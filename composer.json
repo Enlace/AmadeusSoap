@@ -1,0 +1,17 @@
+{
+    "name": "aldogtz/amadeus-soap",
+    "autoload": {
+        "psr-4": {
+            "Aldogtz\\AmadeusSoap\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Aldo Gutierrez",
+            "email": "aldogtz1998@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "laravel/framework": "v9.52.5"
+    }
+}
