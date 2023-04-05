@@ -14,7 +14,7 @@ class AmadeusSoapServiceProvider extends ServiceProvider{
     public function register()
     {
         $this->app->singleton('AmadeusSoap', function() {
-            return new AmadeusSoap(config('AmadeusSoap.wsdl'));
+            return new AmadeusSoap(config('amadeus-soap.wsdl'));
         });
     }
 
@@ -25,6 +25,8 @@ class AmadeusSoapServiceProvider extends ServiceProvider{
      */
     public function boot()
     {
-        //
+        $this->publishes([
+            __DIR__.'/../config/amadeus-soap.php' => config_path('amadeus-soap.php'),
+        ]);
     }
 }
