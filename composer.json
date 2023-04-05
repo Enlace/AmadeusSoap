@@ -13,5 +13,15 @@
     ],
     "require-dev": {
         "laravel/framework": "v9.52.5"
+    },
+    "extra":{
+        "laravel":{
+            "providers":[
+                "Aldogtz\\AmadeusSoap\\AmadeusSoapServiceProvider"
+            ],
+            "aliases":{
+                "AmadeusSoap" : "Aldogtz\\AmadeusSoap\\Facades\\AmadeusSoapFacade"
+            }
+        }
     }
 }
