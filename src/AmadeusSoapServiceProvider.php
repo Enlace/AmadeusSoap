@@ -26,7 +26,7 @@ class AmadeusSoapServiceProvider extends ServiceProvider{
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/../config/amadeus-soap.php' => config_path('amadeus-soap.php'),
+            __DIR__.'/config/amadeus-soap.php' => config_path('amadeus-soap.php'),
         ]);
     }
 }
