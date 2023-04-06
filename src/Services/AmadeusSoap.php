@@ -15,4 +15,9 @@ class AmadeusSoap
             'exception' => true,
         ]);
     }
+
+    public function test()
+    {
+        return $this->client->__getFunctions();
+    }
 }
