@@ -20,4 +20,9 @@ class AmadeusSoap
     {
         return $this->client->__getFunctions();
     }
+
+    public static function __callStatic($name, $arguments)
+    {
+        return["método" => $name, "argumentos" => $arguments];
+    }
 }
