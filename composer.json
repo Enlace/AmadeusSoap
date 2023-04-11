@@ -23,5 +23,8 @@
                 "AmadeusSoap" : "Aldogtz\\AmadeusSoap\\Facades\\AmadeusSoapFacade"
             }
         }
+    },
+    "require": {
+        "spatie/array-to-xml": "^3.1"
     }
 }
