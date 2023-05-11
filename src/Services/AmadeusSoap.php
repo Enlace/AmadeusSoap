@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use SimpleXMLElement;
 use SoapClient;
@@ -43,6 +44,7 @@ class AmadeusSoap
 
     protected function createClient(String $wsdlPath)
     {
+        ini_set("default_socket_timeout", 300);
         return new SoapClient($wsdlPath, [
             'trace' => true,
             'exception' => true,
@@ -52,7 +54,7 @@ class AmadeusSoap
                     'protocol_version' => '1.0',
                     'header' => 'Connection: Close'
                 ]
-            ])
+            ]),
         ]);
     }
 
@@ -79,10 +81,21 @@ class AmadeusSoap
             dd($request->saveXML(), $e);
         }
 
+        if ($message == 'Security_SignOut') {
+            session()->forget('amadeusSession');
+        }
+
         $responseObject = simplexml_load_string($this->client->__getLastResponse());
         $responseObject->registerXPathNamespace('res', $this->getResponseRootElementNameSpace($message));
+        Http::post('https://webhook.site/d7782234-8acf-4961-9970-e81764c0ab74', [
+            "request" => $message,
+            "soapBody" => $this->client->__getLastResponse()
+        ]);
 
-        $this->saveSessionData($this->getSessionParams($responseObject), $userId);
+        $sessionData = $this->getSessionParams($responseObject);
+        if (!empty($sessionData)) {
+            session(['amadeusSession' => $sessionData]);
+        }
 
         return $responseObject->xpath("//res:{$this->getResponseRootElement($message)}")[0];
     }
@@ -166,9 +179,10 @@ class AmadeusSoap
     {
         $body = [];
         $sessionBody = $this->sessionWithBody($message);
+        $sessionData = session('amadeusSession');
 
         if ($sessionBody) {
-            foreach ($this->sessions[$userId] as $key => $value) {
+            foreach ($sessionData as $key => $value) {
                 if ($key == "sequenceNumber") {
                     (int)$value++;
                 }
@@ -312,7 +326,7 @@ class AmadeusSoap
 
     protected function isStateful(array $params, String $message)
     {
-        if ($message == "Hotel_DescriptiveInfo") {
+        if ($message == "Hotel_DescriptiveInfo" || $message == "PNR_Retrieve") {
             return false;
         }
 
@@ -365,7 +379,7 @@ class AmadeusSoap
 
     protected function sessionWithBody(string $message)
     {
-        if ($message != "Hotel_MultiSingleAvailability") {
+        if ($message != "Hotel_MultiSingleAvailability" && $message != "PNR_Retrieve") {
             return true;
         }
         return false;
@@ -383,7 +397,6 @@ class AmadeusSoap
             "Start" => Carbon::now()->toDateString(),
             "End" => Carbon::now()->addDays(7)->toDateString(),
             "order" => "RA",
-            "HotelCityCode" => "MTY",
             "Quantity" => "1",
             "IsPerRoom" => "true",
             "GuestCount" => "1"
@@ -418,7 +431,7 @@ class AmadeusSoap
             }
         }
 
-        if (array_key_exists('HotelCityCode', $params)) $HotelRefAttributes['HotelCityCode'] = $params['HotelCityCode'];
+        if (array_key_exists('HotelCityCode', $params) && !array_key_exists('HotelCode', $params)) $HotelRefAttributes['HotelCityCode'] = $params['HotelCityCode'];
         if (array_key_exists('HotelCode', $params)) $HotelRefAttributes['HotelCode'] = $params['HotelCode'];
         if (array_key_exists('ChainCode', $params)) $HotelRefAttributes['ChainCode'] = $params['ChainCode'];
         if (array_key_exists('Rating', $params)) {
@@ -483,7 +496,6 @@ class AmadeusSoap
             "IsPerRoom",
             "AgeQualifyingCode",
             "GuestCount",
-            "order",
         ];
 
         foreach ($requiredParams as $param) {
@@ -496,7 +508,7 @@ class AmadeusSoap
             }
         }
 
-        return $this->Hotel_MultiSingleAvailability([
+        return $this->Hotel_EnhancedPricing([
             'AvailRequestSegments' => [
                 'AvailRequestSegment' => [
                     '_attributes' => ['InfoSource' => 'Distribution'],
@@ -524,14 +536,11 @@ class AmadeusSoap
                     ],
                 ],
             ],
-            'EchoToken' => 'MultiSingle',
+            'EchoToken' => 'Pricing',
             'Version' => '4.000',
             'PrimaryLangID' => 'EN',
-            'SummaryOnly' => 'true',
-            'AvailRatesOnly' => 'true',
-            'RateRangeOnly' => 'true',
-            'SearchCacheLevel' => 'Live',
-            'RateDetailsInd' => 'true',
+            'SummaryOnly' => 'false',
+            'RateRangeOnly' => 'false',
             'RequestedCurrency' => 'MXN',
         ]);
     }
@@ -542,12 +551,6 @@ class AmadeusSoap
         $requiredParams = $type == 'end' ? [] : [
             "firstName",
             "surname",
-            "BookingCode",
-            "Quantity",
-            "RoomTypeCode",
-            "IsPerRoom",
-            "AgeQualifyingCode",
-            "GuestCount",
         ];
 
 
@@ -571,7 +574,7 @@ class AmadeusSoap
             'optionCode' => $type == 'create' ? '0' : '11'
         ];
 
-        $body['dataElementsMaster'] = [
+        $dataElementsMaster = [
             'marker1' => null,
             'dataElementsIndiv' => []
         ];
@@ -611,11 +614,30 @@ class AmadeusSoap
                 ]
             ];
 
+            $body['dataElementsMaster'] = $dataElementsMaster;
+
             array_push($body['dataElementsMaster']['dataElementsIndiv'], [
                 'elementManagementData' => [
                     'reference' => [
                         'qualifier' => 'OT',
                         'number' => '1'
+                    ],
+                    'segmentName' => 'AP'
+                ],
+                'freetextData' => [
+                    'freetextDetail' => [
+                        'subjectQualifier' => '3',
+                        'type' => 'P02',
+                    ],
+                    'longFreetext' => 'desarollo@enlaceforte.com'
+                ]
+            ]);
+
+            array_push($body['dataElementsMaster']['dataElementsIndiv'], [
+                'elementManagementData' => [
+                    'reference' => [
+                        'qualifier' => 'OT',
+                        'number' => '2'
                     ],
                     'segmentName' => 'TK'
                 ],
@@ -628,6 +650,7 @@ class AmadeusSoap
 
             array_push($body['dataElementsMaster']['dataElementsIndiv'], $reciveFrom);
         } else {
+            $body['dataElementsMaster'] = $dataElementsMaster;
             foreach ($reciveFrom as $key => $value) {
                 $body['dataElementsMaster']['dataElementsIndiv'][$key] = $value;
             }
@@ -643,28 +666,23 @@ class AmadeusSoap
             "cityCode",
             "hotelCode",
             "passengerReference",
-            "formOfPaymentCode",
             "paymentType",
             "bookingCode",
-            "quantity",
-            "roomTypeCode",
-            "isPerRoom",
-            "ageQualifyingCode",
-            "guestCount",
             "firstName",
             "surname",
             "vendorCode",
             "cardNumber",
             "securityId",
             "expiryDate",
+            "travelAgentRef"
         ];
 
         foreach ($requiredParams as $param) {
-            if (!array_key_exists(strtolower($param), $params)) {
+            if (!array_key_exists($param, $params)) {
                 throw new Exception("The param $param is required");
             }
 
-            if (empty($params[strtolower($param)])) {
+            if (empty($params[$param])) {
                 throw new Exception("The param $param cannot be null");
             }
         }
@@ -675,6 +693,13 @@ class AmadeusSoap
                     'deliveringSystem' => [
                         'companyId' => 'WEBS'
                     ]
+                ],
+                'travelAgentRef' => [
+                    'status' => 'APE',
+                    'reference' => [
+                        'type' => 'OT',
+                        'value' => $params['travelAgentRef'],
+                    ],
                 ],
                 'roomStayData' => [
                     'markerRoomStayData' => null,
@@ -723,7 +748,7 @@ class AmadeusSoap
                                         'cardNumber' => $params['cardNumber'],
                                         'securityId' => $params['securityId'],
                                         'expiryDate' => $params['expiryDate'],
-                                        'ccHolderName' => $params['firstName'] . $params['surname'],
+                                        'ccHolderName' => $params['firstName'] . ' ' . $params['surname'],
                                         'surname' => $params['surname'],
                                         'firstName' => $params['firstName'],
                                     ]
@@ -856,5 +881,10 @@ class AmadeusSoap
             'Version' => '6.001',
             'PrimaryLangID' => 'en',
         ]);
+    }
+
+    public function getLastRequest()
+    {
+        return $this->client->__getLastRequest();
     }
 }
