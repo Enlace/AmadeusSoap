@@ -479,7 +479,6 @@ class AmadeusSoap
             'SearchCacheLevel' => 'Live',
             'RateDetailsInd' => 'true',
             'RequestedCurrency' => 'MXN',
-            'SortOrder' => $params['order'],
         ]);
     }
 
