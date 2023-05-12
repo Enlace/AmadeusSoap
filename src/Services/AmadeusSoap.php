@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use SimpleXMLElement;
-use SoapClient;
 use SoapHeader;
 use SoapVar;
 use Spatie\ArrayToXml\ArrayToXml;
@@ -45,7 +44,7 @@ class AmadeusSoap
     protected function createClient(String $wsdlPath)
     {
         ini_set("default_socket_timeout", 300);
-        return new SoapClient($wsdlPath, [
+        return new \SoapClient($wsdlPath, [
             'trace' => true,
             'exception' => true,
             'cache_wsdl' => WSDL_CACHE_MEMORY,
