@@ -63,7 +63,7 @@ class AmadeusSoap
             throw new Exception("Operation not defined in the wsld");
         }
 
-        $userId = $this->makeWsdlIdentifier(Auth::user()->email->email);
+        $userId = $this->makeWsdlIdentifier(Auth::user()->email);
 
         $this->client->__setSoapHeaders([]);
         $this->client->__setSoapHeaders($this->createHeaders(Arr::first($arguments) ?? [], $message, $userId));
