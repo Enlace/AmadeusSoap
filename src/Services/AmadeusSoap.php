@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use SimpleXMLElement;
+use SoapClient;
 use SoapHeader;
 use SoapVar;
 use Spatie\ArrayToXml\ArrayToXml;
@@ -43,8 +44,8 @@ class AmadeusSoap
 
     protected function createClient(String $wsdlPath)
     {
-        ini_set("default_socket_timeout", 300);
-        return new \SoapClient($wsdlPath, [
+        // ini_set("default_socket_timeout", 300);
+        return new SoapClient($wsdlPath, [
             'trace' => true,
             'exception' => true,
             'cache_wsdl' => WSDL_CACHE_MEMORY,
@@ -95,7 +96,6 @@ class AmadeusSoap
         if (!empty($sessionData)) {
             session(['amadeusSession' => $sessionData]);
         }
-
         return $responseObject->xpath("//res:{$this->getResponseRootElement($message)}")[0];
     }
 
@@ -310,7 +310,7 @@ class AmadeusSoap
         return explode(':', $rootElement)[1];
     }
 
-    protected function getResponseRootElementNameSpace(String $message)
+    public function getResponseRootElementNameSpace(String $message)
     {
         $wsdlId = $this->msgAndVer[$message]['wsdl'];
         $rootElement = $this->wsdlDomXpath[$wsdlId]->evaluate(sprintf("string(//wsdl:operation[@name='%s']/wsdl:output/@message)", $message));
@@ -325,7 +325,7 @@ class AmadeusSoap
 
     protected function isStateful(array $params, String $message)
     {
-        if ($message == "Hotel_DescriptiveInfo" || $message == "PNR_Retrieve") {
+        if ($message == "Hotel_DescriptiveInfo") {
             return false;
         }
 
@@ -395,14 +395,16 @@ class AmadeusSoap
         $defaultparams = [
             "Start" => Carbon::now()->toDateString(),
             "End" => Carbon::now()->addDays(7)->toDateString(),
-            "order" => "RA",
             "Quantity" => "1",
             "IsPerRoom" => "true",
-            "GuestCount" => "1"
+            "GuestCount" => "1",
+            "children" => [],
+            "InfoSource" => "Distribution",
+            "SearchCacheLevel" => "Live",
+            "MaxResponses" => "10",
         ];
 
         $HotelRefAttributes = [];
-        $Award = null;
 
         if (!in_array($type, $acceptedTypes)) {
             throw new Exception("Hotel Search Type Not Supported");
@@ -425,32 +427,57 @@ class AmadeusSoap
         $params = array_merge($defaultparams, $sanitizedParams);
 
         foreach ($params as $key => $value) {
-            if ($value == null) {
+            if (is_null($value) && $key != 'children'){
                 throw new Exception("$key cannot be null");
+            }
+        }
+
+        foreach ($params['children'] as $child) {
+            if (!array_key_exists('age', $child) && !array_key_exists('count', $child)) {
+                throw new Exception("Child age and count is required");
             }
         }
 
         if (array_key_exists('HotelCityCode', $params) && !array_key_exists('HotelCode', $params)) $HotelRefAttributes['HotelCityCode'] = $params['HotelCityCode'];
         if (array_key_exists('HotelCode', $params)) $HotelRefAttributes['HotelCode'] = $params['HotelCode'];
         if (array_key_exists('ChainCode', $params)) $HotelRefAttributes['ChainCode'] = $params['ChainCode'];
-        if (array_key_exists('Rating', $params)) {
-            $Award = [
-                '_attributes' => ['Provider' => 'LSR', 'Rating' => $params['Rating']],
+
+        $GuestCount = [];
+
+        $adults = [
+            '_attributes' => ['AgeQualifyingCode' => '10', 'Count' => $params['GuestCount']],
+        ];
+
+        foreach ($params['children'] as $child) {
+            $GuestCount[] = [
+                '_attributes' => ['AgeQualifyingCode' => '8', 'Count' => $child['count'], 'Age' => $child['age']],
             ];
-        };
+        }
 
+        if ($params['children'] > 0) {
+            $GuestCount[] = $adults;
+        } else {
+            $GuestCount = $adults;
+        }
 
-        return $this->Hotel_MultiSingleAvailability([
+        $AvailRequestSegmentAttributes = [
+            'InfoSource' => $params['InfoSource'],
+        ];
+
+        if (isset($params['MoreDataEchoToken'])) {
+            $AvailRequestSegmentAttributes['MoreDataEchoToken'] = $params['MoreDataEchoToken'];
+        }
+
+        $body = [
             'AvailRequestSegments' => [
                 'AvailRequestSegment' => [
-                    '_attributes' => ['InfoSource' => 'Distribution'],
+                    '_attributes' => $AvailRequestSegmentAttributes,
                     'HotelSearchCriteria' => [
                         'Criterion' => [
                             '_attributes' => ['ExactMatch' => 'true'],
                             'HotelRef' => [
                                 '_attributes' => $HotelRefAttributes,
                             ],
-                            'Award' => $Award,
                             'StayDateRange' => [
                                 '_attributes' => ['Start' => $params['Start'], 'End' => $params['End']],
                             ],
@@ -459,9 +486,7 @@ class AmadeusSoap
                                     '_attributes' => ['RoomID' => '1', 'Quantity' => $params['Quantity']],
                                     'GuestCounts' => [
                                         '_attributes' => ['IsPerRoom' => $params['IsPerRoom']],
-                                        'GuestCount' => [
-                                            '_attributes' => ['AgeQualifyingCode' => '10', 'Count' => $params['GuestCount']],
-                                        ]
+                                        'GuestCount' => $GuestCount,
                                     ]
                                 ]
                             ],
@@ -475,10 +500,19 @@ class AmadeusSoap
             'SummaryOnly' => 'true',
             'AvailRatesOnly' => 'true',
             'RateRangeOnly' => 'true',
-            'SearchCacheLevel' => 'Live',
+            'SearchCacheLevel' => $params['SearchCacheLevel'],
             'RateDetailsInd' => 'true',
             'RequestedCurrency' => 'MXN',
-        ]);
+            'MaxResponses' => '80',
+        ];
+
+        if (array_key_exists('Rating', $params)) {
+            $body['Award'] = [
+                '_attributes' => ['Provider' => 'LSR', 'Rating' => $params['Rating']],
+            ];
+        }
+
+        return $this->Hotel_MultiSingleAvailability($body);
     }
 
     public function hotelPricing(array $params = [])
@@ -489,8 +523,8 @@ class AmadeusSoap
             "HotelCode",
             "RatePlanCode",
             "BookingCode",
-            "Quantity",
             "RoomTypeCode",
+            "Quantity",
             "IsPerRoom",
             "AgeQualifyingCode",
             "GuestCount",
@@ -506,6 +540,34 @@ class AmadeusSoap
             }
         }
 
+        if (isset($params['children'])) {
+            foreach ($params['children'] as $child) {
+                if (!array_key_exists('age', $child) && !array_key_exists('count', $child)) {
+                    throw new Exception("Child age and count is required");
+                }
+            }
+        }
+
+        $GuestCount = [];
+
+        $adults = [
+            '_attributes' => ['AgeQualifyingCode' => '10', 'Count' => $params['GuestCount']],
+        ];
+
+        if (isset($params['children'])){
+            foreach ($params['children'] as $child) {
+                $GuestCount[] = [
+                    '_attributes' => ['AgeQualifyingCode' => '8', 'Count' => $child['count'], 'Age' => $child['age']],
+                ];
+            }
+        }
+
+        if (isset($params['children']) && count($params['children']) > 0) {
+            $GuestCount[] = $adults;
+        } else {
+            $GuestCount = $adults;
+        }
+
         return $this->Hotel_EnhancedPricing([
             'AvailRequestSegments' => [
                 'AvailRequestSegment' => [
@@ -519,14 +581,17 @@ class AmadeusSoap
                             'StayDateRange' => [
                                 '_attributes' => ['Start' => $params['Start'], 'End' => $params['End']],
                             ],
+                            'RatePlanCandidates' => [
+                                'RatePlanCandidate' => [
+                                    '_attributes' => ['RatePlanCode' => $params['RatePlanCode']],
+                                ]
+                            ],
                             'RoomStayCandidates' => [
                                 'RoomStayCandidate' => [
                                     '_attributes' => ['BookingCode' => $params['BookingCode'], 'RoomTypeCode' => $params['RoomTypeCode'], 'RoomID' => '1', 'Quantity' => $params['Quantity']],
                                     'GuestCounts' => [
                                         '_attributes' => ['IsPerRoom' => $params['IsPerRoom']],
-                                        'GuestCount' => [
-                                            '_attributes' => ['AgeQualifyingCode' => $params['AgeQualifyingCode'], 'Count' => $params['GuestCount']],
-                                        ]
+                                        'GuestCount' => $GuestCount,
                                     ]
                                 ]
                             ],
@@ -543,34 +608,67 @@ class AmadeusSoap
         ]);
     }
 
+    protected function isMultiArray($a)
+    {
+        foreach ($a as $v) if (is_array($v)) return TRUE;
+        return FALSE;
+    }
+
     public function addMultiElements($type = "create", $params = [])
     {
-        $acceptedTypes = ['create', 'end'];
-        $requiredParams = $type == 'end' ? [] : [
-            "firstName",
-            "surname",
+        $acceptedTypes = ['create', 'end', 'cancel'];
+
+        $rfTexts = [
+            'create' => 'Added via WebService',
+            'end' => 'hotel reservation via WebServices',
+            'cancel' => 'hotel CANCELLED via WebServices',
         ];
 
+        if (!in_array($type, $acceptedTypes)) {
+            throw new Exception("Method Not Supported");
+        }
+
+        $requiredParams = $type == 'create' ?[
+            "firstName",
+            "surname",
+            "type",
+        ] : [];
+
+        $isMultiDimentional = $this->isMultiArray($params);
+
+        if ($isMultiDimentional) {
+            foreach ($params as $index => $passagener) {
+                foreach ($requiredParams as $param) {
+                    if (!array_key_exists($param, $passagener)) {
+                        throw new Exception("The param $param is required on passenger numer $index");
+                    }
+
+                    if (empty($passagener[$param])) {
+                        throw new Exception("The param $param cannot be null on passenger numer $index");
+                    }
+                }
+            }
+        } else {
+            foreach ($requiredParams as $param) {
+                if (!array_key_exists($param, $params)) {
+                    throw new Exception("The param $param is required");
+                }
+
+                if (empty($params[$param])) {
+                    throw new Exception("The param $param cannot be null");
+                }
+            }
+        }
 
         $body = [];
-
-        if (!in_array($type, $acceptedTypes)) {
-            throw new Exception("Hotel Search Type Not Supported");
-        }
-
-        foreach ($requiredParams as $param) {
-            if (!array_key_exists($param, $params)) {
-                throw new Exception("The param $param is required");
-            }
-
-            if (empty($params[$param])) {
-                throw new Exception("The param $param cannot be null");
-            }
-        }
 
         $body['pnrActions'] = [
             'optionCode' => $type == 'create' ? '0' : '11'
         ];
+
+        if ($type == 'create') {
+            $body['travellerInfo'] = [];
+        }
 
         $dataElementsMaster = [
             'marker1' => null,
@@ -586,31 +684,57 @@ class AmadeusSoap
                     'subjectQualifier' => '3',
                     'type' => 'P22'
                 ],
-                'longFreetext' => $type == 'create' ? 'Added via WebService' : 'hotel reservation via WebServices'
+                'longFreetext' => $rfTexts[$type]
             ]
         ];
 
         if ($type == 'create') {
-            $body['travellerInfo'] = [
-                'elementManagementPassenger' => [
-                    'reference' => [
-                        'qualifier' => 'PR',
-                        'number' => '1'
-                    ],
-                    'segmentName' => 'NM'
-                ],
-                'passengerData' => [
-                    'travellerInformation' => [
-                        'traveller' => [
-                            'surname' => $params['surname']
+
+            if ($isMultiDimentional) {
+                foreach ($params as $key => $value) {
+                    array_push($body['travellerInfo'], [
+                        'elementManagementPassenger' => [
+                            'reference' => [
+                                'qualifier' => 'PR',
+                                'number' => $key + 1
+                            ],
+                            'segmentName' => 'NM'
                         ],
-                        'passenger' => [
-                            'firstName' => $params['firstName'],
-                            'type' => 'ADT'
+                        'passengerData' => [
+                            'travellerInformation' => [
+                                'traveller' => [
+                                    'surname' => $value['surname']
+                                ],
+                                'passenger' => [
+                                    'firstName' => $value['firstName'],
+                                    'type' => $value['type']
+                                ]
+                            ]
+                        ]
+                    ]);
+                }
+            } else {
+                $body['travellerInfo'] = [
+                    'elementManagementPassenger' => [
+                        'reference' => [
+                            'qualifier' => 'PR',
+                            'number' => '1'
+                        ],
+                        'segmentName' => 'NM'
+                    ],
+                    'passengerData' => [
+                        'travellerInformation' => [
+                            'traveller' => [
+                                'surname' => $params['surname']
+                            ],
+                            'passenger' => [
+                                'firstName' => $params['firstName'],
+                                'type' => $params['type']
+                            ]
                         ]
                     ]
-                ]
-            ];
+                ];
+            }
 
             $body['dataElementsMaster'] = $dataElementsMaster;
 
@@ -631,6 +755,8 @@ class AmadeusSoap
                 ]
             ]);
 
+            array_push($body['dataElementsMaster']['dataElementsIndiv'], $reciveFrom);
+
             array_push($body['dataElementsMaster']['dataElementsIndiv'], [
                 'elementManagementData' => [
                     'reference' => [
@@ -645,8 +771,6 @@ class AmadeusSoap
                     ],
                 ]
             ]);
-
-            array_push($body['dataElementsMaster']['dataElementsIndiv'], $reciveFrom);
         } else {
             $body['dataElementsMaster'] = $dataElementsMaster;
             foreach ($reciveFrom as $key => $value) {
@@ -657,9 +781,26 @@ class AmadeusSoap
         return $this->PNR_AddMultiElements([$body]);
     }
 
+    protected function isMultiArrayWithException($a, $exceptions = [])
+    {
+        foreach ($a as $k => $v) {
+            if (is_array($v) && !array_key_exists($k, array_flip($exceptions))) return true;
+        }
+        return false;
+    }
+
     public function hotelSell($params = [])
     {
         $requiredParams = [
+            "travelAgentRef"
+        ];
+
+        $passengerReferenceParams = [
+            "value",
+            "type"
+        ];
+
+        $roomStayDataParams = [
             "chainCode",
             "cityCode",
             "hotelCode",
@@ -672,8 +813,13 @@ class AmadeusSoap
             "cardNumber",
             "securityId",
             "expiryDate",
-            "travelAgentRef"
         ];
+
+        $isMultiDimentional = $this->isMultiArrayWithException($params, [
+            "passengerReference",
+        ]);
+
+        if (!$isMultiDimentional) $requiredParams = array_merge($requiredParams, $roomStayDataParams);
 
         foreach ($requiredParams as $param) {
             if (!array_key_exists($param, $params)) {
@@ -685,86 +831,266 @@ class AmadeusSoap
             }
         }
 
-        return $this->Hotel_Sell([
-            [
-                'systemIdentifier' => [
-                    'deliveringSystem' => [
-                        'companyId' => 'WEBS'
-                    ]
-                ],
-                'travelAgentRef' => [
-                    'status' => 'APE',
-                    'reference' => [
-                        'type' => 'OT',
-                        'value' => $params['travelAgentRef'],
-                    ],
-                ],
-                'roomStayData' => [
-                    'markerRoomStayData' => null,
-                    'globalBookingInfo' => [
-                        'markerGlobalBookingInfo' => [
-                            'hotelReference' => [
-                                'chainCode' => (string)$params['chainCode'],
-                                'cityCode' => (string)$params['cityCode'],
-                                'hotelCode' => substr((string)$params['hotelCode'], -3)
-                            ],
+        if ($isMultiDimentional) {
+            foreach ($params as $index => $roomData) {
+                if ($index != "travelAgentRef") {
+                    $missingParams = array_diff_key(array_flip($roomStayDataParams), $roomData);
 
-                        ],
-                        'representativeParties' => [
-                            'occupantList' => [
-                                'passengerReference' => [
-                                    'type' => 'BHO',
-                                    'value' => $params['passengerReference']
-                                ]
+                    if (count($missingParams) > 0) {
+                        $missingParamsStrings = implode(", ", array_keys($missingParams));
+                        throw new Exception("The params $missingParamsStrings are required on room data number " . ($index + 1));
+                    }
+
+                    $passengerReferences = $roomData['passengerReference'];
+                    if (is_array($passengerReferences)) {
+                        foreach ($passengerReferences as $passengerReference) {
+                            $missingPassenegerReferenceParams = array_diff_key(array_flip($passengerReferenceParams), $passengerReference);
+                            if (count($missingPassenegerReferenceParams) > 0) {
+                                $missingParamsStrings = implode(", ", array_keys($missingPassenegerReferenceParams));
+                                throw new Exception("The params $missingParamsStrings are required on room data number " . ($index + 1));
+                            }
+                        }
+                    } else {
+                        $missingPassenegerReferenceParams = array_diff_key(array_flip($passengerReferenceParams, $passengerReferences));
+                        if (count($missingPassenegerReferenceParams) > 0) {
+                            $missingParamsStrings = implode(", ", array_keys($missingPassenegerReferenceParams));
+                            throw new Exception("The params $missingParamsStrings are required on room data number " . ($index + 1));
+                        }
+                    }
+                }
+            }
+        } else {
+            dump("no es multidimencional");
+            $passengerReferences = $params['passengerReference'];
+            if (is_array($passengerReferences)) {
+                foreach ($passengerReferences as $passengerReference) {
+                    $missingPassenegerReferenceParams = array_diff_key(array_flip($passengerReferenceParams), $passengerReference);
+                    if (count($missingPassenegerReferenceParams) > 0) {
+                        $missingParamsStrings = implode(", ", array_keys($missingPassenegerReferenceParams));
+                        throw new Exception("The params $missingParamsStrings are required on room data");
+                    }
+                }
+            } else {
+                $missingPassenegerReferenceParams = array_diff_key(array_flip($passengerReferenceParams), $passengerReferences);
+                if (count($missingPassenegerReferenceParams) > 0) {
+                    $missingParamsStrings = implode(", ", array_keys($missingPassenegerReferenceParams));
+                    throw new Exception("The params $missingParamsStrings are required on room data");
+                }
+            }
+        }
+
+        $body = [
+            'systemIdentifier' => [
+                'deliveringSystem' => [
+                    'companyId' => 'WEBS'
+                ]
+            ],
+            'travelAgentRef' => [
+                'status' => 'APE',
+                'reference' => [
+                    'type' => 'OT',
+                    'value' => $params['travelAgentRef'],
+                ],
+            ],
+            'roomStayData' => []
+        ];
+
+
+        if (!$isMultiDimentional) {
+            $representativeParties = [];
+            $guestList = [];
+
+            if (is_array($params['passengerReference'])) {
+                foreach ($params['passengerReference'] as $passenger) {
+
+                    array_push($representativeParties, [
+                        'occupantList' => [
+                            'passengerReference' => [
+                                'type' => $passenger['type'],
+                                'value' => $passenger['value']
                             ]
                         ]
-                    ],
-                    'roomList' => [
-                        'markerRoomstayQuery' => null,
-                        'roomRateDetails' => [
-                            'marker' => null,
-                            'hotelProductReference' => [
-                                'referenceDetails' => [
-                                    'type' => 'BC',
-                                    'value' => $params['bookingCode']
-                                ]
-                            ],
-                            'markerOfExtra' => null
+                    ]);
+
+                    array_push($guestList, [
+                        'occupantList' => [
+                            'passengerReference' => [
+                                'type' => $passenger['type'] == "BHO" ? 'RMO' : 'ROP',
+                                'value' => $passenger['value']
+                            ]
+                        ]
+                    ]);
+                }
+            } else {
+                $representativeParties = [
+                    'occupantList' => [
+                        'passengerReference' => [
+                            'type' => $params['passengerReference']['type'],
+                            'value' => $params['passengerReference']['value']
+                        ]
+                    ]
+                ];
+                $guestList = [
+                    'occupantList' => [
+                        'passengerReference' => [
+                            'type' => $params['passengerReference']['type'] == "BHO" ? 'RMO' : 'ROP',
+                            'value' => $params['passengerReference']['value']
+                        ]
+                    ]
+                ];
+            }
+
+            $body['roomStayData'] = [
+                'markerRoomStayData' => null,
+                'globalBookingInfo' => [
+                    'markerGlobalBookingInfo' => [
+                        'hotelReference' => [
+                            'chainCode' => (string)$params['chainCode'],
+                            'cityCode' => (string)$params['cityCode'],
+                            'hotelCode' => substr((string)$params['hotelCode'], -3)
                         ],
-                        'guaranteeOrDeposit' => [
-                            'paymentInfo' => [
-                                'paymentDetails' => [
-                                    'formOfPaymentCode' => '1',
-                                    'paymentType' => $params['paymentType'],
-                                    'serviceToPay' => '3'
+
+                    ],
+                    'representativeParties' => $representativeParties
+                ],
+                'roomList' => [
+                    'markerRoomstayQuery' => null,
+                    'roomRateDetails' => [
+                        'marker' => null,
+                        'hotelProductReference' => [
+                            'referenceDetails' => [
+                                'type' => 'BC',
+                                'value' => $params['bookingCode']
+                            ]
+                        ],
+                        'markerOfExtra' => null
+                    ],
+                    'guaranteeOrDeposit' => [
+                        'paymentInfo' => [
+                            'paymentDetails' => [
+                                'formOfPaymentCode' => '1',
+                                'paymentType' => $params['paymentType'],
+                                'serviceToPay' => '3'
+                            ]
+                        ],
+                        'groupCreditCardInfo' => [
+                            'creditCardInfo' => [
+                                'ccInfo' => [
+                                    'vendorCode' => $params['vendorCode'],
+                                    'cardNumber' => $params['cardNumber'],
+                                    'securityId' => $params['securityId'],
+                                    'expiryDate' => $params['expiryDate'],
+                                    'ccHolderName' => $params['firstName'] . ' ' . $params['surname'],
+                                    'surname' => $params['surname'],
+                                    'firstName' => $params['firstName'],
                                 ]
-                            ],
-                            'groupCreditCardInfo' => [
-                                'creditCardInfo' => [
-                                    'ccInfo' => [
-                                        'vendorCode' => $params['vendorCode'],
-                                        'cardNumber' => $params['cardNumber'],
-                                        'securityId' => $params['securityId'],
-                                        'expiryDate' => $params['expiryDate'],
-                                        'ccHolderName' => $params['firstName'] . ' ' . $params['surname'],
-                                        'surname' => $params['surname'],
-                                        'firstName' => $params['firstName'],
+                            ]
+                        ],
+                    ],
+                    'guestList' => $guestList
+                ]
+            ];
+        } else {
+            foreach ($params as $key => $param) {
+                if ($key != "travelAgentRef") {
+                    $representativeParties = [];
+                    $guestList = [];
+
+                    if (is_array($param['passengerReference'])) {
+                        foreach ($param['passengerReference'] as $passenger) {
+
+                            array_push($representativeParties, [
+                                'occupantList' => [
+                                    'passengerReference' => [
+                                        'type' => $passenger['type'],
+                                        'value' => $passenger['value']
                                     ]
                                 ]
-                            ],
-                        ],
-                        'guestList' => [
+                            ]);
+
+                            array_push($guestList, [
+                                'occupantList' => [
+                                    'passengerReference' => [
+                                        'type' => $passenger['type'] == "BHO" ? 'RMO' : 'ROP',
+                                        'value' => $passenger['value']
+                                    ]
+                                ]
+                            ]);
+                        }
+                    } else {
+                        $representativeParties = [
                             'occupantList' => [
                                 'passengerReference' => [
-                                    'type' => 'RMO',
-                                    'value' => $params['passengerReference']
+                                    'type' => $param['passengerReference']['type'],
+                                    'value' => $param['passengerReference']['value']
                                 ]
                             ]
+                        ];
+                        $guestList = [
+                            'occupantList' => [
+                                'passengerReference' => [
+                                    'type' => $param['passengerReference']['type'] == "BHO" ? 'RMO' : 'ROP',
+                                    'value' => $param['passengerReference']['value']
+                                ]
+                            ]
+                        ];
+                    }
+
+                    array_push($body['roomStayData'], [
+                        'markerRoomStayData' => null,
+                        'globalBookingInfo' => [
+                            'markerGlobalBookingInfo' => [
+                                'hotelReference' => [
+                                    'chainCode' => (string)$param['chainCode'],
+                                    'cityCode' => (string)$param['cityCode'],
+                                    'hotelCode' => substr((string)$param['hotelCode'], -3)
+                                ],
+
+                            ],
+                            'representativeParties' => $representativeParties
+                        ],
+                        'roomList' => [
+                            'markerRoomstayQuery' => null,
+                            'roomRateDetails' => [
+                                'marker' => null,
+                                'hotelProductReference' => [
+                                    'referenceDetails' => [
+                                        'type' => 'BC',
+                                        'value' => $param['bookingCode']
+                                    ]
+                                ],
+                                'markerOfExtra' => null
+                            ],
+                            'guaranteeOrDeposit' => [
+                                'paymentInfo' => [
+                                    'paymentDetails' => [
+                                        'formOfPaymentCode' => '1',
+                                        'paymentType' => $param['paymentType'],
+                                        'serviceToPay' => '3'
+                                    ]
+                                ],
+                                'groupCreditCardInfo' => [
+                                    'creditCardInfo' => [
+                                        'ccInfo' => [
+                                            'vendorCode' => $param['vendorCode'],
+                                            'cardNumber' => $param['cardNumber'],
+                                            'securityId' => $param['securityId'],
+                                            'expiryDate' => $param['expiryDate'],
+                                            'ccHolderName' => $param['firstName'] . ' ' . $param['surname'],
+                                            'surname' => $param['surname'],
+                                            'firstName' => $param['firstName'],
+                                        ]
+                                    ]
+                                ],
+                            ],
+                            'guestList' => $guestList
                         ]
-                    ]
-                ]
-            ]
-        ]);
+                    ]);
+                }
+            }
+        }
+
+        return $this->Hotel_Sell([$body]);
     }
 
     public function singOut()
@@ -883,6 +1209,118 @@ class AmadeusSoap
 
     public function getLastRequest()
     {
-        return $this->client->__getLastRequest();
+        $dom = new \DOMDocument('1.0');
+        $dom->preserveWhiteSpace = true;
+        $dom->formatOutput = true;
+        $dom->loadXML($this->client->__getLastRequest());
+        return $dom->saveXML();
+    }
+
+    public function getLastResponse()
+    {
+        $dom = new \DOMDocument('1.0');
+        $dom->preserveWhiteSpace = true;
+        $dom->formatOutput = true;
+        $dom->loadXML($this->client->__getLastResponse());
+        return $dom->saveXML();
+    }
+
+    public function pnrRetrieve(array $params = []) {
+
+        if (!isset($params['pnrNumber']) || empty($params['pnrNumber'])) {
+            throw new Exception("The param pnrNumber is required");
+        }
+
+        return $this->PNR_Retrieve([
+            [
+                "retrievalFacts" => [
+                    "retrieve" => [
+                        "type" => "2"
+                    ],
+                    "reservationOrProfileIdentifier" => [
+                        "reservation" => [
+                            "controlNumber" => $params['pnrNumber']
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+    }
+
+    public function hotelCompleteReservationDetails(array $params = []) {
+
+        $requiredParams = [
+            "pnrNumber",
+            "segmentNumber"
+        ];
+
+        $missingParams = array_diff($requiredParams, array_keys($params));
+
+        if (!empty($missingParams)) {
+            throw new Exception("The params " . implode(', ', $missingParams) . " are required");
+        }
+
+        return $this->Hotel_CompleteReservationDetails([
+            [
+            "retrievalKeyGroup" => [
+                "retrievalKey" => [
+                    "reservation" => [
+                        "companyId" => $params['companyId'],
+                        "controlNumber" => $params['pnrNumber'],
+                        "controlType" => "P",
+                    ]
+                ],
+                "tattooID" => [
+                    "referenceDetails" => [
+                        "type" => " S",
+                        "value" => $params['segmentNumber']
+                    ]
+                ]
+            ],
+        ]
+        ]);
+    }
+
+    public function pnrCancel(array $params = []) {
+        $requiredParams = [
+            "segmentNumber"
+        ];
+
+        $missingParams = array_diff($requiredParams, array_keys($params));
+
+        if (!empty($missingParams)) {
+            throw new Exception("The params " . implode(', ', $missingParams) . " are required");
+        }
+
+        $cancelElements = [];
+
+        if (is_array($params['segmentNumber'])) {
+            foreach ($params['segmentNumber'] as $segmentNumber) {
+                array_push($cancelElements, [
+                    "entryType" => "E",
+                    "element" => [
+                        "identifier" => "ST",
+                        "number" => $segmentNumber
+                    ]
+                ]);
+            }
+        } else {
+            $cancelElements = [
+                "entryType" => "E",
+                "element" => [
+                    "identifier" => "ST",
+                    "number" => $params['segmentNumber']
+                ]
+            ];
+        }
+
+        return $this->PNR_Cancel([
+            [
+                "pnrActions" => [
+                    "optionCode" => "0"
+                ],
+                "cancelElements" => $cancelElements
+            ]
+        ]);
     }
 }
