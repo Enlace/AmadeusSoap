@@ -495,9 +495,19 @@ class AmadeusSoap
         ];
 
         if ($type == 'rating') {
-            $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['Award'] = [
-                '_attributes' => ['Provider' => 'LSR', 'Rating' => $params['Rating']],
-            ];
+            if ($params['Rating'] == 5) {
+                $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['Award'] = [
+                    '_attributes' => ['Provider' => 'LSR', 'Rating' => $params['Rating']],
+                ];
+            } else {
+                $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['Award'] = [];
+
+                for ($i = $params['Rating']; $i <= 5; $i++) {
+                    $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['Award'][] = [
+                        '_attributes' => ['Provider' => 'LSR', 'Rating' => "$i"],
+                    ];
+                }
+            }
         }
 
         $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['StayDateRange'] = [
