@@ -427,7 +427,7 @@ class AmadeusSoap
         $params = array_merge($defaultparams, $sanitizedParams);
 
         foreach ($params as $key => $value) {
-            if (is_null($value) && $key != 'children'){
+            if (is_null($value) && $key != 'children') {
                 throw new Exception("$key cannot be null");
             }
         }
@@ -478,18 +478,6 @@ class AmadeusSoap
                             'HotelRef' => [
                                 '_attributes' => $HotelRefAttributes,
                             ],
-                            'StayDateRange' => [
-                                '_attributes' => ['Start' => $params['Start'], 'End' => $params['End']],
-                            ],
-                            'RoomStayCandidates' => [
-                                'RoomStayCandidate' => [
-                                    '_attributes' => ['RoomID' => '1', 'Quantity' => $params['Quantity']],
-                                    'GuestCounts' => [
-                                        '_attributes' => ['IsPerRoom' => $params['IsPerRoom']],
-                                        'GuestCount' => $GuestCount,
-                                    ]
-                                ]
-                            ],
                         ]
                     ],
                 ],
@@ -506,11 +494,25 @@ class AmadeusSoap
             'MaxResponses' => '80',
         ];
 
-        if (array_key_exists('Rating', $params)) {
-            $body['Award'] = [
+        if ($type == 'rating') {
+            $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['Award'] = [
                 '_attributes' => ['Provider' => 'LSR', 'Rating' => $params['Rating']],
             ];
         }
+
+        $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['StayDateRange'] = [
+            '_attributes' => ['Start' => $params['Start'], 'End' => $params['End']],
+        ];
+
+        $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['RoomStayCandidates'] = [
+            'RoomStayCandidate' => [
+                '_attributes' => ['RoomID' => '1', 'Quantity' => $params['Quantity']],
+                'GuestCounts' => [
+                    '_attributes' => ['IsPerRoom' => $params['IsPerRoom']],
+                    'GuestCount' => $GuestCount,
+                ]
+            ]
+        ];
 
         return $this->Hotel_MultiSingleAvailability($body);
     }
@@ -554,7 +556,7 @@ class AmadeusSoap
             '_attributes' => ['AgeQualifyingCode' => '10', 'Count' => $params['GuestCount']],
         ];
 
-        if (isset($params['children'])){
+        if (isset($params['children'])) {
             foreach ($params['children'] as $child) {
                 $GuestCount[] = [
                     '_attributes' => ['AgeQualifyingCode' => '8', 'Count' => $child['count'], 'Age' => $child['age']],
@@ -628,7 +630,7 @@ class AmadeusSoap
             throw new Exception("Method Not Supported");
         }
 
-        $requiredParams = $type == 'create' ?[
+        $requiredParams = $type == 'create' ? [
             "firstName",
             "surname",
             "type",
@@ -1225,7 +1227,8 @@ class AmadeusSoap
         return $dom->saveXML();
     }
 
-    public function pnrRetrieve(array $params = []) {
+    public function pnrRetrieve(array $params = [])
+    {
 
         if (!isset($params['pnrNumber']) || empty($params['pnrNumber'])) {
             throw new Exception("The param pnrNumber is required");
@@ -1247,7 +1250,8 @@ class AmadeusSoap
         ]);
     }
 
-    public function hotelCompleteReservationDetails(array $params = []) {
+    public function hotelCompleteReservationDetails(array $params = [])
+    {
 
         $requiredParams = [
             "pnrNumber",
@@ -1262,26 +1266,27 @@ class AmadeusSoap
 
         return $this->Hotel_CompleteReservationDetails([
             [
-            "retrievalKeyGroup" => [
-                "retrievalKey" => [
-                    "reservation" => [
-                        "companyId" => $params['companyId'],
-                        "controlNumber" => $params['pnrNumber'],
-                        "controlType" => "P",
+                "retrievalKeyGroup" => [
+                    "retrievalKey" => [
+                        "reservation" => [
+                            "companyId" => $params['companyId'],
+                            "controlNumber" => $params['pnrNumber'],
+                            "controlType" => "P",
+                        ]
+                    ],
+                    "tattooID" => [
+                        "referenceDetails" => [
+                            "type" => " S",
+                            "value" => $params['segmentNumber']
+                        ]
                     ]
                 ],
-                "tattooID" => [
-                    "referenceDetails" => [
-                        "type" => " S",
-                        "value" => $params['segmentNumber']
-                    ]
-                ]
-            ],
-        ]
+            ]
         ]);
     }
 
-    public function pnrCancel(array $params = []) {
+    public function pnrCancel(array $params = [])
+    {
         $requiredParams = [
             "segmentNumber"
         ];
