@@ -538,7 +538,6 @@ class AmadeusSoap
             "RoomTypeCode",
             "Quantity",
             "IsPerRoom",
-            "AgeQualifyingCode",
             "GuestCount",
         ];
 
