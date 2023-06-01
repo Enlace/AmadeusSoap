@@ -385,9 +385,8 @@ class AmadeusSoap
         $this->sessions[$userId] = $data;
     }
 
-    public function HotelSearch($type = "city", $params = [])
+    public function HotelSearch($params = [])
     {
-        $acceptedTypes = ['city', 'rating', 'hotel', 'chain'];
         $defaultparams = [
             "Start" => Carbon::now()->toDateString(),
             "End" => Carbon::now()->addDays(7)->toDateString(),
@@ -397,26 +396,10 @@ class AmadeusSoap
             "children" => [],
             "InfoSource" => "Distribution",
             "SearchCacheLevel" => "Live",
-            "MaxResponses" => "10",
+            "MaxResponses" => "96",
         ];
 
         $HotelRefAttributes = [];
-
-        if (!in_array($type, $acceptedTypes)) {
-            throw new Exception("Hotel Search Type Not Supported");
-        }
-
-        if ($type == 'rating') {
-            $defaultparams["Rating"] = "3";
-        }
-
-        if ($type == 'hotel') {
-            $defaultparams["HotelCode"] = null;
-        }
-
-        if ($type == 'chain') {
-            $defaultparams["ChainCode"] = null;
-        }
 
         $sanitizedParams = array_filter($params);
 
@@ -460,7 +443,7 @@ class AmadeusSoap
             'InfoSource' => $params['InfoSource'],
         ];
 
-        if (isset($params['MoreDataEchoToken'])) {
+        if (isset($params['MoreDataEchoToken']) && !isset($params['HotelCode'])) {
             $AvailRequestSegmentAttributes['MoreDataEchoToken'] = $params['MoreDataEchoToken'];
         }
 
@@ -486,11 +469,11 @@ class AmadeusSoap
             'RateRangeOnly' => 'true',
             'SearchCacheLevel' => $params['SearchCacheLevel'],
             'RateDetailsInd' => 'true',
-            'RequestedCurrency' => 'MXN',
-            'MaxResponses' => '80',
+            'RequestedCurrency' => $params['Currency'] ?? 'MXN',
+            'MaxResponses' => $params['MaxResponses'],
         ];
 
-        if ($type == 'rating') {
+        if (isset($params['Rating']) && !isset($params['HotelCode'])) {
             if ($params['Rating'] == 5) {
                 $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['Award'] = [
                     '_attributes' => ['Provider' => 'LSR', 'Rating' => $params['Rating']],
@@ -509,6 +492,16 @@ class AmadeusSoap
         $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['StayDateRange'] = [
             '_attributes' => ['Start' => $params['Start'], 'End' => $params['End']],
         ];
+
+        if ((isset($params['maxRate']) || isset($params['minRate'])) && !isset($params['HotelCode'])) {
+            $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['RateRange'] = [
+                '_attributes' => [
+                    'CurrencyCode' => $params['Currency'] ?? 'MXN',
+                    'MaxRate' => $params['maxRate'],
+                    'MinRate' => isset($params['minRate']) ? $params['minRate'] : "0",
+                ],
+            ];
+        }
 
         $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['RoomStayCandidates'] = [
             'RoomStayCandidate' => [
