@@ -87,11 +87,7 @@ class AmadeusSoap
 
         $responseObject = simplexml_load_string($this->client->__getLastResponse());
         $responseObject->registerXPathNamespace('res', $this->getResponseRootElementNameSpace($message));
-        Http::post('https://webhook.site/d7782234-8acf-4961-9970-e81764c0ab74', [
-            "request" => $message,
-            "soapBody" => $this->client->__getLastResponse()
-        ]);
-
+        
         $sessionData = $this->getSessionParams($responseObject);
         if (!empty($sessionData)) {
             session(['amadeusSession' => $sessionData]);
