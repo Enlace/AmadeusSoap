@@ -85,14 +85,20 @@ class AmadeusSoap
             session()->forget('amadeusSession');
         }
 
-        $responseObject = simplexml_load_string($this->client->__getLastResponse());
-        $responseObject->registerXPathNamespace('res', $this->getResponseRootElementNameSpace($message));
-        
-        $sessionData = $this->getSessionParams($responseObject);
+        $responseObject = new DOMDocument('1.0', 'UTF-8');
+        $responseObject->loadXML($this->client->__getLastResponse());
+        $responseDomXpath = new DOMXPath($responseObject);
+        $responseDomXpath->registerNamespace('res', $this->getResponseRootElementNameSpace($message));
+        $responseDomXpath->registerNamespace("php", "http://php.net/xpath");
+        $responseDomXpath->registerPHPFunctions();
+        // $responseObject = simplexml_load_string($this->client->__getLastResponse());
+        // $responseObject->registerXPathNamespace('res', $this->getResponseRootElementNameSpace($message));
+
+        $sessionData = $this->getSessionParams($responseDomXpath);
         if (!empty($sessionData)) {
             session(['amadeusSession' => $sessionData]);
         }
-        return $responseObject->xpath("//res:{$this->getResponseRootElement($message)}")[0];
+        return $responseDomXpath;
     }
 
     protected function makeWsdlIdentifier(String $wsdlPath)
@@ -355,15 +361,15 @@ class AmadeusSoap
         return false;
     }
 
-    protected function getSessionParams(SimpleXMLElement $xml)
+    protected function getSessionParams(DOMXPath $xml)
     {
-        if ((string)$xml->xpath('//awsse:Session/@TransactionStatusCode')[0] != "InSeries") {
+        if ($xml->evaluate('string(//awsse:Session/@TransactionStatusCode)') != "InSeries") {
             return [];
         }
 
-        $sessionId = (string)$xml->xpath('//awsse:Session/awsse:SessionId')[0];
-        $sequenceNumber = (string)$xml->xpath('//awsse:Session/awsse:SequenceNumber')[0];
-        $securityToken = (string)$xml->xpath('//awsse:Session/awsse:SecurityToken')[0];
+        $sessionId = $xml->evaluate('string(//awsse:Session/awsse:SessionId)');
+        $sequenceNumber = $xml->evaluate('string(//awsse:Session/awsse:SequenceNumber)');
+        $securityToken = $xml->evaluate('string(//awsse:Session/awsse:SecurityToken)');
 
         return [
             "sessionId" => $sessionId,
@@ -860,7 +866,6 @@ class AmadeusSoap
                 }
             }
         } else {
-            dump("no es multidimencional");
             $passengerReferences = $params['passengerReference'];
             if (is_array($passengerReferences)) {
                 foreach ($passengerReferences as $passengerReference) {
