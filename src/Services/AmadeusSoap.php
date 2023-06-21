@@ -635,7 +635,7 @@ class AmadeusSoap
         }
 
         $requiredParams = $type == 'create' ? [
-            "firstName",
+            "name",
             "surname",
             "type",
         ] : [];
@@ -712,7 +712,7 @@ class AmadeusSoap
                                     'surname' => $value['surname']
                                 ],
                                 'passenger' => [
-                                    'firstName' => $value['firstName'],
+                                    'firstName' => $value['name'],
                                     'type' => $value['type']
                                 ]
                             ]
@@ -734,7 +734,7 @@ class AmadeusSoap
                                 'surname' => $params['surname']
                             ],
                             'passenger' => [
-                                'firstName' => $params['firstName'],
+                                'firstName' => $params['name'],
                                 'type' => $params['type']
                             ]
                         ]
@@ -813,8 +813,7 @@ class AmadeusSoap
             "passengerReference",
             "paymentType",
             "bookingCode",
-            "firstName",
-            "surname",
+            "ccHolderName",
             "vendorCode",
             "cardNumber",
             "securityId",
@@ -1081,9 +1080,7 @@ class AmadeusSoap
                                             'cardNumber' => $param['cardNumber'],
                                             'securityId' => $param['securityId'],
                                             'expiryDate' => $param['expiryDate'],
-                                            'ccHolderName' => $param['firstName'] . ' ' . $param['surname'],
-                                            'surname' => $param['surname'],
-                                            'firstName' => $param['firstName'],
+                                            'ccHolderName' => $param['ccHolderName'],
                                         ]
                                     ]
                                 ],
@@ -1272,14 +1269,14 @@ class AmadeusSoap
                 "retrievalKeyGroup" => [
                     "retrievalKey" => [
                         "reservation" => [
-                            "companyId" => $params['companyId'],
+                            "companyId" => '1A',
                             "controlNumber" => $params['pnrNumber'],
                             "controlType" => "P",
                         ]
                     ],
                     "tattooID" => [
                         "referenceDetails" => [
-                            "type" => " S",
+                            "type" => "S",
                             "value" => $params['segmentNumber']
                         ]
                     ]
