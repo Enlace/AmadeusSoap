@@ -7,44 +7,45 @@ use DOMXPath;
 use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use SimpleXMLElement;
-use SoapClient;
+use Aldogtz\AmadeusSoap\SoapClient\SoapClient;
 use SoapHeader;
 use SoapVar;
 use Spatie\ArrayToXml\ArrayToXml;
 use Throwable;
+use Aldogtz\AmadeusSoap\WsdlAnalyser\WsdlAnalyser;
 
-class AmadeusSoap
+
+class AmadeusSoap extends WsdlAnalyser
 {
-    protected $client;
-    protected $username;
-    protected $password;
-    protected $officeId;
-    protected $msgAndVer = [];
-    protected $wsdlDomDoc = [];
-    protected $wsdlDomXpath = [];
-    protected $wsdlIds = [];
-    protected $userIds = [];
-    protected $sessions = [];
+    protected static $client;
+    protected static $username;
+    protected static $password;
+    public static $officeId;
+    protected static $msgAndVer = [];
 
     public function __construct(String $wsdlPath)
     {
-        $this->username = config('amadeus-soap.username');
-        $this->password = config('amadeus-soap.password');
-        $this->officeId = config('amadeus-soap.officeId');
-        $this->client = $this->createClient($wsdlPath);
-        $identifier = $this->makeWsdlIdentifier($wsdlPath);
-        $this->wsdlIds[$identifier] = $wsdlPath;
-        $this->loadWsdlXpath($identifier);
-        $this->loadMessagesAndVersions($identifier);
+        self::$username = config('amadeus-soap.username');
+        self::$password = config('amadeus-soap.password');
+        self::$officeId = config('amadeus-soap.officeId');
+
+        $files = scandir(storage_path($wsdlPath));
+
+        $wsdls = Arr::where($files, function ($path,) {
+            return Str::endsWith($path, '.wsdl');
+        });
+
+        $wsdlPaths = Arr::map($wsdls, function ($path) use ($wsdlPath) {
+            return storage_path($wsdlPath . DIRECTORY_SEPARATOR . $path);
+        });
+
+        self::$msgAndVer = self::loadMessagesAndVersions($wsdlPaths);
+        // dd(self::$msgAndVer, self::$wsdlIds);
     }
 
-    protected function createClient(String $wsdlPath)
+    protected static function createClient(String $wsdlPath)
     {
-        // ini_set("default_socket_timeout", 300);
         return new SoapClient($wsdlPath, [
             'trace' => true,
             'exception' => true,
@@ -58,26 +59,26 @@ class AmadeusSoap
         ]);
     }
 
-    public function __call(string $message, array $arguments)
+    public static function __callStatic(string $message, array $arguments)
     {
-        if (!isset($this->msgAndVer[$message])) {
+        if (!isset(self::$msgAndVer[$message])) {
             throw new Exception("Operation not defined in the wsld");
         }
 
-        $userId = $this->makeWsdlIdentifier(Auth::user()->email);
+        $path = self::getWsdlPath($message);
 
-        $this->client->__setSoapHeaders([]);
-        $this->client->__setSoapHeaders($this->createHeaders(Arr::first($arguments) ?? [], $message, $userId));
+        self::$client = self::createClient($path);
+        self::$client->__setUsernameToken(self::$username, self::$password);
 
-        $params = $this->createBodyParams(Arr::first($arguments) ?? [], $message);
+        $params = self::createBodyParams(Arr::first($arguments, null, []), $message);
 
         try {
-            $this->client->{$message}($params);
+            $response = self::$client->{$message}($params);
         } catch (Throwable $e) {
 
             $request = new DOMDocument('1.0', 'UTF-8');
             $request->formatOutput = true;
-            $request->loadXML($this->client->__getLastRequest());
+            $request->loadXML(self::$client->__getLastRequest());
             dd($request->saveXML(), $e);
         }
 
@@ -86,100 +87,58 @@ class AmadeusSoap
         }
 
         $responseObject = new DOMDocument('1.0', 'UTF-8');
-        $responseObject->loadXML($this->client->__getLastResponse());
+        // dd($responseObject);
+        $responseObject->loadXML(self::$client->__getLastResponse());
         $responseDomXpath = new DOMXPath($responseObject);
-        $responseDomXpath->registerNamespace('res', $this->getResponseRootElementNameSpace($message));
-        $responseDomXpath->registerNamespace("php", "http://php.net/xpath");
-        $responseDomXpath->registerPHPFunctions();
-        // $responseObject = simplexml_load_string($this->client->__getLastResponse());
-        // $responseObject->registerXPathNamespace('res', $this->getResponseRootElementNameSpace($message));
+        $responseDomXpath->registerNamespace('res', self::getResponseRootElementNameSpace($message));
+        // $responseDomXpath->registerNamespace("php", "http://php.net/xpath");
+        // $responseDomXpath->registerPHPFunctions();
 
-        $sessionData = $this->getSessionParams($responseDomXpath);
+        $sessionData = self::getSessionParams($responseDomXpath);
+        // dd($responseDomXpath);
+
         if (!empty($sessionData)) {
             session(['amadeusSession' => $sessionData]);
         }
         return $responseDomXpath;
     }
 
-    protected function makeWsdlIdentifier(String $wsdlPath)
+    protected static function getWsdlPath($message)
     {
-        return sprintf('%x', crc32($wsdlPath));
+        $wsdlId = self::$msgAndVer[$message]['wsdl'];
+        return self::$wsdlIds[$wsdlId];
     }
 
-    protected function loadWsdlXpath(String $wsdlId)
+    protected static function setSoapHeaders(array $headers)
     {
-        $this->wsdlDomDoc[$wsdlId] = new DOMDocument('1.0', 'UTF-8');
-        $wsdlContent = file_get_contents($this->wsdlIds[$wsdlId]);
-        $this->wsdlDomDoc[$wsdlId]->loadXML($wsdlContent);
-        $this->wsdlDomXpath[$wsdlId] = new DOMXPath($this->wsdlDomDoc[$wsdlId]);
-        $this->wsdlDomXpath[$wsdlId]->registerNamespace(
-            'wsdl',
-            'http://schemas.xmlsoap.org/wsdl/'
-        );
-        $this->wsdlDomXpath[$wsdlId]->registerNamespace(
-            'soap',
-            'http://schemas.xmlsoap.org/wsdl/soap/'
-        );
+        self::$client->__setSoapHeaders([]);
+        self::$client->__setSoapHeaders($headers);
     }
 
-    protected function loadMessagesAndVersions(String $wsdlId)
-    {
-        $operations = $this->wsdlDomXpath[$wsdlId]->query('/wsdl:definitions/wsdl:portType/wsdl:operation');
-
-        $msgAndVer = [];
-
-        foreach ($operations as $operation) {
-
-            $inputs = $operation->getElementsByTagName('input');
-            $outputs = $operation->getElementsByTagName('output');
-
-
-            if ($inputs->length > 0) {
-                $message = $inputs->item(0)->getAttribute('message');
-                $messageName = explode(":", $message)[1];
-                $marker = strpos($messageName, '_', strpos($messageName, '_') + 1);
-                $num = substr($messageName, $marker + 1);
-                $extractedVersion = str_replace('_', '.', $num);
-
-                $outputMessage = $outputs->item(0)->getAttribute('message');
-                $outputMessageName = explode(":", $outputMessage)[1];
-
-                $msgAndVer[$operation->getAttribute('name')] = [
-                    'version' => $extractedVersion,
-                    'wsdl' => $wsdlId,
-                    'messageName' => $messageName,
-                    'outputMessageName' => $outputMessageName
-                ];
-            }
-        }
-
-        $this->msgAndVer = $msgAndVer;
-    }
-
-    protected function createHeaders(array $params = [], String $message, string $userId)
+    protected static function createHeaders(array $params = [], String $message)
     {
         $headers = [];
 
-        if ($this->isStateful($params, $message)) {
-            array_push($headers, $this->createSessionHeader($message, $userId));
+        if (self::isStateful($params, $message)) {
+            array_push($headers, self::createSessionHeader($message));
         }
 
-        array_push($headers, $this->createMessageIdHeader());
-        array_push($headers, $this->createActionHeader($message));
-        array_push($headers, $this->createToHeader($message));
+        array_push($headers, self::createMessageIdHeader());
+        array_push($headers, self::createActionHeader($message));
+        array_push($headers, self::createToHeader($message));
 
-        if (!$this->sessionWithBody($message) || !$this->isStateful($params, $message)) {
-            array_push($headers, $this->createSecurityHeader());
-            array_push($headers, $this->createAMASecurityHostedUserHeader());
+        if (!self::sessionWithBody($message) || !self::isStateful($params, $message)) {
+            array_push($headers, self::createSecurityHeader());
+            array_push($headers, self::createAMASecurityHostedUserHeader());
         }
 
         return $headers;
     }
 
-    protected function createSessionHeader(String $message, $userId)
+    protected function createSessionHeader(String $message)
     {
         $body = [];
-        $sessionBody = $this->sessionWithBody($message);
+        $sessionBody = self::sessionWithBody($message);
         $sessionData = session('amadeusSession');
 
         if ($sessionBody) {
@@ -206,7 +165,7 @@ class AmadeusSoap
         );
     }
 
-    protected function createMessageIdHeader()
+    protected static function createMessageIdHeader()
     {
         return new SoapHeader(
             'http://www.w3.org/2005/08/addressing',
@@ -215,10 +174,10 @@ class AmadeusSoap
         );
     }
 
-    protected function createActionHeader(String $message)
+    protected static function createActionHeader(String $message)
     {
-        $wsdlId = $this->msgAndVer[$message]['wsdl'];
-        $action = $this->wsdlDomXpath[$wsdlId]->evaluate(sprintf('string(//wsdl:operation[./@name="%s"]/soap:operation/@soapAction)', $message));
+        $wsdlId = self::$msgAndVer[$message]['wsdl'];
+        $action = self::$wsdlDomXpath[$wsdlId]->evaluate(sprintf('string(//wsdl:operation[./@name="%s"]/soap:operation/@soapAction)', $message));
         return new SoapHeader(
             'http://www.w3.org/2005/08/addressing',
             'Action',
@@ -226,10 +185,10 @@ class AmadeusSoap
         );
     }
 
-    protected function createToHeader(String $message)
+    protected static function createToHeader(String $message)
     {
-        $wsdlId = $this->msgAndVer[$message]['wsdl'];
-        $To = $this->wsdlDomXpath[$wsdlId]->evaluate('string(/wsdl:definitions/wsdl:service/wsdl:port/soap:address/@location)');
+        $wsdlId = self::$msgAndVer[$message]['wsdl'];
+        $To = self::$wsdlDomXpath[$wsdlId]->evaluate('string(/wsdl:definitions/wsdl:service/wsdl:port/soap:address/@location)');
         return new SoapHeader(
             'http://www.w3.org/2005/08/addressing',
             'To',
@@ -237,20 +196,20 @@ class AmadeusSoap
         );
     }
 
-    protected function createSecurityHeader()
+    protected static function createSecurityHeader()
     {
         $nonce = random_bytes(32);
         $encodedNonce = base64_encode($nonce);
         date_default_timezone_set("UTC");
         $timestamp = Carbon::now()->toIso8601String();
-        $passSHA = base64_encode(sha1($nonce . $timestamp . sha1($this->password, true), true));
+        $passSHA = base64_encode(sha1($nonce . $timestamp . sha1(self::$password, true), true));
 
         return new SoapHeader(
             'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wsswssecurity-secext-1.0.xsd',
             'Security',
             new SoapVar('<oas:Security xmlns:oas="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
             <oas:UsernameToken xmlns:oas1="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" oas1:Id="UsernameToken-1">
-            <oas:Username>' . $this->username . '</oas:Username>
+            <oas:Username>' . self::$username . '</oas:Username>
             <oas:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">' . $encodedNonce . '</oas:Nonce>
             <oas:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest">' . $passSHA . '</oas:Password>
             <oas1:Created>' . $timestamp . '</oas1:Created>
@@ -259,7 +218,7 @@ class AmadeusSoap
         );
     }
 
-    protected function createAMASecurityHostedUserHeader()
+    protected static function createAMASecurityHostedUserHeader()
     {
         return new SoapHeader(
             'http://xml.amadeus.com/2010/06/Security_v1',
@@ -267,14 +226,14 @@ class AmadeusSoap
             ["UserID" => [
                 "_" => "",
                 "POS_Type" => "1",
-                "PseudoCityCode" => $this->officeId,
+                "PseudoCityCode" => self::$officeId,
                 "AgentDutyCode" => "SU",
                 "RequestorType" => "U",
             ]]
         );
     }
 
-    protected function createBodyParams(array $params = [], string $message)
+    protected static function createBodyParams(array $params = [], string $message)
     {
         $attributes = [];
 
@@ -287,7 +246,7 @@ class AmadeusSoap
         }
 
         $arrayToXml = new ArrayToXml($params, [
-            'rootElementName' => $this->getRootElement($message),
+            'rootElementName' => self::getRootElement($message),
             '_attributes' => $attributes,
         ]);
 
@@ -296,51 +255,123 @@ class AmadeusSoap
         return new SoapVar($body, XSD_ANYXML);
     }
 
-    protected function getRootElement(String $message)
+    public static function evaluateXpathQueryOnWsdl($wsdlId, $wsdlFilePath, $xpath): \DOMNodeList | \DOMNode | string |null
     {
-        $wsdlId = $this->msgAndVer[$message]['wsdl'];
-        $messageName = $this->msgAndVer[$message]['messageName'];
-        $rootElement = $this->wsdlDomXpath[$wsdlId]->evaluate(sprintf("string(//wsdl:message[contains(./@name, '%s')]/wsdl:part/@element)", $messageName));
+        WsdlAnalyser::loadWsdlXpath($wsdlFilePath, $wsdlId);
+
+        $imports = self::$wsdlDomXpath[$wsdlId]->query(WsdlAnalyser::XPATH_IMPORTS);
+
+        foreach ($imports as $import) {
+            $importPath = realpath(dirname($wsdlFilePath)) . DIRECTORY_SEPARATOR . $import->value;
+            $wsdlContent = file_get_contents($importPath);
+
+            $importedDomDoc = new \DOMDocument('1.0', 'UTF-8');
+            $importedDomDoc->loadXML($wsdlContent);
+            $importedDomXpath = new \DOMXPath($importedDomDoc);
+
+            $namespaces = $importedDomXpath->evaluate('//wsdl:definitions/namespace::*');
+            $query = self::$wsdlDomXpath[$wsdlId]->evaluate("//wsdl:definitions/namespace::*");
+
+            $baseNamespaces = iterator_to_array($query);
+            $baseNamespaces = array_map(function ($namespace) {
+                return $namespace->namespaceURI;
+            }, $baseNamespaces);
+
+            $importedNamespaces = iterator_to_array($namespaces);
+
+            $missingNamespaces = array_filter($importedNamespaces, function ($namespace) use ($baseNamespaces) {
+                return !in_array($namespace->namespaceURI, $baseNamespaces);
+            });
+
+            foreach ($missingNamespaces as $missingNamespace) {
+                $root = self::$wsdlDomXpath[$wsdlId]->query('//wsdl:definitions')->item(0);
+                $root->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:' . $missingNamespace->prefix, $missingNamespace->namespaceURI);
+            }
+
+            $xsImports = $importedDomXpath->query('//wsdl:definitions/wsdl:types/xs:schema/xs:import');
+            foreach ($xsImports as $xsImport) {
+                $node = self::$wsdlDomDoc[$wsdlId]->importNode($xsImport, true);
+                $schemaNode = self::$wsdlDomDoc[$wsdlId]->getElementsByTagName('schema')->item(0);
+                $schemaNode->appendChild($node);
+            }
+
+            $wsdlMessages = $importedDomXpath->query('//wsdl:definitions/wsdl:message');
+            foreach ($wsdlMessages as $wsdlMessage) {
+                $node = self::$wsdlDomDoc[$wsdlId]->importNode($wsdlMessage, true);
+                $definitionsNode = self::$wsdlDomDoc[$wsdlId]->getElementsByTagName('definitions')->item(0);
+                $definitionsNode->appendChild($node);
+            }
+
+            $portType = $importedDomXpath->query('//wsdl:definitions/wsdl:portType');
+            foreach ($portType as $portType) {
+                $node = self::$wsdlDomDoc[$wsdlId]->importNode($portType, true);
+                $definitionsNode = self::$wsdlDomDoc[$wsdlId]->getElementsByTagName('definitions')->item(0);
+                $definitionsNode->appendChild($node);
+            }
+        }
+
+        return self::$wsdlDomXpath[$wsdlId]->evaluate($xpath);
+    }
+
+    protected static function getRootElement(String $message)
+    {
+        $wsdlId = self::$msgAndVer[$message]['wsdl'];
+        $messageName = self::$msgAndVer[$message]['messageName'];
+        $rootElement = self::evaluateXpathQueryOnWsdl($wsdlId, self::$wsdlIds[$wsdlId], sprintf("string(//wsdl:message[contains(./@name, '%s')]/wsdl:part/@element)", $messageName));
         return explode(':', $rootElement)[1];
     }
 
-    protected function getResponseRootElement(String $message)
+    protected static function getResponseRootElement(String $message)
     {
-        $wsdlId = $this->msgAndVer[$message]['wsdl'];
-        $messageName = $this->msgAndVer[$message]['outputMessageName'];
-        $rootElement = $this->wsdlDomXpath[$wsdlId]->evaluate(sprintf("string(//wsdl:message[contains(./@name, '%s')]/wsdl:part/@element)", $messageName));
+        $wsdlId = self::$msgAndVer[$message]['wsdl'];
+        $messageName = self::$msgAndVer[$message]['outputMessageName'];
+        $rootElement = self::evaluateXpathQueryOnWsdl($wsdlId, self::$wsdlIds[$wsdlId], sprintf("string(//wsdl:message[contains(./@name, '%s')]/wsdl:part/@element)", $messageName));
         return explode(':', $rootElement)[1];
     }
 
-    public function getResponseRootElementNameSpace(String $message)
+    public static function getResponseRootElementNameSpace(String $message)
     {
-        $wsdlId = $this->msgAndVer[$message]['wsdl'];
-        $rootElement = $this->wsdlDomXpath[$wsdlId]->evaluate(sprintf("string(//wsdl:operation[@name='%s']/wsdl:output/@message)", $message));
-        $nsPrefix = strtolower(explode(':', $rootElement)[1]);
-        return $this->wsdlDomXpath[$wsdlId]->query(sprintf("//wsdl:definitions/namespace::%s", $nsPrefix))[0]->namespaceURI;
+        $wsdlId = self::$msgAndVer[$message]['wsdl'];
+        $rootElement = self::evaluateXpathQueryOnWsdl($wsdlId, self::$wsdlIds[$wsdlId], sprintf("string(//wsdl:portType/wsdl:operation[@name='%s']/wsdl:output/@message)", $message));
+        $messageName = explode(':', $rootElement)[1];
+        $messageElement = self::evaluateXpathQueryOnWsdl($wsdlId, self::$wsdlIds[$wsdlId], sprintf("string(//wsdl:definitions/wsdl:message[./@name = '%s']/wsdl:part/@element)", $messageName));
+        $nsPrefix = explode(':', $messageElement)[0];
+        $namespaces = self::evaluateXpathQueryOnWsdl($wsdlId, self::$wsdlIds[$wsdlId], "//wsdl:definitions/namespace::*");
+
+        $namespaceNode = array_filter(iterator_to_array($namespaces), function ($namespace) use ($nsPrefix) {
+            return $namespace->prefix == $nsPrefix;
+        });
+       return Arr::first($namespaceNode)->namespaceURI;
     }
 
-    public function getNamespace(String $message)
+    public static function getNamespace(String $message)
     {
-        return $this->getResponseRootElementNameSpace($message);
+        return self::getResponseRootElementNameSpace($message);
     }
 
-    protected function isStateful(array $params, String $message)
+    public static function isStateful(array $params, String $message)
     {
         if ($message == "Hotel_DescriptiveInfo") {
             return false;
         }
 
         if ($message == "Hotel_MultiSingleAvailability") {
-            if ($this->multiKeyExists($params, 'HotelCityCode') != false) {
-                return false;
+            $body = new DOMDocument('1.0', 'UTF-8');
+            $body->loadXML(Arr::first($params)->enc_value);
+            $xpath = new DOMXPath($body);
+            $hotelRefs = $xpath->evaluate('//AvailRequestSegments/AvailRequestSegment/HotelSearchCriteria/Criterion/HotelRef');
+
+            if ($hotelRefs->length > 1) return true;
+
+            foreach ($hotelRefs as $hotelRef) {
+                if (!$hotelRef->hasAttribute('HotelCode') && $hotelRef->hasAttribute('HotelCityCode')) return false;
             }
         }
 
         return true;
     }
 
-    protected function multiKeyExists(array $arr, $key)
+    protected static function multiKeyExists(array $arr, $key)
     {
 
         // is in base array?
@@ -351,7 +382,7 @@ class AmadeusSoap
         // check arrays contained in this array
         foreach ($arr as $element) {
             if (is_array($element)) {
-                $result = $this->multiKeyExists($element, $key);
+                $result = self::multiKeyExists($element, $key);
                 if ($result != false) {
                     return $result;
                 }
@@ -361,7 +392,7 @@ class AmadeusSoap
         return false;
     }
 
-    protected function getSessionParams(DOMXPath $xml)
+    protected static function getSessionParams(DOMXPath $xml)
     {
         if ($xml->evaluate('string(//awsse:Session/@TransactionStatusCode)') != "InSeries") {
             return [];
@@ -378,7 +409,7 @@ class AmadeusSoap
         ];
     }
 
-    protected function sessionWithBody(string $message)
+    public static function sessionWithBody(string $message)
     {
         if ($message != "Hotel_MultiSingleAvailability" && $message != "PNR_Retrieve") {
             return true;
@@ -386,13 +417,14 @@ class AmadeusSoap
         return false;
     }
 
-    protected function saveSessionData(array $data, string $userId)
+    public function HotelSearch($type = 'multi',$params = [])
     {
-        $this->sessions[$userId] = $data;
-    }
+        $acceptedTypes = ['multi', 'single'];
 
-    public function HotelSearch($params = [])
-    {
+        if (!in_array($type, $acceptedTypes)) {
+            throw new Exception("Type must be either multi or single");
+        }
+
         $defaultparams = [
             "Start" => Carbon::now()->toDateString(),
             "End" => Carbon::now()->addDays(7)->toDateString(),
@@ -401,9 +433,13 @@ class AmadeusSoap
             "GuestCount" => "1",
             "children" => [],
             "InfoSource" => "Distribution",
-            "SearchCacheLevel" => "Live",
-            "MaxResponses" => "96",
+            "SearchCacheLevel" => $type == 'multi' ? "LessRecent" : "Live",
+            "MaxResponses" => "10",
         ];
+
+        if ($type == 'multi') {
+            $defaultparams['SortOrder'] = "RA";
+        }
 
         $HotelRefAttributes = [];
 
@@ -477,7 +513,16 @@ class AmadeusSoap
             'RateDetailsInd' => 'true',
             'RequestedCurrency' => $params['Currency'] ?? 'MXN',
             'MaxResponses' => $params['MaxResponses'],
+
         ];
+
+        if (isset($params['SortOrder'])) {
+            $body['SortOrder'] = $params['SortOrder'];
+        }
+
+        if ($type == 'multi') {
+            $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['_attributes'] = ['AvailableOnlyIndicator' => 'true', 'BestOnlyIndicator' => 'true'];
+        }
 
         if (isset($params['Rating']) && !isset($params['HotelCode'])) {
             if ($params['Rating'] == 5) {
@@ -497,6 +542,12 @@ class AmadeusSoap
 
         $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['StayDateRange'] = [
             '_attributes' => ['Start' => $params['Start'], 'End' => $params['End']],
+        ];
+
+        $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['RatePlanCandidates'] = [
+            'RatePlanCandidate' => [
+                '_attributes' => ['RatePlanCode' => 'ENF'],
+            ],
         ];
 
         if ((isset($params['maxRate']) || isset($params['minRate'])) && !isset($params['HotelCode'])) {
@@ -519,7 +570,7 @@ class AmadeusSoap
             ]
         ];
 
-        return $this->Hotel_MultiSingleAvailability($body);
+        return self::Hotel_MultiSingleAvailability($body);
     }
 
     public function hotelPricing(array $params = [])
@@ -574,7 +625,7 @@ class AmadeusSoap
             $GuestCount = $adults;
         }
 
-        return $this->Hotel_EnhancedPricing([
+        return self::Hotel_EnhancedPricing([
             'AvailRequestSegments' => [
                 'AvailRequestSegment' => [
                     '_attributes' => ['InfoSource' => 'Distribution'],
@@ -640,7 +691,7 @@ class AmadeusSoap
             "type",
         ] : [];
 
-        $isMultiDimentional = $this->isMultiArray($params);
+        $isMultiDimentional = self::isMultiArray($params);
 
         if ($isMultiDimentional) {
             foreach ($params as $index => $passagener) {
@@ -784,7 +835,7 @@ class AmadeusSoap
             }
         }
 
-        return $this->PNR_AddMultiElements([$body]);
+        return self::PNR_AddMultiElements([$body]);
     }
 
     protected function isMultiArrayWithException($a, $exceptions = [])
@@ -820,7 +871,7 @@ class AmadeusSoap
             "expiryDate",
         ];
 
-        $isMultiDimentional = $this->isMultiArrayWithException($params, [
+        $isMultiDimentional = self::isMultiArrayWithException($params, [
             "passengerReference",
         ]);
 
@@ -1092,12 +1143,12 @@ class AmadeusSoap
             }
         }
 
-        return $this->Hotel_Sell([$body]);
+        return self::Hotel_Sell([$body]);
     }
 
     public function singOut()
     {
-        return $this->Security_SignOut();
+        return self::Security_SignOut();
     }
 
     public function hotelDescriptiveInfo(array $params = [])
@@ -1199,7 +1250,7 @@ class AmadeusSoap
             }
         }
 
-        return $this->Hotel_DescriptiveInfo([
+        return self::Hotel_DescriptiveInfo([
             'HotelDescriptiveInfos' => [
                 'HotelDescriptiveInfo' => $HotelDescriptiveInfo,
             ],
@@ -1214,7 +1265,7 @@ class AmadeusSoap
         $dom = new \DOMDocument('1.0');
         $dom->preserveWhiteSpace = true;
         $dom->formatOutput = true;
-        $dom->loadXML($this->client->__getLastRequest());
+        $dom->loadXML(self::$client->__getLastRequest());
         return $dom->saveXML();
     }
 
@@ -1223,7 +1274,7 @@ class AmadeusSoap
         $dom = new \DOMDocument('1.0');
         $dom->preserveWhiteSpace = true;
         $dom->formatOutput = true;
-        $dom->loadXML($this->client->__getLastResponse());
+        $dom->loadXML(self::$client->__getLastResponse());
         return $dom->saveXML();
     }
 
@@ -1234,7 +1285,7 @@ class AmadeusSoap
             throw new Exception("The param pnrNumber is required");
         }
 
-        return $this->PNR_Retrieve([
+        return self::PNR_Retrieve([
             [
                 "retrievalFacts" => [
                     "retrieve" => [
@@ -1264,7 +1315,7 @@ class AmadeusSoap
             throw new Exception("The params " . implode(', ', $missingParams) . " are required");
         }
 
-        return $this->Hotel_CompleteReservationDetails([
+        return self::Hotel_CompleteReservationDetails([
             [
                 "retrievalKeyGroup" => [
                     "retrievalKey" => [
@@ -1319,7 +1370,7 @@ class AmadeusSoap
             ];
         }
 
-        return $this->PNR_Cancel([
+        return self::PNR_Cancel([
             [
                 "pnrActions" => [
                     "optionCode" => "0"

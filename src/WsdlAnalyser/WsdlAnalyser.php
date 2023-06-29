@@ -277,7 +277,9 @@ class WsdlAnalyser
                     $extractedVersion = self::extractMessageVersion($fullVersion);
                     $msgAndVer[$operation->value] = [
                         'version' => $extractedVersion,
-                        'wsdl' => $wsdlIdentifier
+                        'wsdl' => $wsdlIdentifier,
+                        'messageName' => explode(":", $domXpath->evaluate(sprintf("string(//wsdl:operation[./@name = '%s']/wsdl:input/@message)",$operation->value)))[1],
+                        'outputMessageName' => explode(":", $domXpath->evaluate(sprintf("string(//wsdl:operation[./@name = '%s']/wsdl:output/@message)",$operation->value)))[1]
                     ];
                 }
             }
