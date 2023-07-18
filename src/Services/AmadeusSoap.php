@@ -14,7 +14,7 @@ use SoapVar;
 use Spatie\ArrayToXml\ArrayToXml;
 use Throwable;
 use Aldogtz\AmadeusSoap\WsdlAnalyser\WsdlAnalyser;
-
+use Illuminate\Support\Facades\App;
 
 class AmadeusSoap extends WsdlAnalyser
 {
@@ -341,7 +341,7 @@ class AmadeusSoap extends WsdlAnalyser
         $namespaceNode = array_filter(iterator_to_array($namespaces), function ($namespace) use ($nsPrefix) {
             return $namespace->prefix == $nsPrefix;
         });
-       return Arr::first($namespaceNode)->namespaceURI;
+        return Arr::first($namespaceNode)->namespaceURI;
     }
 
     public static function getNamespace(String $message)
@@ -417,7 +417,7 @@ class AmadeusSoap extends WsdlAnalyser
         return false;
     }
 
-    public function HotelSearch($type = 'multi',$params = [])
+    public function HotelSearch($type = 'multi', $params = [])
     {
         $acceptedTypes = ['multi', 'single'];
 
@@ -434,7 +434,7 @@ class AmadeusSoap extends WsdlAnalyser
             "children" => [],
             "InfoSource" => "Distribution",
             "SearchCacheLevel" => $type == 'multi' ? "LessRecent" : "Live",
-            "MaxResponses" => "10",
+            "MaxResponses" => "96",
         ];
 
         if ($type == 'multi') {
@@ -544,11 +544,13 @@ class AmadeusSoap extends WsdlAnalyser
             '_attributes' => ['Start' => $params['Start'], 'End' => $params['End']],
         ];
 
-        $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['RatePlanCandidates'] = [
-            'RatePlanCandidate' => [
-                '_attributes' => ['RatePlanCode' => 'ENF'],
-            ],
-        ];
+        if (App::environment(['production'])) {
+            $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['RatePlanCandidates'] = [
+                'RatePlanCandidate' => [
+                    '_attributes' => ['RatePlanCode' => 'ENF'],
+                ],
+            ];
+        }
 
         if ((isset($params['maxRate']) || isset($params['minRate'])) && !isset($params['HotelCode'])) {
             $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['RateRange'] = [
@@ -562,9 +564,9 @@ class AmadeusSoap extends WsdlAnalyser
 
         $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['RoomStayCandidates'] = [
             'RoomStayCandidate' => [
-                '_attributes' => ['RoomID' => '1', 'Quantity' => $params['Quantity']],
+                '_attributes' => ['RoomID' => '1', 'Quantity' => $type == 'multi' ? "1" : $params['Quantity']],
                 'GuestCounts' => [
-                    '_attributes' => ['IsPerRoom' => $params['IsPerRoom']],
+                    '_attributes' => ['IsPerRoom' => "true"],
                     'GuestCount' => $GuestCount,
                 ]
             ]
@@ -1378,5 +1380,32 @@ class AmadeusSoap extends WsdlAnalyser
                 "cancelElements" => $cancelElements
             ]
         ]);
+    }
+
+    public function recursiveHotelSearch($type = 'multi', array $params)
+    {
+        $response =  $this->HotelSearch('multi', $params);
+        // dump($params, $response);
+        $hasHotelStays = !empty($response->evaluate("count(//res:Warnings/res:Warning[./@Tag='OK'])"));
+        $moreIndicator = $response->evaluate("string(//res:RoomStays/@MoreIndicator)");
+
+        if (!empty($params['MoreDataEchoToken']) && !empty($moreIndicator)) {
+            return $response;
+        }
+
+        if (!$hasHotelStays) {
+
+            if (!empty($moreIndicator)) {
+
+                return $this->recursiveHotelSearch('multi', [...$params, "MoreDataEchoToken" => $moreIndicator]);
+            }
+            // dd($hotels, $response, AmadeusSoapFacade::getLastRequest());
+
+            return redirect()->back()->withErrors([
+                "search" => "No se encontraron hoteles con los criterios de búsqueda seleccionados."
+            ]);
+        }
+
+        return $response;
     }
 }
