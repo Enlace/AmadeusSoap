@@ -1385,7 +1385,6 @@ class AmadeusSoap extends WsdlAnalyser
     public function recursiveHotelSearch($type = 'multi', array $params)
     {
         $response =  $this->HotelSearch('multi', $params);
-        dump($params, $response);
         $hasHotelStays = !empty($response->evaluate("count(//res:Warnings/res:Warning[./@Tag='OK'])"));
         $moreIndicator = $response->evaluate("string(//res:RoomStays/@MoreIndicator)");
 
