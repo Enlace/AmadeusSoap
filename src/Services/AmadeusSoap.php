@@ -544,7 +544,7 @@ class AmadeusSoap extends WsdlAnalyser
             '_attributes' => ['Start' => $params['Start'], 'End' => $params['End']],
         ];
 
-        if (App::environment(['production'])) {
+        if (App::environment(['production', 'testing'])) {
             $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['RatePlanCandidates'] = [
                 'RatePlanCandidate' => [
                     '_attributes' => ['RatePlanCode' => 'ENF'],
@@ -1385,7 +1385,7 @@ class AmadeusSoap extends WsdlAnalyser
     public function recursiveHotelSearch($type = 'multi', array $params)
     {
         $response =  $this->HotelSearch('multi', $params);
-        // dump($params, $response);
+        dump($params, $response);
         $hasHotelStays = !empty($response->evaluate("count(//res:Warnings/res:Warning[./@Tag='OK'])"));
         $moreIndicator = $response->evaluate("string(//res:RoomStays/@MoreIndicator)");
 
