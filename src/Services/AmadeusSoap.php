@@ -14,7 +14,8 @@ use SoapVar;
 use Spatie\ArrayToXml\ArrayToXml;
 use Throwable;
 use Aldogtz\AmadeusSoap\WsdlAnalyser\WsdlAnalyser;
-use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redis;
 
 class AmadeusSoap extends WsdlAnalyser
 {
@@ -75,7 +76,7 @@ class AmadeusSoap extends WsdlAnalyser
         try {
             $response = self::$client->{$message}($params);
         } catch (Throwable $e) {
-
+            dd($e);
             $request = new DOMDocument('1.0', 'UTF-8');
             $request->formatOutput = true;
             $request->loadXML(self::$client->__getLastRequest());
@@ -83,7 +84,7 @@ class AmadeusSoap extends WsdlAnalyser
         }
 
         if ($message == 'Security_SignOut') {
-            session()->forget('amadeusSession');
+            Redis::del('amadeusSession'. Auth::user()->id);
         }
 
         $responseObject = new DOMDocument('1.0', 'UTF-8');
@@ -98,7 +99,7 @@ class AmadeusSoap extends WsdlAnalyser
         // dd($responseDomXpath);
 
         if (!empty($sessionData)) {
-            session(['amadeusSession' => $sessionData]);
+            Redis::set('amadeusSession'. Auth::user()->id, json_encode($sessionData));
         }
         return $responseDomXpath;
     }
@@ -139,7 +140,7 @@ class AmadeusSoap extends WsdlAnalyser
     {
         $body = [];
         $sessionBody = self::sessionWithBody($message);
-        $sessionData = session('amadeusSession');
+        $sessionData = json_decode(Redis::get('amadeusSession'. Auth::user()->id));
 
         if ($sessionBody) {
             foreach ($sessionData as $key => $value) {
@@ -513,6 +514,7 @@ class AmadeusSoap extends WsdlAnalyser
             'RateDetailsInd' => 'true',
             'RequestedCurrency' => $params['Currency'] ?? 'MXN',
             'MaxResponses' => $params['MaxResponses'],
+            "ExactMatchOnly" => 'true'
 
         ];
 
@@ -544,13 +546,13 @@ class AmadeusSoap extends WsdlAnalyser
             '_attributes' => ['Start' => $params['Start'], 'End' => $params['End']],
         ];
 
-        if (App::environment(['production', 'testing'])) {
-            $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['RatePlanCandidates'] = [
-                'RatePlanCandidate' => [
-                    '_attributes' => ['RatePlanCode' => 'ENF'],
-                ],
-            ];
-        }
+        $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['RatePlanCandidates'] = [
+            'RatePlanCandidate' => [
+                '_attributes' => ['RatePlanCode' => 'ENF'],
+            ],
+        ];
+        // if (App::environment(['production', 'testing'])) {
+        // }
 
         if ((isset($params['maxRate']) || isset($params['minRate'])) && !isset($params['HotelCode'])) {
             $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['RateRange'] = [

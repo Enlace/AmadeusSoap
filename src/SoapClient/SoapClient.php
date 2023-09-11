@@ -7,6 +7,8 @@ use Aldogtz\AmadeusSoap\WsdlAnalyser\InvalidWsdlFileException;
 use Aldogtz\AmadeusSoap\WsdlAnalyser\WsdlAnalyser;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 use SoapHeader;
 use SoapVar;
@@ -102,7 +104,7 @@ class SoapClient extends \SoapClient
     {
         $body = [];
         $sessionBody = AmadeusSoap::sessionWithBody($message);
-        $sessionData = session('amadeusSession');
+        $sessionData = json_decode(Redis::get('amadeusSession'. Auth::user()->id));
 
         if ($sessionBody) {
             foreach ($sessionData as $key => $value) {
