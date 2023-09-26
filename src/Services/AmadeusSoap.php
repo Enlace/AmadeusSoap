@@ -427,19 +427,19 @@ class AmadeusSoap extends WsdlAnalyser
         }
 
         $defaultparams = [
-            "Start" => Carbon::now()->toDateString(),
-            "End" => Carbon::now()->addDays(7)->toDateString(),
-            "Quantity" => "1",
-            "IsPerRoom" => "true",
-            "GuestCount" => "1",
+            "start" => Carbon::now()->toDateString(),
+            "end" => Carbon::now()->addDays(7)->toDateString(),
+            "quantity" => "1",
+            "is_per_room" => "true",
+            "guest_count" => "1",
             "children" => [],
-            "InfoSource" => "Distribution",
-            "SearchCacheLevel" => $type == 'multi' ? "LessRecent" : "Live",
-            "MaxResponses" => "96",
+            "info_source" => "Distribution",
+            "search_cache_level" => $type == 'multi' ? "LessRecent" : "Live",
+            "max_responses" => "96",
         ];
 
         if ($type == 'multi') {
-            $defaultparams['SortOrder'] = "RA";
+            $defaultparams['sort_order'] = "RA";
         }
 
         $HotelRefAttributes = [];
@@ -469,14 +469,14 @@ class AmadeusSoap extends WsdlAnalyser
 
             if (Str::contains($params['latitude'], '.')) {
                 $explodeadString = explode('.', $params['latitude']);
-                $explodeadString[1] = strlen($explodeadString[1]) == 5 ? $explodeadString[1] : ( strlen($explodeadString[1]) > 5 ? substr($explodeadString[1], 0, 5): Str::padRight($explodeadString[1],5,0));
-                $params['latitude'] = implode('',$explodeadString);
+                $explodeadString[1] = strlen($explodeadString[1]) == 5 ? $explodeadString[1] : (strlen($explodeadString[1]) > 5 ? substr($explodeadString[1], 0, 5) : Str::padRight($explodeadString[1], 5, 0));
+                $params['latitude'] = implode('', $explodeadString);
             }
 
             if (Str::contains($params['longitude'], '.')) {
                 $explodeadString = explode('.', $params['longitude']);
-                $explodeadString[1] = strlen($explodeadString[1]) == 5 ? $explodeadString[1] : ( strlen($explodeadString[1]) > 5 ? substr($explodeadString[1], 0, 5) : Str::padRight($explodeadString[1],5,0));
-                $params['longitude'] = implode('',$explodeadString);
+                $explodeadString[1] = strlen($explodeadString[1]) == 5 ? $explodeadString[1] : (strlen($explodeadString[1]) > 5 ? substr($explodeadString[1], 0, 5) : Str::padRight($explodeadString[1], 5, 0));
+                $params['longitude'] = implode('', $explodeadString);
             }
 
             $searchData['Position'] = [
@@ -504,12 +504,10 @@ class AmadeusSoap extends WsdlAnalyser
             ];
         }
 
-
-
         $GuestCount = [];
 
         $adults = [
-            '_attributes' => ['AgeQualifyingCode' => '10', 'Count' => $params['GuestCount']],
+            '_attributes' => ['AgeQualifyingCode' => '10', 'Count' => $params['guest_count']],
         ];
 
         foreach ($params['children'] as $child) {
@@ -525,11 +523,11 @@ class AmadeusSoap extends WsdlAnalyser
         }
 
         $AvailRequestSegmentAttributes = [
-            'InfoSource' => $params['InfoSource'],
+            'InfoSource' => $params['info_source'],
         ];
 
-        if (isset($params['MoreDataEchoToken']) && !isset($params['HotelCode'])) {
-            $AvailRequestSegmentAttributes['MoreDataEchoToken'] = $params['MoreDataEchoToken'];
+        if (isset($params['more_data_echo_token']) && !isset($params['hotel_code'])) {
+            $AvailRequestSegmentAttributes['MoreDataEchoToken'] = $params['more_data_echo_token'];
         }
 
         $body = [
@@ -550,31 +548,31 @@ class AmadeusSoap extends WsdlAnalyser
             'SummaryOnly' => 'true',
             'AvailRatesOnly' => 'true',
             'RateRangeOnly' => 'true',
-            'SearchCacheLevel' => $params['SearchCacheLevel'],
+            'SearchCacheLevel' => $params['search_cache_level'],
             'RateDetailsInd' => 'true',
-            'RequestedCurrency' => $params['Currency'] ?? 'MXN',
-            'MaxResponses' => $params['MaxResponses'],
+            'RequestedCurrency' => $params['currency'] ?? 'MXN',
+            'MaxResponses' => $params['max_responses'],
             "ExactMatchOnly" => 'true'
 
         ];
 
-        if (isset($params['SortOrder'])) {
-            $body['SortOrder'] = $params['SortOrder'];
+        if (isset($params['sort_order'])) {
+            $body['SortOrder'] = $params['sort_order'];
         }
 
         if ($type == 'multi') {
             $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['_attributes'] = ['AvailableOnlyIndicator' => 'true', 'BestOnlyIndicator' => 'true'];
         }
 
-        if (isset($params['Rating']) && !isset($params['HotelCode'])) {
-            if ($params['Rating'] == 5) {
+        if (isset($params['rating']) && !isset($params['hotel_code'])) {
+            if ($params['rating'] == 5) {
                 $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['Award'] = [
-                    '_attributes' => ['Provider' => 'LSR', 'Rating' => $params['Rating']],
+                    '_attributes' => ['Provider' => 'LSR', 'Rating' => $params['rating']],
                 ];
             } else {
                 $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['Award'] = [];
 
-                for ($i = $params['Rating']; $i <= 5; $i++) {
+                for ($i = $params['rating']; $i <= 5; $i++) {
                     $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['Award'][] = [
                         '_attributes' => ['Provider' => 'LSR', 'Rating' => "$i"],
                     ];
@@ -583,7 +581,7 @@ class AmadeusSoap extends WsdlAnalyser
         }
 
         $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['StayDateRange'] = [
-            '_attributes' => ['Start' => $params['Start'], 'End' => $params['End']],
+            '_attributes' => ['Start' => $params['start'], 'End' => $params['end']],
         ];
 
         $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['RatePlanCandidates'] = [
@@ -594,19 +592,19 @@ class AmadeusSoap extends WsdlAnalyser
         // if (App::environment(['production', 'testing'])) {
         // }
 
-        if ((isset($params['maxRate']) || isset($params['minRate'])) && !isset($params['HotelCode'])) {
+        if ((isset($params['max_rate']) || isset($params['min_rate'])) && !isset($params['hotel_code'])) {
             $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['RateRange'] = [
                 '_attributes' => [
-                    'CurrencyCode' => $params['Currency'] ?? 'MXN',
-                    'MaxRate' => $params['maxRate'],
-                    'MinRate' => isset($params['minRate']) ? $params['minRate'] : "0",
+                    'CurrencyCode' => $params['currency'] ?? 'MXN',
+                    'MaxRate' => $params['max_rate'],
+                    'MinRate' => isset($params['min_rate']) ? $params['min_rate'] : "0",
                 ],
             ];
         }
 
         $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['RoomStayCandidates'] = [
             'RoomStayCandidate' => [
-                '_attributes' => ['RoomID' => '1', 'Quantity' => $type == 'multi' ? "1" : $params['Quantity']],
+                '_attributes' => ['RoomID' => '1', 'Quantity' => $type == 'multi' ? "1" : $params['quantity']],
                 'GuestCounts' => [
                     '_attributes' => ['IsPerRoom' => "true"],
                     'GuestCount' => $GuestCount,
@@ -620,15 +618,15 @@ class AmadeusSoap extends WsdlAnalyser
     public function hotelPricing(array $params = [])
     {
         $requiredParams = [
-            "Start",
-            "End",
-            "HotelCode",
-            "RatePlanCode",
-            "BookingCode",
-            "RoomTypeCode",
-            "Quantity",
-            "IsPerRoom",
-            "GuestCount",
+            "start",
+            "end",
+            "hotel_code",
+            "rate_plan_code",
+            "booking_code",
+            "room_type_code",
+            "quantity",
+            "is_per_room",
+            "guest_count",
         ];
 
         foreach ($requiredParams as $param) {
@@ -652,7 +650,7 @@ class AmadeusSoap extends WsdlAnalyser
         $GuestCount = [];
 
         $adults = [
-            '_attributes' => ['AgeQualifyingCode' => '10', 'Count' => $params['GuestCount']],
+            '_attributes' => ['AgeQualifyingCode' => '10', 'Count' => $params['guest_count']],
         ];
 
         if (isset($params['children'])) {
@@ -677,21 +675,21 @@ class AmadeusSoap extends WsdlAnalyser
                         'Criterion' => [
                             '_attributes' => ['ExactMatch' => 'true'],
                             'HotelRef' => [
-                                '_attributes' => ['HotelCode' => $params['HotelCode']],
+                                '_attributes' => ['HotelCode' => $params['hotel_code']],
                             ],
                             'StayDateRange' => [
-                                '_attributes' => ['Start' => $params['Start'], 'End' => $params['End']],
+                                '_attributes' => ['Start' => $params['start'], 'End' => $params['end']],
                             ],
                             'RatePlanCandidates' => [
                                 'RatePlanCandidate' => [
-                                    '_attributes' => ['RatePlanCode' => $params['RatePlanCode']],
+                                    '_attributes' => ['RatePlanCode' => $params['rate_plan_code']],
                                 ]
                             ],
                             'RoomStayCandidates' => [
                                 'RoomStayCandidate' => [
-                                    '_attributes' => ['BookingCode' => $params['BookingCode'], 'RoomTypeCode' => $params['RoomTypeCode'], 'RoomID' => '1', 'Quantity' => $params['Quantity']],
+                                    '_attributes' => ['BookingCode' => $params['booking_code'], 'RoomTypeCode' => $params['room_type_code'], 'RoomID' => '1', 'Quantity' => $params['quantity']],
                                     'GuestCounts' => [
-                                        '_attributes' => ['IsPerRoom' => $params['IsPerRoom']],
+                                        '_attributes' => ['IsPerRoom' => $params['is_per_room']],
                                         'GuestCount' => $GuestCount,
                                     ]
                                 ]
@@ -1430,7 +1428,7 @@ class AmadeusSoap extends WsdlAnalyser
         $hasHotelStays = !empty($response->evaluate("count(//res:Warnings/res:Warning[./@Tag='OK'])"));
         $moreIndicator = $response->evaluate("string(//res:RoomStays/@MoreIndicator)");
 
-        if (!empty($params['MoreDataEchoToken']) && !empty($moreIndicator)) {
+        if (!empty($params['more_data_echo_token']) && !empty($moreIndicator)) {
             return $response;
         }
 
