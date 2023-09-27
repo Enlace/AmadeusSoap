@@ -495,9 +495,9 @@ class AmadeusSoap extends WsdlAnalyser
                 ]
             ];
         } else {
-            if (array_key_exists('HotelCityCode', $params)) $HotelRefAttributes['HotelCityCode'] = $params['HotelCityCode'];
-            if (array_key_exists('HotelCode', $params)) $HotelRefAttributes['HotelCode'] = $params['HotelCode'];
-            if (array_key_exists('ChainCode', $params)) $HotelRefAttributes['ChainCode'] = $params['ChainCode'];
+            if (array_key_exists('hotel_city_code', $params)) $HotelRefAttributes['HotelCityCode'] = $params['hotel_city_code'];
+            if (array_key_exists('hotel_code', $params)) $HotelRefAttributes['HotelCode'] = $params['hotel_code'];
+            if (array_key_exists('chain_code', $params)) $HotelRefAttributes['ChainCode'] = $params['chain_code'];
 
             $searchData['HotelRef'] = [
                 '_attributes' => $HotelRefAttributes,
