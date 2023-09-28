@@ -432,9 +432,10 @@ class AmadeusSoap extends WsdlAnalyser
             "quantity" => "1",
             "is_per_room" => "true",
             "guest_count" => "1",
+            "distance" => "15",   
             "children" => [],
             "info_source" => "Distribution",
-            "search_cache_level" => $type == 'multi' ? "LessRecent" : "Live",
+            "search_cache_level" => $type == 'multi' ? "LessRecent" : "Live",            
             "max_responses" => "96",
         ];
 
@@ -466,6 +467,7 @@ class AmadeusSoap extends WsdlAnalyser
 
             $params['latitude'] = (string)$params['latitude'];
             $params['longitude'] = (string)$params['longitude'];
+            $params['distance'] = (string)$params['distance'];
 
             if (Str::contains($params['latitude'], '.')) {
                 $explodeadString = explode('.', $params['latitude']);
@@ -485,11 +487,11 @@ class AmadeusSoap extends WsdlAnalyser
                     "Longitude" => $params['longitude']
                 ]
 
-            ];
+            ];            
 
             $searchData['Radius'] = [
                 "_attributes" => [
-                    "Distance" =>  "30",
+                    "Distance" =>  $params['distance'],
                     "DistanceMeasure" =>  "DIS",
                     "UnitOfMeasureCode" =>  "2"
                 ]
@@ -586,7 +588,8 @@ class AmadeusSoap extends WsdlAnalyser
 
         $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['RatePlanCandidates'] = [
             'RatePlanCandidate' => [
-                '_attributes' => ['RatePlanCode' => 'ENF'],
+                ['_attributes' => ['RatePlanCode' => 'ENF']],
+                ['_attributes' => ['RatePlanCode' => 'RAC']]
             ],
         ];
         // if (App::environment(['production', 'testing'])) {
