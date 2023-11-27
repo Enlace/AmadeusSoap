@@ -435,13 +435,13 @@ class AmadeusSoap extends WsdlAnalyser
             "distance" => "15",   
             "children" => [],
             "info_source" => "Distribution",
-            "search_cache_level" => $type == 'multi' ? "LessRecent" : "Live",            
+            "search_cache_level" => $type == 'multi' ? "VeryRecent" : "Live",
             "max_responses" => "96",
         ];
 
-        if ($type == 'multi') {
-            $defaultparams['sort_order'] = "RA";
-        }
+//        if ($type == 'multi') {
+//            $defaultparams['sort_order'] = "RA";
+//        }
 
         $HotelRefAttributes = [];
 
