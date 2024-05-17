@@ -435,7 +435,7 @@ class AmadeusSoap extends WsdlAnalyser
             "distance" => "15",   
             "children" => [],
             "info_source" => "Distribution",
-            "search_cache_level" => $type == 'multi' ? "VeryRecent" : "Live",
+            "search_cache_level" => "Live",
             "max_responses" => "96",
         ];
 
