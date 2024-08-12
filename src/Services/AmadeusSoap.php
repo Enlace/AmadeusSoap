@@ -31,18 +31,17 @@ class AmadeusSoap extends WsdlAnalyser
         self::$password = config('amadeus-soap.password');
         self::$officeId = config('amadeus-soap.officeId');
 
-        $files = scandir(storage_path($wsdlPath));
+        $files = scandir(getcwd(). "/.." . DIRECTORY_SEPARATOR . "storage" . DIRECTORY_SEPARATOR . $wsdlPath);
 
         $wsdls = Arr::where($files, function ($path,) {
             return Str::endsWith($path, '.wsdl');
         });
 
         $wsdlPaths = Arr::map($wsdls, function ($path) use ($wsdlPath) {
-            return storage_path($wsdlPath . DIRECTORY_SEPARATOR . $path);
+            return getcwd(). "/.." . DIRECTORY_SEPARATOR . "storage" . DIRECTORY_SEPARATOR . $wsdlPath . DIRECTORY_SEPARATOR . $path;
         });
 
         self::$msgAndVer = self::loadMessagesAndVersions($wsdlPaths);
-        // dd(self::$msgAndVer, self::$wsdlIds);
     }
 
     protected static function createClient(String $wsdlPath)
@@ -84,7 +83,7 @@ class AmadeusSoap extends WsdlAnalyser
         }
 
         if ($message == 'Security_SignOut') {
-            Redis::del('amadeusSession' . Auth::user()->id);
+            Redis::del('amadeusSession' . is_null(Auth::user()) ? 'system' : Auth::user()->id);
         }
 
         $responseObject = new DOMDocument('1.0', 'UTF-8');
@@ -99,7 +98,7 @@ class AmadeusSoap extends WsdlAnalyser
         // dd($responseDomXpath);
 
         if (!empty($sessionData)) {
-            Redis::set('amadeusSession' . Auth::user()->id, json_encode($sessionData));
+            Redis::set('amadeusSession' . is_null(Auth::user()) ? 'system' : Auth::user()->id, json_encode($sessionData));
         }
         return $responseDomXpath;
     }
@@ -140,7 +139,7 @@ class AmadeusSoap extends WsdlAnalyser
     {
         $body = [];
         $sessionBody = self::sessionWithBody($message);
-        $sessionData = json_decode(Redis::get('amadeusSession' . Auth::user()->id));
+        $sessionData = json_decode(Redis::get('amadeusSession' . is_null(Auth::user()) ? 'system' : Auth::user()->id));
 
         if ($sessionBody) {
             foreach ($sessionData as $key => $value) {
