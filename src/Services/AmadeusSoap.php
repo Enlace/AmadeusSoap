@@ -83,7 +83,8 @@ class AmadeusSoap extends WsdlAnalyser
         }
 
         if ($message == 'Security_SignOut') {
-            Redis::del('amadeusSession' . is_null(Auth::user()) ? 'system' : Auth::user()->id);
+            $key =  is_null(Auth::id()) ? 'system' : Auth::id();
+            Redis::del("amadeusSession$key");
         }
 
         $responseObject = new DOMDocument('1.0', 'UTF-8');
@@ -98,7 +99,8 @@ class AmadeusSoap extends WsdlAnalyser
         // dd($responseDomXpath);
 
         if (!empty($sessionData)) {
-            Redis::set('amadeusSession' . is_null(Auth::user()) ? 'system' : Auth::user()->id, json_encode($sessionData));
+            $key =  is_null(Auth::id()) ? 'system' : Auth::id();
+            Redis::set("amadeusSession$key", json_encode($sessionData));
         }
         return $responseDomXpath;
     }
@@ -139,7 +141,8 @@ class AmadeusSoap extends WsdlAnalyser
     {
         $body = [];
         $sessionBody = self::sessionWithBody($message);
-        $sessionData = json_decode(Redis::get('amadeusSession' . is_null(Auth::user()) ? 'system' : Auth::user()->id));
+        $key =  is_null(Auth::id()) ? 'system' : Auth::id();
+        $sessionData = json_decode(Redis::get("amadeusSession$key"));
 
         if ($sessionBody) {
             foreach ($sessionData as $key => $value) {
