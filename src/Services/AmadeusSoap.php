@@ -31,14 +31,14 @@ class AmadeusSoap extends WsdlAnalyser
         self::$password = config('amadeus-soap.password');
         self::$officeId = config('amadeus-soap.officeId');
 
-        $files = scandir(getcwd(). "/.." . DIRECTORY_SEPARATOR . "storage" . DIRECTORY_SEPARATOR . $wsdlPath);
+        $files = scandir($wsdlPath);
 
         $wsdls = Arr::where($files, function ($path,) {
             return Str::endsWith($path, '.wsdl');
         });
 
         $wsdlPaths = Arr::map($wsdls, function ($path) use ($wsdlPath) {
-            return getcwd(). "/.." . DIRECTORY_SEPARATOR . "storage" . DIRECTORY_SEPARATOR . $wsdlPath . DIRECTORY_SEPARATOR . $path;
+            return  $wsdlPath . DIRECTORY_SEPARATOR . $path;
         });
 
         self::$msgAndVer = self::loadMessagesAndVersions($wsdlPaths);
