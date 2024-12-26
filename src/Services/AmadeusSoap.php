@@ -500,6 +500,10 @@ class AmadeusSoap extends WsdlAnalyser
             ];
         } else {
             if (array_key_exists('hotel_city_code', $params)) $HotelRefAttributes['HotelCityCode'] = $params['hotel_city_code'];
+            if (array_key_exists('hotel_name', $params)) {
+                $HotelRefAttributes['HotelName'] = $params['hotel_name'];
+                $HotelRefAttributes['ExtendedCitySearchIndicator'] = '1';
+            }
             if (array_key_exists('hotel_code', $params)) $HotelRefAttributes['HotelCode'] = $params['hotel_code'];
             if (array_key_exists('chain_code', $params)) $HotelRefAttributes['ChainCode'] = $params['chain_code'];
 
@@ -564,7 +568,7 @@ class AmadeusSoap extends WsdlAnalyser
             $body['SortOrder'] = $params['sort_order'];
         }
 
-        if ($type == 'multi') {
+        if ($type == 'multi' && !isset($params['hotel_name'])) {
             $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['_attributes'] = ['AvailableOnlyIndicator' => 'true', 'BestOnlyIndicator' => 'true'];
         }
 
@@ -588,12 +592,14 @@ class AmadeusSoap extends WsdlAnalyser
             '_attributes' => ['Start' => $params['start'], 'End' => $params['end']],
         ];
 
-        $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['RatePlanCandidates'] = [
-            'RatePlanCandidate' => [
-                ['_attributes' => ['RatePlanCode' => 'ENF']],
-                ['_attributes' => ['RatePlanCode' => 'RAC']]
-            ],
-        ];
+        if (!isset($params['hotel_name'])) {
+            $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['RatePlanCandidates'] = [
+                'RatePlanCandidate' => [
+                    ['_attributes' => ['RatePlanCode' => 'ENF']],
+                    ['_attributes' => ['RatePlanCode' => 'RAC']]
+                ],
+            ];
+        }
         // if (App::environment(['production', 'testing'])) {
         // }
 
