@@ -25,7 +25,7 @@ class AmadeusSoap extends WsdlAnalyser
     public static $officeId;
     protected static $msgAndVer = [];
 
-    public function __construct(String $wsdlPath)
+    public function __construct(string $wsdlPath)
     {
         self::$username = config('amadeus-soap.username');
         self::$password = config('amadeus-soap.password');
@@ -33,18 +33,18 @@ class AmadeusSoap extends WsdlAnalyser
 
         $files = scandir($wsdlPath);
 
-        $wsdls = Arr::where($files, function ($path,) {
+        $wsdls = Arr::where($files, function ($path) {
             return Str::endsWith($path, '.wsdl');
         });
 
         $wsdlPaths = Arr::map($wsdls, function ($path) use ($wsdlPath) {
-            return  $wsdlPath . DIRECTORY_SEPARATOR . $path;
+            return $wsdlPath . DIRECTORY_SEPARATOR . $path;
         });
 
         self::$msgAndVer = self::loadMessagesAndVersions($wsdlPaths);
     }
 
-    protected static function createClient(String $wsdlPath)
+    protected static function createClient(string $wsdlPath)
     {
         return new SoapClient($wsdlPath, [
             'trace' => true,
@@ -75,7 +75,6 @@ class AmadeusSoap extends WsdlAnalyser
         try {
             $response = self::$client->{$message}($params);
         } catch (Throwable $e) {
-            dd($e);
             $request = new DOMDocument('1.0', 'UTF-8');
             $request->formatOutput = true;
             $request->loadXML(self::$client->__getLastRequest());
@@ -83,7 +82,7 @@ class AmadeusSoap extends WsdlAnalyser
         }
 
         if ($message == 'Security_SignOut') {
-            $key =  is_null(Auth::id()) ? 'system' : Auth::id();
+            $key = is_null(Auth::id()) ? 'system' : Auth::id();
             Redis::del("amadeusSession$key");
         }
 
@@ -99,7 +98,7 @@ class AmadeusSoap extends WsdlAnalyser
         // dd($responseDomXpath);
 
         if (!empty($sessionData)) {
-            $key =  is_null(Auth::id()) ? 'system' : Auth::id();
+            $key = is_null(Auth::id()) ? 'system' : Auth::id();
             Redis::set("amadeusSession$key", json_encode($sessionData));
         }
         return $responseDomXpath;
@@ -117,7 +116,7 @@ class AmadeusSoap extends WsdlAnalyser
         self::$client->__setSoapHeaders($headers);
     }
 
-    protected static function createHeaders(array $params = [], String $message)
+    protected static function createHeaders(array $params = [], string $message)
     {
         $headers = [];
 
@@ -137,11 +136,11 @@ class AmadeusSoap extends WsdlAnalyser
         return $headers;
     }
 
-    protected function createSessionHeader(String $message)
+    protected function createSessionHeader(string $message)
     {
         $body = [];
         $sessionBody = self::sessionWithBody($message);
-        $key =  is_null(Auth::id()) ? 'system' : Auth::id();
+        $key = is_null(Auth::id()) ? 'system' : Auth::id();
         $sessionData = json_decode(Redis::get("amadeusSession$key"));
 
         if ($sessionBody) {
@@ -173,11 +172,11 @@ class AmadeusSoap extends WsdlAnalyser
         return new SoapHeader(
             'http://www.w3.org/2005/08/addressing',
             'MessageID',
-            (string) Str::uuid()
+            (string)Str::uuid()
         );
     }
 
-    protected static function createActionHeader(String $message)
+    protected static function createActionHeader(string $message)
     {
         $wsdlId = self::$msgAndVer[$message]['wsdl'];
         $action = self::$wsdlDomXpath[$wsdlId]->evaluate(sprintf('string(//wsdl:operation[./@name="%s"]/soap:operation/@soapAction)', $message));
@@ -188,7 +187,7 @@ class AmadeusSoap extends WsdlAnalyser
         );
     }
 
-    protected static function createToHeader(String $message)
+    protected static function createToHeader(string $message)
     {
         $wsdlId = self::$msgAndVer[$message]['wsdl'];
         $To = self::$wsdlDomXpath[$wsdlId]->evaluate('string(/wsdl:definitions/wsdl:service/wsdl:port/soap:address/@location)');
@@ -258,7 +257,7 @@ class AmadeusSoap extends WsdlAnalyser
         return new SoapVar($body, XSD_ANYXML);
     }
 
-    public static function evaluateXpathQueryOnWsdl($wsdlId, $wsdlFilePath, $xpath): \DOMNodeList | \DOMNode | string |null
+    public static function evaluateXpathQueryOnWsdl($wsdlId, $wsdlFilePath, $xpath): \DOMNodeList|\DOMNode|string|null
     {
         WsdlAnalyser::loadWsdlXpath($wsdlFilePath, $wsdlId);
 
@@ -305,8 +304,8 @@ class AmadeusSoap extends WsdlAnalyser
                 $definitionsNode->appendChild($node);
             }
 
-            $portType = $importedDomXpath->query('//wsdl:definitions/wsdl:portType');
-            foreach ($portType as $portType) {
+            $portTypes = $importedDomXpath->query('//wsdl:definitions/wsdl:portType');
+            foreach ($portTypes as $portType) {
                 $node = self::$wsdlDomDoc[$wsdlId]->importNode($portType, true);
                 $definitionsNode = self::$wsdlDomDoc[$wsdlId]->getElementsByTagName('definitions')->item(0);
                 $definitionsNode->appendChild($node);
@@ -316,7 +315,7 @@ class AmadeusSoap extends WsdlAnalyser
         return self::$wsdlDomXpath[$wsdlId]->evaluate($xpath);
     }
 
-    protected static function getRootElement(String $message)
+    protected static function getRootElement(string $message)
     {
         $wsdlId = self::$msgAndVer[$message]['wsdl'];
         $messageName = self::$msgAndVer[$message]['messageName'];
@@ -324,7 +323,7 @@ class AmadeusSoap extends WsdlAnalyser
         return explode(':', $rootElement)[1];
     }
 
-    protected static function getResponseRootElement(String $message)
+    protected static function getResponseRootElement(string $message)
     {
         $wsdlId = self::$msgAndVer[$message]['wsdl'];
         $messageName = self::$msgAndVer[$message]['outputMessageName'];
@@ -332,7 +331,7 @@ class AmadeusSoap extends WsdlAnalyser
         return explode(':', $rootElement)[1];
     }
 
-    public static function getResponseRootElementNameSpace(String $message)
+    public static function getResponseRootElementNameSpace(string $message)
     {
         $wsdlId = self::$msgAndVer[$message]['wsdl'];
         $rootElement = self::evaluateXpathQueryOnWsdl($wsdlId, self::$wsdlIds[$wsdlId], sprintf("string(//wsdl:portType/wsdl:operation[@name='%s']/wsdl:output/@message)", $message));
@@ -347,12 +346,12 @@ class AmadeusSoap extends WsdlAnalyser
         return Arr::first($namespaceNode)->namespaceURI;
     }
 
-    public static function getNamespace(String $message)
+    public static function getNamespace(string $message)
     {
         return self::getResponseRootElementNameSpace($message);
     }
 
-    public static function isStateful(array $params, String $message)
+    public static function isStateful(array $params, string $message)
     {
         if ($message == "Hotel_DescriptiveInfo") {
             return false;
@@ -434,16 +433,13 @@ class AmadeusSoap extends WsdlAnalyser
             "quantity" => "1",
             "is_per_room" => "true",
             "guest_count" => "1",
-            "distance" => "15",   
+            "distance" => "15",
             "children" => [],
             "info_source" => "Distribution",
             "search_cache_level" => "Live",
             "max_responses" => "96",
+            "rate_code" => "RAC"
         ];
-
-//        if ($type == 'multi') {
-//            $defaultparams['sort_order'] = "RA";
-//        }
 
         $HotelRefAttributes = [];
 
@@ -463,7 +459,7 @@ class AmadeusSoap extends WsdlAnalyser
             }
         }
 
-        $searchData =  [];
+        $searchData = [];
 
         if (array_key_exists('latitude', $params) && array_key_exists('longitude', $params)) {
 
@@ -489,17 +485,21 @@ class AmadeusSoap extends WsdlAnalyser
                     "Longitude" => $params['longitude']
                 ]
 
-            ];            
+            ];
 
             $searchData['Radius'] = [
                 "_attributes" => [
-                    "Distance" =>  $params['distance'],
-                    "DistanceMeasure" =>  "DIS",
-                    "UnitOfMeasureCode" =>  "2"
+                    "Distance" => $params['distance'],
+                    "DistanceMeasure" => "DIS",
+                    "UnitOfMeasureCode" => "2"
                 ]
             ];
         } else {
             if (array_key_exists('hotel_city_code', $params)) $HotelRefAttributes['HotelCityCode'] = $params['hotel_city_code'];
+            if (array_key_exists('hotel_name', $params)) {
+                $HotelRefAttributes['HotelName'] = $params['hotel_name'];
+                $HotelRefAttributes['ExtendedCitySearchIndicator'] = '1';
+            }
             if (array_key_exists('hotel_name', $params)) {
                 $HotelRefAttributes['HotelName'] = $params['hotel_name'];
                 $HotelRefAttributes['ExtendedCitySearchIndicator'] = '1';
@@ -543,10 +543,7 @@ class AmadeusSoap extends WsdlAnalyser
                 'AvailRequestSegment' => [
                     '_attributes' => $AvailRequestSegmentAttributes,
                     'HotelSearchCriteria' => [
-                        'Criterion' => [
-                            '_attributes' => ['ExactMatch' => 'true'],
-                            ...$searchData
-                        ]
+                        'Criterion' => array_merge(['_attributes' => ['ExactMatch' => 'true']], $searchData)
                     ],
                 ],
             ],
@@ -592,16 +589,17 @@ class AmadeusSoap extends WsdlAnalyser
             '_attributes' => ['Start' => $params['start'], 'End' => $params['end']],
         ];
 
-        if (!isset($params['hotel_name'])) {
+        if (!isset($params['hotel_name']) && isset($params['rate_code'])) {
+            $ratePlanCodes = is_array($params['rate_code']) ? $params['rate_code'] : [$params['rate_code']];
+            $ratePlanCandidate = array_map(function ($ratePlanCode) {
+                return [
+                    '_attributes' => ['RatePlanCode' => $ratePlanCode],
+                ];
+            }, $ratePlanCodes);
             $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['RatePlanCandidates'] = [
-                'RatePlanCandidate' => [
-                    ['_attributes' => ['RatePlanCode' => 'ENF']],
-                    ['_attributes' => ['RatePlanCode' => 'RAC']]
-                ],
+                'RatePlanCandidate' => $ratePlanCandidate,
             ];
         }
-        // if (App::environment(['production', 'testing'])) {
-        // }
 
         if ((isset($params['max_rate']) || isset($params['min_rate'])) && !isset($params['hotel_code'])) {
             $body['AvailRequestSegments']['AvailRequestSegment']['HotelSearchCriteria']['Criterion']['RateRange'] = [
@@ -1246,7 +1244,7 @@ class AmadeusSoap extends WsdlAnalyser
                     '_attributes' => ['SendData' => $params['hotelSendData']]
                 ],
                 'FacilityInfo' => [
-                    '_attributes' => ['SendGuestRooms' => $params['sendGuestRooms'], 'SendMeetingRooms' => $params['sendMeetingRooms'], 'SendRestaurants' =>  $params['sendRestaurants']]
+                    '_attributes' => ['SendGuestRooms' => $params['sendGuestRooms'], 'SendMeetingRooms' => $params['sendMeetingRooms'], 'SendRestaurants' => $params['sendRestaurants']]
                 ],
                 'Policies' => [
                     '_attributes' => ['SendPolicies' => $params['sendPolicies']],
@@ -1277,7 +1275,7 @@ class AmadeusSoap extends WsdlAnalyser
                         '_attributes' => ['SendData' => $params['hotelSendData']]
                     ],
                     'FacilityInfo' => [
-                        '_attributes' => ['SendGuestRooms' => $params['sendGuestRooms'], 'SendMeetingRooms' => $params['sendMeetingRooms'], 'SendRestaurants' =>  $params['sendRestaurants']]
+                        '_attributes' => ['SendGuestRooms' => $params['sendGuestRooms'], 'SendMeetingRooms' => $params['sendMeetingRooms'], 'SendRestaurants' => $params['sendRestaurants']]
                     ],
                     'Policies' => [
                         '_attributes' => ['SendPolicies' => $params['sendPolicies']],
@@ -1435,7 +1433,7 @@ class AmadeusSoap extends WsdlAnalyser
 
     public function recursiveHotelSearch($type = 'multi', array $params)
     {
-        $response =  $this->HotelSearch('multi', $params);
+        $response = $this->HotelSearch('multi', $params);
         $hasHotelStays = !empty($response->evaluate("count(//res:Warnings/res:Warning[./@Tag='OK'])"));
         $moreIndicator = $response->evaluate("string(//res:RoomStays/@MoreIndicator)");
 

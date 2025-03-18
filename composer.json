@@ -1,30 +1,32 @@
 {
-    "name": "aldogtz/amadeus-soap",
-    "autoload": {
-        "psr-4": {
-            "Aldogtz\\AmadeusSoap\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "Aldo Gutierrez",
-            "email": "aldogtz1998@gmail.com"
-        }
-    ],
-    "require-dev": {
-        "laravel/framework": "v9.52.5"
-    },
-    "extra":{
-        "laravel":{
-            "providers":[
-                "Aldogtz\\AmadeusSoap\\AmadeusSoapServiceProvider"
-            ],
-            "aliases":{
-                "AmadeusSoap" : "Aldogtz\\AmadeusSoap\\Facades\\AmadeusSoapFacade"
-            }
-        }
-    },
-    "require": {
-        "spatie/array-to-xml": "^3.1"
+  "name": "aldogtz/amadeus-soap",
+  "autoload": {
+    "psr-4": {
+      "Aldogtz\\AmadeusSoap\\": "src/"
     }
+  },
+  "authors": [
+    {
+      "name": "Aldo Gutierrez",
+      "email": "aldogtz1998@gmail.com"
+    }
+  ],
+  "require-dev": {
+    "laravel/framework": "v9.52.5"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Aldogtz\\AmadeusSoap\\AmadeusSoapServiceProvider"
+      ],
+      "aliases": {
+        "AmadeusSoap": "Aldogtz\\AmadeusSoap\\Facades\\AmadeusSoapFacade"
+      }
+    }
+  },
+  "require": {
+    "spatie/array-to-xml": "^3.1",
+    "ext-soap": "*",
+    "ext-dom": "*"
+  }
 }
