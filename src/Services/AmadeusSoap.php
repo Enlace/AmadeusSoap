@@ -2,13 +2,20 @@
 
 namespace Aldogtz\AmadeusSoap\Services;
 
+use Aldogtz\AmadeusSoap\WsdlAnalyser\InvalidWsdlFileException;
 use DOMDocument;
+use DOMException;
+use DOMNode;
+use DOMNodeList;
 use DOMXPath;
 use Exception;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Aldogtz\AmadeusSoap\SoapClient\SoapClient;
+use Random\RandomException;
+use SoapFault;
 use SoapHeader;
 use SoapVar;
 use Spatie\ArrayToXml\ArrayToXml;
@@ -17,13 +24,30 @@ use Aldogtz\AmadeusSoap\WsdlAnalyser\WsdlAnalyser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 
+/**
+ * Class AmadeusSoap
+ *
+ * Provides a wrapper for Amadeus SOAP web services operations.
+ *
+ * @method static DOMXPath Hotel_MultiSingleAvailability(array $params = []) Performs hotel availability search for single or multiple properties
+ * @method static DOMXPath Hotel_EnhancedPricing(array $params = []) Retrieves detailed pricing information for a specific hotel room rate
+ * @method static DOMXPath Hotel_Sell(array $params = []) Creates a hotel reservation segment in the PNR
+ * @method static DOMXPath Hotel_DescriptiveInfo(array $params = []) Retrieves descriptive information about hotel properties
+ * @method static DOMXPath Hotel_CompleteReservationDetails(array $params = []) Retrieves complete details of a hotel reservation
+ * @method static DOMXPath PNR_AddMultiElements(array $params = []) Adds multiple elements (passengers, data) to a PNR
+ * @method static DOMXPath PNR_Retrieve(array $params = []) Retrieves a PNR by its record locator
+ * @method static DOMXPath PNR_Cancel(array $params = []) Cancels elements or segments from a PNR
+ * @method static DOMXPath Security_SignOut() Ends the current Amadeus session and clears session data
+ *
+ * @package Aldogtz\AmadeusSoap\Services
+ */
 class AmadeusSoap extends WsdlAnalyser
 {
-    protected static $client;
-    protected static $username;
-    protected static $password;
-    public static $officeId;
-    protected static $msgAndVer = [];
+    protected static SoapClient $client;
+    protected static mixed $username;
+    protected static mixed $password;
+    public static mixed $officeId;
+    protected static array $msgAndVer = [];
 
     public function __construct(string $wsdlPath)
     {
@@ -44,7 +68,10 @@ class AmadeusSoap extends WsdlAnalyser
         self::$msgAndVer = self::loadMessagesAndVersions($wsdlPaths);
     }
 
-    protected static function createClient(string $wsdlPath)
+    /**
+     * @throws SoapFault
+     */
+    protected static function createClient(string $wsdlPath): SoapClient
     {
         return new SoapClient($wsdlPath, [
             'trace' => true,
@@ -59,6 +86,9 @@ class AmadeusSoap extends WsdlAnalyser
         ]);
     }
 
+    /**
+     * @throws Exception
+     */
     public static function __callStatic(string $message, array $arguments)
     {
         if (!isset(self::$msgAndVer[$message])) {
@@ -73,7 +103,7 @@ class AmadeusSoap extends WsdlAnalyser
         $params = self::createBodyParams(Arr::first($arguments, null, []), $message);
 
         try {
-            $response = self::$client->{$message}($params);
+            self::$client->{$message}($params);
         } catch (Throwable $e) {
             $request = new DOMDocument('1.0', 'UTF-8');
             $request->formatOutput = true;
@@ -110,33 +140,40 @@ class AmadeusSoap extends WsdlAnalyser
         return self::$wsdlIds[$wsdlId];
     }
 
-    protected static function setSoapHeaders(array $headers)
+    protected static function setSoapHeaders(array $headers): void
     {
         self::$client->__setSoapHeaders([]);
         self::$client->__setSoapHeaders($headers);
     }
 
-    protected static function createHeaders(array $params = [], string $message)
+    /**
+     * @throws RandomException
+     * @throws DOMException
+     */
+    protected static function createHeaders(array $params = [], string $message): array
     {
         $headers = [];
 
         if (self::isStateful($params, $message)) {
-            array_push($headers, self::createSessionHeader($message));
+            $headers[] = self::createSessionHeader($message);
         }
 
-        array_push($headers, self::createMessageIdHeader());
-        array_push($headers, self::createActionHeader($message));
-        array_push($headers, self::createToHeader($message));
+        $headers[] = self::createMessageIdHeader();
+        $headers[] = self::createActionHeader($message);
+        $headers[] = self::createToHeader($message);
 
         if (!self::sessionWithBody($message) || !self::isStateful($params, $message)) {
-            array_push($headers, self::createSecurityHeader());
-            array_push($headers, self::createAMASecurityHostedUserHeader());
+            $headers[] = self::createSecurityHeader();
+            $headers[] = self::createAMASecurityHostedUserHeader();
         }
 
         return $headers;
     }
 
-    protected function createSessionHeader(string $message)
+    /**
+     * @throws DOMException
+     */
+    protected function createSessionHeader(string $message): SoapHeader
     {
         $body = [];
         $sessionBody = self::sessionWithBody($message);
@@ -167,7 +204,7 @@ class AmadeusSoap extends WsdlAnalyser
         );
     }
 
-    protected static function createMessageIdHeader()
+    protected static function createMessageIdHeader(): SoapHeader
     {
         return new SoapHeader(
             'http://www.w3.org/2005/08/addressing',
@@ -176,7 +213,7 @@ class AmadeusSoap extends WsdlAnalyser
         );
     }
 
-    protected static function createActionHeader(string $message)
+    protected static function createActionHeader(string $message): SoapHeader
     {
         $wsdlId = self::$msgAndVer[$message]['wsdl'];
         $action = self::$wsdlDomXpath[$wsdlId]->evaluate(sprintf('string(//wsdl:operation[./@name="%s"]/soap:operation/@soapAction)', $message));
@@ -187,7 +224,7 @@ class AmadeusSoap extends WsdlAnalyser
         );
     }
 
-    protected static function createToHeader(string $message)
+    protected static function createToHeader(string $message): SoapHeader
     {
         $wsdlId = self::$msgAndVer[$message]['wsdl'];
         $To = self::$wsdlDomXpath[$wsdlId]->evaluate('string(/wsdl:definitions/wsdl:service/wsdl:port/soap:address/@location)');
@@ -198,7 +235,10 @@ class AmadeusSoap extends WsdlAnalyser
         );
     }
 
-    protected static function createSecurityHeader()
+    /**
+     * @throws RandomException
+     */
+    protected static function createSecurityHeader(): SoapHeader
     {
         $nonce = random_bytes(32);
         $encodedNonce = base64_encode($nonce);
@@ -220,7 +260,7 @@ class AmadeusSoap extends WsdlAnalyser
         );
     }
 
-    protected static function createAMASecurityHostedUserHeader()
+    protected static function createAMASecurityHostedUserHeader(): SoapHeader
     {
         return new SoapHeader(
             'http://xml.amadeus.com/2010/06/Security_v1',
@@ -235,7 +275,10 @@ class AmadeusSoap extends WsdlAnalyser
         );
     }
 
-    protected static function createBodyParams(array $params = [], string $message)
+    /**
+     * @throws DOMException
+     */
+    protected static function createBodyParams(array $params = [], string $message): SoapVar
     {
         $attributes = [];
 
@@ -257,9 +300,13 @@ class AmadeusSoap extends WsdlAnalyser
         return new SoapVar($body, XSD_ANYXML);
     }
 
-    public static function evaluateXpathQueryOnWsdl($wsdlId, $wsdlFilePath, $xpath): \DOMNodeList|\DOMNode|string|null
+    public static function evaluateXpathQueryOnWsdl($wsdlId, $wsdlFilePath, $xpath): DOMNodeList|DOMNode|string|null
     {
-        WsdlAnalyser::loadWsdlXpath($wsdlFilePath, $wsdlId);
+        try {
+            WsdlAnalyser::loadWsdlXpath($wsdlFilePath, $wsdlId);
+        } catch (InvalidWsdlFileException) {
+
+        }
 
         $imports = self::$wsdlDomXpath[$wsdlId]->query(WsdlAnalyser::XPATH_IMPORTS);
 
@@ -267,9 +314,9 @@ class AmadeusSoap extends WsdlAnalyser
             $importPath = realpath(dirname($wsdlFilePath)) . DIRECTORY_SEPARATOR . $import->value;
             $wsdlContent = file_get_contents($importPath);
 
-            $importedDomDoc = new \DOMDocument('1.0', 'UTF-8');
+            $importedDomDoc = new DOMDocument('1.0', 'UTF-8');
             $importedDomDoc->loadXML($wsdlContent);
-            $importedDomXpath = new \DOMXPath($importedDomDoc);
+            $importedDomXpath = new DOMXPath($importedDomDoc);
 
             $namespaces = $importedDomXpath->evaluate('//wsdl:definitions/namespace::*');
             $query = self::$wsdlDomXpath[$wsdlId]->evaluate("//wsdl:definitions/namespace::*");
@@ -315,7 +362,7 @@ class AmadeusSoap extends WsdlAnalyser
         return self::$wsdlDomXpath[$wsdlId]->evaluate($xpath);
     }
 
-    protected static function getRootElement(string $message)
+    protected static function getRootElement(string $message): string
     {
         $wsdlId = self::$msgAndVer[$message]['wsdl'];
         $messageName = self::$msgAndVer[$message]['messageName'];
@@ -323,7 +370,7 @@ class AmadeusSoap extends WsdlAnalyser
         return explode(':', $rootElement)[1];
     }
 
-    protected static function getResponseRootElement(string $message)
+    protected static function getResponseRootElement(string $message): string
     {
         $wsdlId = self::$msgAndVer[$message]['wsdl'];
         $messageName = self::$msgAndVer[$message]['outputMessageName'];
@@ -351,7 +398,7 @@ class AmadeusSoap extends WsdlAnalyser
         return self::getResponseRootElementNameSpace($message);
     }
 
-    public static function isStateful(array $params, string $message)
+    public static function isStateful(array $params, string $message): bool
     {
         if ($message == "Hotel_DescriptiveInfo") {
             return false;
@@ -385,7 +432,7 @@ class AmadeusSoap extends WsdlAnalyser
         foreach ($arr as $element) {
             if (is_array($element)) {
                 $result = self::multiKeyExists($element, $key);
-                if ($result != false) {
+                if ($result) {
                     return $result;
                 }
             }
@@ -394,7 +441,7 @@ class AmadeusSoap extends WsdlAnalyser
         return false;
     }
 
-    protected static function getSessionParams(DOMXPath $xml)
+    protected static function getSessionParams(DOMXPath $xml): array
     {
         if ($xml->evaluate('string(//awsse:Session/@TransactionStatusCode)') != "InSeries") {
             return [];
@@ -411,7 +458,7 @@ class AmadeusSoap extends WsdlAnalyser
         ];
     }
 
-    public static function sessionWithBody(string $message)
+    public static function sessionWithBody(string $message): bool
     {
         if ($message != "Hotel_MultiSingleAvailability" && $message != "PNR_Retrieve") {
             return true;
@@ -419,7 +466,10 @@ class AmadeusSoap extends WsdlAnalyser
         return false;
     }
 
-    public function HotelSearch($type = 'multi', $params = [])
+    /**
+     * @throws Exception
+     */
+    public function HotelSearch($type = 'multi', $params = []): DOMXPath
     {
         $acceptedTypes = ['multi', 'single'];
 
@@ -427,7 +477,7 @@ class AmadeusSoap extends WsdlAnalyser
             throw new Exception("Type must be either multi or single");
         }
 
-        $defaultparams = [
+        $defaultParams = [
             "start" => Carbon::now()->toDateString(),
             "end" => Carbon::now()->addDays(7)->toDateString(),
             "quantity" => "1",
@@ -445,7 +495,7 @@ class AmadeusSoap extends WsdlAnalyser
 
         $sanitizedParams = array_filter($params);
 
-        $params = array_merge($defaultparams, $sanitizedParams);
+        $params = array_merge($defaultParams, $sanitizedParams);
 
         foreach ($params as $key => $value) {
             if (is_null($value) && $key != 'children') {
@@ -468,15 +518,15 @@ class AmadeusSoap extends WsdlAnalyser
             $params['distance'] = (string)$params['distance'];
 
             if (Str::contains($params['latitude'], '.')) {
-                $explodeadString = explode('.', $params['latitude']);
-                $explodeadString[1] = strlen($explodeadString[1]) == 5 ? $explodeadString[1] : (strlen($explodeadString[1]) > 5 ? substr($explodeadString[1], 0, 5) : Str::padRight($explodeadString[1], 5, 0));
-                $params['latitude'] = implode('', $explodeadString);
+                $explodedString = explode('.', $params['latitude']);
+                $explodedString[1] = strlen($explodedString[1]) == 5 ? $explodedString[1] : (strlen($explodedString[1]) > 5 ? substr($explodedString[1], 0, 5) : Str::padRight($explodedString[1], 5, 0));
+                $params['latitude'] = implode('', $explodedString);
             }
 
             if (Str::contains($params['longitude'], '.')) {
-                $explodeadString = explode('.', $params['longitude']);
-                $explodeadString[1] = strlen($explodeadString[1]) == 5 ? $explodeadString[1] : (strlen($explodeadString[1]) > 5 ? substr($explodeadString[1], 0, 5) : Str::padRight($explodeadString[1], 5, 0));
-                $params['longitude'] = implode('', $explodeadString);
+                $explodedString = explode('.', $params['longitude']);
+                $explodedString[1] = strlen($explodedString[1]) == 5 ? $explodedString[1] : (strlen($explodedString[1]) > 5 ? substr($explodedString[1], 0, 5) : Str::padRight($explodedString[1], 5, 0));
+                $params['longitude'] = implode('', $explodedString);
             }
 
             $searchData['Position'] = [
@@ -606,7 +656,7 @@ class AmadeusSoap extends WsdlAnalyser
                 '_attributes' => [
                     'CurrencyCode' => $params['currency'] ?? 'MXN',
                     'MaxRate' => $params['max_rate'],
-                    'MinRate' => isset($params['min_rate']) ? $params['min_rate'] : "0",
+                    'MinRate' => $params['min_rate'] ?? "0",
                 ],
             ];
         }
@@ -624,7 +674,10 @@ class AmadeusSoap extends WsdlAnalyser
         return self::Hotel_MultiSingleAvailability($body);
     }
 
-    public function hotelPricing(array $params = [])
+    /**
+     * @throws Exception
+     */
+    public function hotelPricing(array $params = []): DOMXPath
     {
         $requiredParams = [
             "start",
@@ -716,13 +769,16 @@ class AmadeusSoap extends WsdlAnalyser
         ]);
     }
 
-    protected function isMultiArray($a)
+    protected function isMultiArray($a): bool
     {
         foreach ($a as $v) if (is_array($v)) return TRUE;
         return FALSE;
     }
 
-    public function addMultiElements($type = "create", $params = [])
+    /**
+     * @throws Exception
+     */
+    public function addMultiElements($type = "create", $params = []): DOMXPath
     {
         $acceptedTypes = ['create', 'end', 'cancel'];
 
@@ -742,17 +798,17 @@ class AmadeusSoap extends WsdlAnalyser
             "type",
         ] : [];
 
-        $isMultiDimentional = self::isMultiArray($params);
+        $isMultiDimensional = self::isMultiArray($params);
 
-        if ($isMultiDimentional) {
-            foreach ($params as $index => $passagener) {
+        if ($isMultiDimensional) {
+            foreach ($params as $index => $passenger) {
                 foreach ($requiredParams as $param) {
-                    if (!array_key_exists($param, $passagener)) {
-                        throw new Exception("The param $param is required on passenger numer $index");
+                    if (!array_key_exists($param, $passenger)) {
+                        throw new Exception("The param $param is required on passenger number $index");
                     }
 
-                    if (empty($passagener[$param])) {
-                        throw new Exception("The param $param cannot be null on passenger numer $index");
+                    if (empty($passenger[$param])) {
+                        throw new Exception("The param $param cannot be null on passenger number $index");
                     }
                 }
             }
@@ -783,7 +839,7 @@ class AmadeusSoap extends WsdlAnalyser
             'dataElementsIndiv' => []
         ];
 
-        $reciveFrom = [
+        $receiveFrom = [
             'elementManagementData' => [
                 'segmentName' => 'RF'
             ],
@@ -798,9 +854,9 @@ class AmadeusSoap extends WsdlAnalyser
 
         if ($type == 'create') {
 
-            if ($isMultiDimentional) {
+            if ($isMultiDimensional) {
                 foreach ($params as $key => $value) {
-                    array_push($body['travellerInfo'], [
+                    $body['travellerInfo'][] = [
                         'elementManagementPassenger' => [
                             'reference' => [
                                 'qualifier' => 'PR',
@@ -819,7 +875,7 @@ class AmadeusSoap extends WsdlAnalyser
                                 ]
                             ]
                         ]
-                    ]);
+                    ];
                 }
             } else {
                 $body['travellerInfo'] = [
@@ -846,7 +902,7 @@ class AmadeusSoap extends WsdlAnalyser
 
             $body['dataElementsMaster'] = $dataElementsMaster;
 
-            array_push($body['dataElementsMaster']['dataElementsIndiv'], [
+            $body['dataElementsMaster']['dataElementsIndiv'][] = [
                 'elementManagementData' => [
                     'reference' => [
                         'qualifier' => 'OT',
@@ -861,11 +917,11 @@ class AmadeusSoap extends WsdlAnalyser
                     ],
                     'longFreetext' => 'desarollo@enlaceforte.com'
                 ]
-            ]);
+            ];
 
-            array_push($body['dataElementsMaster']['dataElementsIndiv'], $reciveFrom);
+            $body['dataElementsMaster']['dataElementsIndiv'][] = $receiveFrom;
 
-            array_push($body['dataElementsMaster']['dataElementsIndiv'], [
+            $body['dataElementsMaster']['dataElementsIndiv'][] = [
                 'elementManagementData' => [
                     'reference' => [
                         'qualifier' => 'OT',
@@ -878,10 +934,10 @@ class AmadeusSoap extends WsdlAnalyser
                         'indicator' => 'OK',
                     ],
                 ]
-            ]);
+            ];
         } else {
             $body['dataElementsMaster'] = $dataElementsMaster;
-            foreach ($reciveFrom as $key => $value) {
+            foreach ($receiveFrom as $key => $value) {
                 $body['dataElementsMaster']['dataElementsIndiv'][$key] = $value;
             }
         }
@@ -889,7 +945,7 @@ class AmadeusSoap extends WsdlAnalyser
         return self::PNR_AddMultiElements([$body]);
     }
 
-    protected function isMultiArrayWithException($a, $exceptions = [])
+    protected function isMultiArrayWithException($a, $exceptions = []): bool
     {
         foreach ($a as $k => $v) {
             if (is_array($v) && !array_key_exists($k, array_flip($exceptions))) return true;
@@ -897,7 +953,10 @@ class AmadeusSoap extends WsdlAnalyser
         return false;
     }
 
-    public function hotelSell($params = [])
+    /**
+     * @throws Exception
+     */
+    public function hotelSell($params = []): DOMXPath
     {
         $requiredParams = [
             "travelAgentRef"
@@ -922,11 +981,11 @@ class AmadeusSoap extends WsdlAnalyser
             "expiryDate",
         ];
 
-        $isMultiDimentional = self::isMultiArrayWithException($params, [
+        $isMultiDimensional = self::isMultiArrayWithException($params, [
             "passengerReference",
         ]);
 
-        if (!$isMultiDimentional) $requiredParams = array_merge($requiredParams, $roomStayDataParams);
+        if (!$isMultiDimensional) $requiredParams = array_merge($requiredParams, $roomStayDataParams);
 
         foreach ($requiredParams as $param) {
             if (!array_key_exists($param, $params)) {
@@ -938,7 +997,7 @@ class AmadeusSoap extends WsdlAnalyser
             }
         }
 
-        if ($isMultiDimentional) {
+        if ($isMultiDimensional) {
             foreach ($params as $index => $roomData) {
                 if ($index != "travelAgentRef") {
                     $missingParams = array_diff_key(array_flip($roomStayDataParams), $roomData);
@@ -951,16 +1010,16 @@ class AmadeusSoap extends WsdlAnalyser
                     $passengerReferences = $roomData['passengerReference'];
                     if (is_array($passengerReferences)) {
                         foreach ($passengerReferences as $passengerReference) {
-                            $missingPassenegerReferenceParams = array_diff_key(array_flip($passengerReferenceParams), $passengerReference);
-                            if (count($missingPassenegerReferenceParams) > 0) {
-                                $missingParamsStrings = implode(", ", array_keys($missingPassenegerReferenceParams));
+                            $missingPassengerReferenceParams = array_diff_key(array_flip($passengerReferenceParams), $passengerReference);
+                            if (count($missingPassengerReferenceParams) > 0) {
+                                $missingParamsStrings = implode(", ", array_keys($missingPassengerReferenceParams));
                                 throw new Exception("The params $missingParamsStrings are required on room data number " . ($index + 1));
                             }
                         }
                     } else {
-                        $missingPassenegerReferenceParams = array_diff_key(array_flip($passengerReferenceParams, $passengerReferences));
-                        if (count($missingPassenegerReferenceParams) > 0) {
-                            $missingParamsStrings = implode(", ", array_keys($missingPassenegerReferenceParams));
+                        $missingPassengerReferenceParams = array_diff_key(array_flip($passengerReferenceParams, $passengerReferences));
+                        if (count($missingPassengerReferenceParams) > 0) {
+                            $missingParamsStrings = implode(", ", array_keys($missingPassengerReferenceParams));
                             throw new Exception("The params $missingParamsStrings are required on room data number " . ($index + 1));
                         }
                     }
@@ -970,16 +1029,16 @@ class AmadeusSoap extends WsdlAnalyser
             $passengerReferences = $params['passengerReference'];
             if (is_array($passengerReferences)) {
                 foreach ($passengerReferences as $passengerReference) {
-                    $missingPassenegerReferenceParams = array_diff_key(array_flip($passengerReferenceParams), $passengerReference);
-                    if (count($missingPassenegerReferenceParams) > 0) {
-                        $missingParamsStrings = implode(", ", array_keys($missingPassenegerReferenceParams));
+                    $missingPassengerReferenceParams = array_diff_key(array_flip($passengerReferenceParams), $passengerReference);
+                    if (count($missingPassengerReferenceParams) > 0) {
+                        $missingParamsStrings = implode(", ", array_keys($missingPassengerReferenceParams));
                         throw new Exception("The params $missingParamsStrings are required on room data");
                     }
                 }
             } else {
-                $missingPassenegerReferenceParams = array_diff_key(array_flip($passengerReferenceParams), $passengerReferences);
-                if (count($missingPassenegerReferenceParams) > 0) {
-                    $missingParamsStrings = implode(", ", array_keys($missingPassenegerReferenceParams));
+                $missingPassengerReferenceParams = array_diff_key(array_flip($passengerReferenceParams), $passengerReferences);
+                if (count($missingPassengerReferenceParams) > 0) {
+                    $missingParamsStrings = implode(", ", array_keys($missingPassengerReferenceParams));
                     throw new Exception("The params $missingParamsStrings are required on room data");
                 }
             }
@@ -1002,30 +1061,30 @@ class AmadeusSoap extends WsdlAnalyser
         ];
 
 
-        if (!$isMultiDimentional) {
+        if (!$isMultiDimensional) {
             $representativeParties = [];
             $guestList = [];
 
             if (is_array($params['passengerReference'])) {
                 foreach ($params['passengerReference'] as $passenger) {
 
-                    array_push($representativeParties, [
+                    $representativeParties[] = [
                         'occupantList' => [
                             'passengerReference' => [
                                 'type' => $passenger['type'],
                                 'value' => $passenger['value']
                             ]
                         ]
-                    ]);
+                    ];
 
-                    array_push($guestList, [
+                    $guestList[] = [
                         'occupantList' => [
                             'passengerReference' => [
                                 'type' => $passenger['type'] == "BHO" ? 'RMO' : 'ROP',
                                 'value' => $passenger['value']
                             ]
                         ]
-                    ]);
+                    ];
                 }
             } else {
                 $representativeParties = [
@@ -1105,23 +1164,23 @@ class AmadeusSoap extends WsdlAnalyser
                     if (is_array($param['passengerReference'])) {
                         foreach ($param['passengerReference'] as $passenger) {
 
-                            array_push($representativeParties, [
+                            $representativeParties[] = [
                                 'occupantList' => [
                                     'passengerReference' => [
                                         'type' => $passenger['type'],
                                         'value' => $passenger['value']
                                     ]
                                 ]
-                            ]);
+                            ];
 
-                            array_push($guestList, [
+                            $guestList[] = [
                                 'occupantList' => [
                                     'passengerReference' => [
                                         'type' => $passenger['type'] == "BHO" ? 'RMO' : 'ROP',
                                         'value' => $passenger['value']
                                     ]
                                 ]
-                            ]);
+                            ];
                         }
                     } else {
                         $representativeParties = [
@@ -1142,7 +1201,7 @@ class AmadeusSoap extends WsdlAnalyser
                         ];
                     }
 
-                    array_push($body['roomStayData'], [
+                    $body['roomStayData'][] = [
                         'markerRoomStayData' => null,
                         'globalBookingInfo' => [
                             'markerGlobalBookingInfo' => [
@@ -1189,7 +1248,7 @@ class AmadeusSoap extends WsdlAnalyser
                             ],
                             'guestList' => $guestList
                         ]
-                    ]);
+                    ];
                 }
             }
         }
@@ -1197,16 +1256,19 @@ class AmadeusSoap extends WsdlAnalyser
         return self::Hotel_Sell([$body]);
     }
 
-    public function singOut()
+    public function singOut(): DOMXPath
     {
         return self::Security_SignOut();
     }
 
-    public function hotelDescriptiveInfo(array $params = [])
+    /**
+     * @throws Exception
+     */
+    public function hotelDescriptiveInfo(array $params = []): DOMXPath
     {
         $requiredParams = ["hotelCode"];
 
-        $defaultparams = [
+        $defaultParams = [
             'hotelCode' => [],
             'hotelSendData' => 'true',
             'contactSendData' => 'true',
@@ -1235,7 +1297,7 @@ class AmadeusSoap extends WsdlAnalyser
 
         $HotelDescriptiveInfo = [];
 
-        $params = array_merge($defaultparams, $params);
+        $params = array_merge($defaultParams, $params);
 
         if (!is_array($params['hotelCode'])) {
             $HotelDescriptiveInfo = [
@@ -1269,7 +1331,7 @@ class AmadeusSoap extends WsdlAnalyser
             ];
         } else {
             foreach ($params['hotelCode'] as $hotelCode) {
-                array_push($HotelDescriptiveInfo, [
+                $HotelDescriptiveInfo[] = [
                     '_attributes' => ['HotelCode' => $hotelCode],
                     'HotelInfo' => [
                         '_attributes' => ['SendData' => $params['hotelSendData']]
@@ -1297,7 +1359,7 @@ class AmadeusSoap extends WsdlAnalyser
                             '_attributes' => ['Name' => 'SecureMultimediaURLs'],
                         ]
                     ]
-                ]);
+                ];
             }
         }
 
@@ -1311,28 +1373,31 @@ class AmadeusSoap extends WsdlAnalyser
         ]);
     }
 
-    public function getLastRequest()
+    public function getLastRequest(): bool|string
     {
-        $dom = new \DOMDocument('1.0');
+        $dom = new DOMDocument('1.0');
         $dom->preserveWhiteSpace = true;
         $dom->formatOutput = true;
         $dom->loadXML(self::$client->__getLastRequest());
         return $dom->saveXML();
     }
 
-    public function getLastResponse()
+    public function getLastResponse(): bool|string
     {
-        $dom = new \DOMDocument('1.0');
+        $dom = new DOMDocument('1.0');
         $dom->preserveWhiteSpace = true;
         $dom->formatOutput = true;
         $dom->loadXML(self::$client->__getLastResponse());
         return $dom->saveXML();
     }
 
-    public function pnrRetrieve(array $params = [])
+    /**
+     * @throws Exception
+     */
+    public function pnrRetrieve(array $params = []): DOMXPath
     {
 
-        if (!isset($params['pnrNumber']) || empty($params['pnrNumber'])) {
+        if (empty($params['pnrNumber'])) {
             throw new Exception("The param pnrNumber is required");
         }
 
@@ -1352,7 +1417,10 @@ class AmadeusSoap extends WsdlAnalyser
         ]);
     }
 
-    public function hotelCompleteReservationDetails(array $params = [])
+    /**
+     * @throws Exception
+     */
+    public function hotelCompleteReservationDetails(array $params = []): DOMXPath
     {
 
         $requiredParams = [
@@ -1387,7 +1455,10 @@ class AmadeusSoap extends WsdlAnalyser
         ]);
     }
 
-    public function pnrCancel(array $params = [])
+    /**
+     * @throws Exception
+     */
+    public function pnrCancel(array $params = []): DOMXPath
     {
         $requiredParams = [
             "segmentNumber"
@@ -1403,13 +1474,13 @@ class AmadeusSoap extends WsdlAnalyser
 
         if (is_array($params['segmentNumber'])) {
             foreach ($params['segmentNumber'] as $segmentNumber) {
-                array_push($cancelElements, [
+                $cancelElements[] = [
                     "entryType" => "E",
                     "element" => [
                         "identifier" => "ST",
                         "number" => $segmentNumber
                     ]
-                ]);
+                ];
             }
         } else {
             $cancelElements = [
@@ -1431,7 +1502,10 @@ class AmadeusSoap extends WsdlAnalyser
         ]);
     }
 
-    public function recursiveHotelSearch($type = 'multi', array $params)
+    /**
+     * @throws Exception
+     */
+    public function recursiveHotelSearch($type = 'multi', array $params): DOMXPath|RedirectResponse
     {
         $response = $this->HotelSearch('multi', $params);
         $hasHotelStays = !empty($response->evaluate("count(//res:Warnings/res:Warning[./@Tag='OK'])"));
