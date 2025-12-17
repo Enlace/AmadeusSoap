@@ -778,7 +778,7 @@ class AmadeusSoap extends WsdlAnalyser
     /**
      * @throws Exception
      */
-    public function addMultiElements($type = "create", $params = []): DOMXPath
+    public function addMultiElements($type = "create", $params = [], $remarks = []): DOMXPath
     {
         $acceptedTypes = ['create', 'end', 'cancel'];
 
@@ -857,7 +857,7 @@ class AmadeusSoap extends WsdlAnalyser
         // Formato DDMMYY para Amadeus: 03OCT23 -> 031023
         $formattedDate = $retentionDate->format('dmy');
 
-       
+
 
         $body = [];
 
@@ -994,11 +994,41 @@ class AmadeusSoap extends WsdlAnalyser
 
             $body['dataElementsMaster']['dataElementsIndiv'][] = $receiveFrom;
 
+            // Segmentos RM - Loyalty Program Comments
+            $rmCount = 0;
+
+            if (is_array($remarks) && isset($remarks['loyalty_programs']) && is_array($remarks['loyalty_programs'])) {
+                foreach ($remarks['loyalty_programs'] as $loyaltyComment) {
+                    if (!empty($loyaltyComment) && is_string($loyaltyComment)) {
+                        $rmCount++;
+                        $rmNumber = 2 + $rmCount;
+
+                        $body['dataElementsMaster']['dataElementsIndiv'][] = [
+                            'elementManagementData' => [
+                                'reference' => [
+                                    'qualifier' => 'OT',
+                                    'number' => (string) $rmNumber
+                                ],
+                                'segmentName' => 'RM'
+                            ],
+                            'extendedRemark' => [
+                                'structuredRemark' => [
+                                    'type' => 'RM',
+                                    'freetext' => $loyaltyComment
+                                ]
+                            ]
+                        ];
+                    }
+                }
+            }
+
+            // Segmento TK - número ajustado dinámicamente según cantidad de RM
+            $tkNumber = 2 + $rmCount + 1; // Si hay 2 RM: AP(1), RF(2), RM(3), RM(4), TK(5)
             $body['dataElementsMaster']['dataElementsIndiv'][] = [
                 'elementManagementData' => [
                     'reference' => [
                         'qualifier' => 'OT',
-                        'number' => '2'
+                        'number' => (string) $tkNumber
                     ],
                     'segmentName' => 'TK'
                 ],
