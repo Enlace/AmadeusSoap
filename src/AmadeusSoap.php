@@ -195,10 +195,12 @@ class AmadeusSoap
      * Add multi elements to PNR (create, end, cancel).
      *
      * For 'create', pass a Traveler (or a list of them) or the params array.
+     * $checkOutDate dates the retention segment (check-out + 7 days + the
+     * configured months); passengers' check_out_date is used when it is null.
      *
      * @param  array<int|string, mixed>|Traveler|Traveler[]  $params
      */
-    public function addMultiElements(string $type = 'create', array|Traveler $params = [], array $remarks = []): AddMultiElementsResponse
+    public function addMultiElements(string $type = 'create', array|Traveler $params = [], array $remarks = [], ?string $checkOutDate = null): AddMultiElementsResponse
     {
         $params = match (true) {
             $params instanceof Traveler => $params->toArray(),
@@ -216,6 +218,7 @@ class AmadeusSoap
             remarks: $remarks,
             retentionConfig: $this->config['retention'] ?? [],
             contactEmail: $this->config['contact_email'] ?? 'desarollo@enlaceforte.com',
+            checkOutDate: $checkOutDate,
         );
         $body = $operation->build();
         $operationName = $operation->getOperationName();
@@ -343,7 +346,8 @@ class AmadeusSoap
     }
 
     /**
-     * Get the last SOAP request XML (pretty-printed for debugging).
+     * Get the last SOAP request XML (pretty-printed for debugging), with card
+     * numbers and security codes masked.
      */
     public function getLastRequest(): ?string
     {
@@ -351,7 +355,8 @@ class AmadeusSoap
     }
 
     /**
-     * Get the last SOAP response XML (pretty-printed for debugging).
+     * Get the last SOAP response XML (pretty-printed for debugging), with card
+     * numbers and security codes masked.
      */
     public function getLastResponse(): ?string
     {
@@ -364,6 +369,33 @@ class AmadeusSoap
     public function session(): SessionManager
     {
         return $this->sessionManager;
+    }
+
+    /**
+     * Run a flow on its own Amadeus session, stored under $key instead of the
+     * resolved one (by default the authenticated user's), e.g. a queued job
+     * booking an approval: usingSession("approval:{$id}", fn ($amadeus) => …).
+     * The previous key is restored afterwards, also when $callback throws.
+     *
+     * With $signOut the session is signed out when $callback ends, whether it
+     * returned or threw. A failed sign-out is reported, never thrown.
+     *
+     * @template T
+     *
+     * @param  callable(self): T  $callback
+     * @return T
+     */
+    public function usingSession(string $key, callable $callback, bool $signOut = false): mixed
+    {
+        return $this->sessionManager->usingKey($key, function () use ($callback, $signOut) {
+            try {
+                return $callback($this);
+            } finally {
+                if ($signOut && $this->sessionManager->hasSession()) {
+                    $this->signOutQuietly();
+                }
+            }
+        });
     }
 
     /**
@@ -420,7 +452,7 @@ class AmadeusSoap
         // on Amadeus until it times out, counting against the office's limit.
         if ($isStateful && ! $hasSessionBody && $this->sessionManager->hasSession()
             && ($this->config['session']['sign_out_replaced'] ?? true)) {
-            $this->signOutReplacedSession();
+            $this->signOutQuietly();
         }
 
         $startedAt = microtime(true);
@@ -479,13 +511,13 @@ class AmadeusSoap
     }
 
     /**
-     * Best-effort sign-out of the stored session before a new one replaces it.
+     * Best-effort sign-out of the stored session: before a new one replaces
+     * it, or at the end of usingSession(..., signOut: true).
      *
-     * Never fails the call that is about to start: the stored session may
-     * already have expired on Amadeus, so errors are reported and the
-     * session is forgotten either way.
+     * Never fails the caller: the stored session may already have expired on
+     * Amadeus, so errors are reported and the session is forgotten either way.
      */
-    protected function signOutReplacedSession(): void
+    protected function signOutQuietly(): void
     {
         try {
             $this->signOut();

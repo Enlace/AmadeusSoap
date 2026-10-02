@@ -15,11 +15,39 @@ class SessionManager
         protected array $statelessOperations = [],
     ) {}
 
+    /**
+     * Store the session under $key from now on, instead of the resolved one.
+     *
+     * The SessionManager is a singleton: the key stays for the rest of the
+     * process, which in a queue worker or under Octane means the next jobs
+     * and requests too. Prefer usingKey() (AmadeusSoap::usingSession()).
+     */
     public function withKey(string $key): static
     {
         $this->overrideKey = $key;
 
         return $this;
+    }
+
+    /**
+     * Run $callback with the session stored under $key, then restore the key
+     * in use before, also when $callback throws.
+     *
+     * @template T
+     *
+     * @param  callable(): T  $callback
+     * @return T
+     */
+    public function usingKey(string $key, callable $callback): mixed
+    {
+        $previous = $this->overrideKey;
+        $this->overrideKey = $key;
+
+        try {
+            return $callback();
+        } finally {
+            $this->overrideKey = $previous;
+        }
     }
 
     public function getSessionKey(): string

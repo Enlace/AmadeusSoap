@@ -13,6 +13,7 @@ class PnrAddMultiElements implements Operation
         protected array $remarks = [],
         protected array $retentionConfig = [],
         protected string $contactEmail = 'desarollo@enlaceforte.com',
+        protected ?string $checkOutDate = null,
     ) {}
 
     public function getOperationName(): string
@@ -37,10 +38,9 @@ class PnrAddMultiElements implements Operation
         $passengerCount = $isMultiDimensional ? count($this->params) : 1;
 
         // Calculate retention date
-        $checkOutDate = null;
-        if ($isMultiDimensional && isset($this->params[0]['check_out_date'])) {
-            $checkOutDate = $this->params[0]['check_out_date'];
-        }
+        $checkOutDate = $this->checkOutDate ?? ($isMultiDimensional
+            ? ($this->params[0]['check_out_date'] ?? null)
+            : ($this->params['check_out_date'] ?? null));
 
         if ($checkOutDate) {
             $baseDate = Carbon::parse($checkOutDate)->addDays(7);

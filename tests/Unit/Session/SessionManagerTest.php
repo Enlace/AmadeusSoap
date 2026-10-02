@@ -59,6 +59,29 @@ class SessionManagerTest extends TestCase
         $this->assertEquals('custom', $manager->getSessionKey());
     }
 
+    public function test_using_key_scopes_the_override_to_the_callback(): void
+    {
+        $manager = $this->createManager();
+        $manager->withKey('custom');
+
+        $seen = $manager->usingKey('job:1', fn () => $manager->getSessionKey());
+
+        $this->assertSame('job:1', $seen);
+        $this->assertSame('custom', $manager->getSessionKey());
+    }
+
+    public function test_using_key_restores_the_key_when_the_callback_throws(): void
+    {
+        $manager = $this->createManager();
+
+        try {
+            $manager->usingKey('job:1', fn () => throw new \RuntimeException('boom'));
+        } catch (\RuntimeException) {
+        }
+
+        $this->assertSame('test', $manager->getSessionKey());
+    }
+
     public function test_it_detects_no_session(): void
     {
         $manager = $this->createManager();
