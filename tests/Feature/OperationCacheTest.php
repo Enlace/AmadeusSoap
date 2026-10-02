@@ -134,17 +134,33 @@ class OperationCacheTest extends TestCase
         $this->assertNull($amadeus->getLastResponse());
     }
 
-    public function test_entries_are_not_shared_across_endpoints(): void
+    public function test_entries_are_not_shared_across_amadeus_endpoints(): void
     {
-        $this->fakeAmadeus('hotel-search-multi');
-        $this->app->make(AmadeusSoap::class)->hotelSearch('multi', $this->cityParams());
+        // Same office ID and WSDL directory path, but the WSDL behind it points
+        // at another environment (e.g. TST and production sharing a Redis)
+        $dir = sys_get_temp_dir().'/amadeus-wsdl-'.bin2hex(random_bytes(4));
+        $wsdl = file_get_contents(dirname(__DIR__).'/Fixtures/wsdl-full/Amadeus_All.wsdl');
+        $production = str_replace('nodeD2.test.webservices.amadeus.com/1ASIWTEST', 'production.webservices.amadeus.test/1ASIWPROD', $wsdl, $replaced);
+        $this->assertSame(1, $replaced);
 
-        // Same office ID, different environment
-        config(['amadeus-soap.endpoint' => 'https://production.webservices.amadeus.test/1ASIWPROD']);
-        $client = $this->fakeAmadeus('hotel-search-multi');
-        $this->app->make(AmadeusSoap::class)->hotelSearch('multi', $this->cityParams());
+        mkdir($dir);
+        $this->replayWsdlDirectory = $dir;
 
-        $this->assertCount(1, $client->requests);
+        try {
+            file_put_contents("{$dir}/Amadeus_All.wsdl", $wsdl);
+            $this->fakeAmadeus('hotel-search-multi');
+            $this->app->make(AmadeusSoap::class)->hotelSearch('multi', $this->cityParams());
+
+            file_put_contents("{$dir}/Amadeus_All.wsdl", $production);
+            $client = $this->fakeAmadeus('hotel-search-multi');
+            $this->app->make(AmadeusSoap::class)->hotelSearch('multi', $this->cityParams());
+
+            $this->assertCount(1, $client->requests);
+            $this->assertStringContainsString('1ASIWPROD', $client->requests[0]['location']);
+        } finally {
+            @unlink("{$dir}/Amadeus_All.wsdl");
+            @rmdir($dir);
+        }
     }
 
     public function test_nothing_is_cached_when_the_cache_is_disabled(): void

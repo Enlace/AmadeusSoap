@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- The response cache keys entries by the endpoint the WSDL points at, so
+  environments sharing a cache store, an office ID and even the WSDL directory
+  path never share entries
+
+### Deprecated
+- `SoapTransport`'s `$wsdlManager` constructor parameter (optional now; it was
+  never used) and `WsdlManager::getWsdlDomDoc()` / `getWsdlDomXpath()` (they
+  always returned `[]`). All three are removed in 3.0.
+
+### Removed
+- The `endpoint` (`AMADEUS_ENDPOINT`) and `debug` (`AMADEUS_DEBUG`) config
+  options. Nothing read them: requests always went to the WSDL's endpoint,
+  which made `AMADEUS_ENDPOINT` look like it pointed the client somewhere it
+  did not.
+
 ## [2.0.0] - 2026-10-02
 
 A rewrite of the package: validated params, typed response DTOs, pluggable

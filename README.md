@@ -107,9 +107,6 @@ AMADEUS_DEFAULT_SEARCH_CACHE_LEVEL=Live
 AMADEUS_LOGGING=false
 AMADEUS_LOG_CHANNEL=stack
 
-# Debug Mode (optional)
-AMADEUS_DEBUG=false
-
 # Contact Email — written as the PNR AP element (optional)
 AMADEUS_CONTACT_EMAIL=your-email@example.com
 ```

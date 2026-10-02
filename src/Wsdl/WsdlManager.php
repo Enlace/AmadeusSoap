@@ -57,6 +57,10 @@ class WsdlManager
         return $this->wsdlIds;
     }
 
+    /**
+     * @deprecated Always returns []: the DOMs are freed once the operation
+     *             metadata is extracted. Removed in 3.0.
+     */
     public function getWsdlDomXpath(): array
     {
         $this->ensureLoaded();
@@ -64,6 +68,10 @@ class WsdlManager
         return $this->wsdlDomXpath;
     }
 
+    /**
+     * @deprecated Always returns []: the DOMs are freed once the operation
+     *             metadata is extracted. Removed in 3.0.
+     */
     public function getWsdlDomDoc(): array
     {
         $this->ensureLoaded();

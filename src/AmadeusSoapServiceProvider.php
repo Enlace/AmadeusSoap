@@ -91,11 +91,11 @@ class AmadeusSoapServiceProvider extends PackageServiceProvider
                 store: $app['cache']->store($config['store'] ?? null),
                 ttls: $config['cacheable_operations'] ?? [],
                 prefix: $config['prefix'] ?? 'amadeus_cache',
-                // Office + WSDL/endpoint: TST and production may share an office ID
+                // TST and production may share an office ID; AmadeusSoap also
+                // keys entries by the WSDL's endpoint
                 scope: implode('|', [
                     config('amadeus-soap.office_id'),
                     config('amadeus-soap.wsdl_path'),
-                    config('amadeus-soap.endpoint'),
                 ]),
             );
         });
@@ -148,7 +148,6 @@ class AmadeusSoapServiceProvider extends PackageServiceProvider
             $transport = new SoapTransport(
                 factory: $app->make(SoapClientFactory::class),
                 headerBuilder: $headerBuilder,
-                wsdlManager: $wsdlManager,
                 retryHandler: $retryHandler,
             );
 

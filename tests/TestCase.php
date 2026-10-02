@@ -21,6 +21,9 @@ class TestCase extends Orchestra
 {
     protected const SOAP_ENVELOPE_NS = 'http://schemas.xmlsoap.org/soap/envelope/';
 
+    /** Directory holding the Amadeus_All.wsdl fakeAmadeus() loads (default: Fixtures/wsdl-full). */
+    protected ?string $replayWsdlDirectory = null;
+
     protected function getPackageProviders($app): array
     {
         return [
@@ -50,7 +53,7 @@ class TestCase extends Orchestra
      */
     protected function fakeAmadeus(string ...$responses): ReplaySoapClient
     {
-        $wsdlPath = __DIR__.'/Fixtures/wsdl-full';
+        $wsdlPath = $this->replayWsdlDirectory ?? __DIR__.'/Fixtures/wsdl-full';
         $factory = new ReplaySoapClientFactory;
 
         config(['amadeus-soap.wsdl_path' => $wsdlPath]);

@@ -344,7 +344,11 @@ class AmadeusSoap
         // carries the session that the next pricing/sell/PNR call continues.
         $cacheable = ! $isStateful && $this->cache?->isCacheable($operationName);
 
-        if ($cacheable && ($cachedXml = $this->cache->get($operationName, $soapBody->enc_value)) !== null) {
+        // Keyed by the endpoint the request actually goes to: environments may
+        // share a cache store, an office ID and even the WSDL directory path.
+        $cacheKey = $metadata->serviceEndpoint."\n".$soapBody->enc_value;
+
+        if ($cacheable && ($cachedXml = $this->cache->get($operationName, $cacheKey)) !== null) {
             // No SOAP exchange happened: getLastRequest()/getLastResponse() must not
             // keep exposing the previous call (possibly another user's, in workers)
             $this->transport->forgetLastExchange();
@@ -401,7 +405,7 @@ class AmadeusSoap
         }
 
         if ($cacheable && ! $response->hasErrors()) {
-            $this->cache->put($operationName, $soapBody->enc_value, $responseXml);
+            $this->cache->put($operationName, $cacheKey, $responseXml);
         }
 
         // Save session data from response

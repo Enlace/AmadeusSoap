@@ -77,7 +77,8 @@ src/
 Performance features (all opt-in, see `docs/performance.md`):
 - `OperationCache` serves only stateless calls (multi search by city/coordinates,
   descriptive info); a hit skips transport, session and events. Store errors are
-  reported and swallowed. Key = request body + office ID + WSDL path + endpoint.
+  reported and swallowed. Key = request body + office ID + WSDL path + the
+  endpoint from the WSDL (where the request actually goes).
 - `PerformanceMonitor` subscribes to `OperationCompleted`/`OperationFailed`;
   store errors are swallowed so they can never fail a completed sell.
 - `rate_filter_criteria` filters the room stays of a search **by hotel code**
@@ -169,15 +170,15 @@ Worth knowing before changing anything here:
   `rate_filtering.default_strategy`, `retention`, `contact_email`).
 - `SoapClientFactory` is a container singleton, so `app(SoapClientFactory::class)`
   is the live client pool (tests swap it for `ReplaySoapClientFactory`).
-- `SoapTransport` takes a `WsdlManager` in its constructor and never uses it.
-- `WsdlManager::getWsdlDomDoc()` and `getWsdlDomXpath()` always return `[]` —
-  `ensureLoaded()` frees the DOMs before any caller can read them.
+- Deprecated, removed in 3.0 (kept for the 2.x API): `SoapTransport`'s
+  `$wsdlManager` parameter (optional, unused) and `WsdlManager::getWsdlDomDoc()`
+  / `getWsdlDomXpath()` (always `[]`: `ensureLoaded()` frees the DOMs).
 - Every single-hotel search (and `PNR_Retrieve`) starts a **new** Amadeus session.
   The stored one is signed out first (best effort: a failure is reported, never
   thrown; `session.sign_out_replaced`), so it no longer stays open on Amadeus
   until it times out.
-- `AMADEUS_ENDPOINT` does not change where requests go (the WSDL endpoint is
-  used); it only takes part in the response-cache key.
+- Requests always go to the endpoint in the WSDL (`soap:address`); there is no
+  config override.
 
 ### Session Management
 
@@ -257,8 +258,8 @@ Env vars that actually have an effect (read by the ServiceProvider):
 Env vars with **no effect**: `AMADEUS_SEARCH_CACHE_LEVEL` and
 `AMADEUS_RATE_STRATEGY` (old names, never read), `AMADEUS_CONNECTION_POOL_*`,
 `AMADEUS_XML_CACHE_*`, `AMADEUS_MAX_RATES_PER_HOTEL`,
-`AMADEUS_MIN_PRICE_DIFFERENCE` (removed features), `AMADEUS_DEBUG`, and
-`AMADEUS_ENDPOINT` for routing (see above).
+`AMADEUS_MIN_PRICE_DIFFERENCE`, `AMADEUS_ENDPOINT` and `AMADEUS_DEBUG`
+(removed).
 
 ## Test Environment
 

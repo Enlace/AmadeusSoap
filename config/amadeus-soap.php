@@ -23,16 +23,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Endpoint Override
-    |--------------------------------------------------------------------------
-    |
-    | If set, overrides the endpoint defined in the WSDL files.
-    |
-    */
-    'endpoint' => env('AMADEUS_ENDPOINT'),
-
-    /*
-    |--------------------------------------------------------------------------
     | Session Configuration
     |--------------------------------------------------------------------------
     |
@@ -118,13 +108,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Debug Mode
-    |--------------------------------------------------------------------------
-    */
-    'debug' => (bool) env('AMADEUS_DEBUG', false),
-
-    /*
-    |--------------------------------------------------------------------------
     | Stateless Operations
     |--------------------------------------------------------------------------
     |
@@ -165,7 +148,8 @@ return [
     | search, pricing, sell, PNR) are never cached, even if listed here: their
     | response carries the session the booking flow continues.
     |
-    | Responses with errors are not cached. Entries are scoped per office ID.
+    | Responses with errors are not cached. Entries are scoped per office ID
+    | and per Amadeus endpoint (the one in the WSDL).
     | Call OperationCache::flush() to invalidate everything.
     |
     */

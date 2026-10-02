@@ -33,9 +33,10 @@ AMADEUS_CACHE_SEARCH_TTL=300     # Hotel_MultiSingleAvailability, seconds
 AMADEUS_CACHE_INFO_TTL=3600      # Hotel_DescriptiveInfo, seconds
 ```
 
-- The key is the request body plus the office ID, WSDL path and endpoint, so
-  different searches, offices or environments (TST vs production) never share
-  entries.
+- The key is the request body plus the office ID, the WSDL path and the
+  endpoint the WSDL points at, so different searches, offices or environments
+  (TST vs production) never share entries — even when they share a cache store
+  and the same `AMADEUS_WSDL_PATH`.
 - Responses with errors (e.g. no availability) are not cached.
 - A cache hit does not call Amadeus, does not touch the session and does not
   dispatch `OperationStarting` / `OperationCompleted`; `getLastRequest()` and

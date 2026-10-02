@@ -16,7 +16,6 @@ use Aldogtz\AmadeusSoap\Tests\Doubles\FakeSoapClient;
 use Aldogtz\AmadeusSoap\Tests\Doubles\FakeSoapClientFactory;
 use Aldogtz\AmadeusSoap\Tests\Doubles\RecordingRetryHandler;
 use Aldogtz\AmadeusSoap\Wsdl\OperationMetadata;
-use Aldogtz\AmadeusSoap\Wsdl\WsdlManager;
 use PHPUnit\Framework\TestCase;
 use SoapFault;
 use SoapVar;
@@ -53,7 +52,6 @@ class SoapTransportTest extends TestCase
                 amaSecurity: new AmaSecurityHeader('TEST01'),
                 sessionManager: $sessionManager,
             ),
-            wsdlManager: new WsdlManager(dirname(__DIR__, 2).'/Fixtures/wsdl'),
             retryHandler: $retryHandler,
         );
     }

@@ -15,10 +15,15 @@ class SoapTransport
 {
     protected ?AmadeusSoapClient $client = null;
 
+    /**
+     * @param  WsdlManager|null  $wsdlManager  Deprecated and unused (the metadata
+     *                                         passed to call() carries the WSDL);
+     *                                         removed in 3.0.
+     */
     public function __construct(
         protected SoapClientFactory $factory,
         protected HeaderBuilder $headerBuilder,
-        protected WsdlManager $wsdlManager,
+        protected ?WsdlManager $wsdlManager = null,
         protected ?RetryHandler $retryHandler = null,
     ) {}
 
