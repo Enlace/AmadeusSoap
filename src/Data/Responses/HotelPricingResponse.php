@@ -6,6 +6,7 @@ use Aldogtz\AmadeusSoap\Data\AmadeusResponse;
 use Aldogtz\AmadeusSoap\Data\Responses\Concerns\ParsesAmadeusXml;
 use Aldogtz\AmadeusSoap\Data\Responses\Values\AmadeusError;
 use Aldogtz\AmadeusSoap\Data\Responses\Values\CancelPenalty;
+use Aldogtz\AmadeusSoap\Data\Responses\Values\CurrencyConversion;
 use Aldogtz\AmadeusSoap\Data\Responses\Values\DailyRate;
 use Aldogtz\AmadeusSoap\Data\Responses\Values\RoomTotal;
 use Aldogtz\AmadeusSoap\Data\Responses\Values\Tax;
@@ -20,6 +21,11 @@ final class HotelPricingResponse
      * @param  Tax[]  $taxes
      * @param  DailyRate[]  $dailyRates
      * @param  CancelPenalty[]  $cancelPenalties
+     * @param  CurrencyConversion[]  $currencyConversions
+     * @param  string[]|null  $acceptedCardCodes  Cards the priced rate's guarantee accepts
+     *                                            (VI, MC, AX…): [] when the rate lists none,
+     *                                            null when no rate plan matches the priced
+     *                                            booking code
      */
     public function __construct(
         public readonly bool $hasErrors,
@@ -44,12 +50,16 @@ final class HotelPricingResponse
         public readonly array $dailyRates,
         public readonly array $cancelPenalties,
         public readonly AmadeusResponse $raw,
+        public readonly string $ratePlanCategory = '',
+        public readonly array $currencyConversions = [],
+        public readonly ?array $acceptedCardCodes = null,
     ) {}
 
     public static function fromResponse(AmadeusResponse $response): self
     {
         $errors = self::parseOtaErrors($response);
         $hasErrors = count($errors) > 0;
+        $bookingCode = self::str($response, '//res:RoomStay/res:RoomRates/res:RoomRate/@BookingCode');
 
         return new self(
             hasErrors: $hasErrors,
@@ -64,7 +74,7 @@ final class HotelPricingResponse
             commissionStatusType: self::str($response, '//res:RoomStays/res:RoomStay/res:RatePlans/res:RatePlan/res:Commission/@StatusType'),
             guaranteeCode: self::str($response, '//res:RoomStay/res:RatePlans/res:RatePlan/res:Guarantee/@GuaranteeCode'),
             roomType: self::str($response, '//res:RoomStay/res:RoomTypes/res:RoomType/@RoomType'),
-            bookingCode: self::str($response, '//res:RoomStay/res:RoomRates/res:RoomRate/@BookingCode'),
+            bookingCode: $bookingCode,
             numberOfUnits: self::int($response, '//res:RoomStay/res:RoomRates/res:RoomRate/@NumberOfUnits'),
             currency: self::str($response, '//res:RoomStay/res:Total/@CurrencyCode'),
             start: self::str($response, '//res:RoomStay/res:TimeSpan/@Start'),
@@ -72,9 +82,52 @@ final class HotelPricingResponse
             totals: self::parseTotals($response),
             taxes: self::parseTaxes($response),
             dailyRates: self::parseDailyRates($response),
-            cancelPenalties: self::parseCancelPenalties($response),
+            cancelPenalties: self::cancelPenaltiesAt($response, '//res:CancelPenalties/res:CancelPenalty'),
             raw: $response,
+            ratePlanCategory: self::str($response, '//res:RoomStay/res:RoomRates/res:RoomRate/@RatePlanCategory'),
+            currencyConversions: self::currencyConversionsAt($response, '//res:CurrencyConversions/res:CurrencyConversion'),
+            acceptedCardCodes: self::parseAcceptedCardCodes($response, $bookingCode),
         );
+    }
+
+    /**
+     * Cards accepted by the rate plan of the priced booking code: the
+     * RatePlan whose RatePlanCode is the one on the RoomRate carrying that
+     * booking code.
+     *
+     * @return string[]|null null when no rate plan matches
+     */
+    private static function parseAcceptedCardCodes(AmadeusResponse $response, string $bookingCode): ?array
+    {
+        if ($bookingCode === '') {
+            return null;
+        }
+
+        $codes = [];
+        $matched = false;
+        $booking = self::xpathLiteral($bookingCode);
+
+        foreach (self::nodes($response, '//res:RoomStay') as $roomStay) {
+            $ratePlanCodes = [];
+            foreach (self::nodes($response, "./res:RoomRates/res:RoomRate[@BookingCode = {$booking}]/@RatePlanCode", $roomStay) as $node) {
+                $ratePlanCodes[] = self::xpathLiteral((string) $node->nodeValue);
+            }
+
+            foreach ($ratePlanCodes as $ratePlanCode) {
+                $ratePlans = self::nodes($response, "./res:RatePlans/res:RatePlan[@RatePlanCode = {$ratePlanCode}]", $roomStay);
+
+                foreach ($ratePlans as $ratePlan) {
+                    $matched = true;
+                    $codes = array_merge($codes, self::cardCodesAt(
+                        $response,
+                        './res:Guarantee/res:GuaranteesAccepted/res:GuaranteeAccepted/res:PaymentCard/@CardCode',
+                        $ratePlan,
+                    ));
+                }
+            }
+        }
+
+        return $matched ? array_values(array_unique($codes)) : null;
     }
 
     /**
@@ -101,20 +154,9 @@ final class HotelPricingResponse
      */
     private static function parseTaxes(AmadeusResponse $response): array
     {
-        $taxes = [];
-        $taxNodes = self::nodes($response, "//res:RoomStays/res:RoomStay/res:RoomRates/res:RoomRate/res:Total/res:Taxes/res:Tax[(not(@Code = preceding::res:Tax/@Code) or @Code = '27') and (@Percent or @Amount)]");
-
-        foreach ($taxNodes as $node) {
-            $taxes[] = new Tax(
-                code: self::str($response, './@Code', $node) ?: null,
-                percent: self::float($response, './@Percent', $node) ?: null,
-                amount: self::float($response, './@Amount', $node) ?: null,
-                currencyCode: self::str($response, './@CurrencyCode', $node) ?: null,
-                chargeUnit: self::str($response, './@ChargeUnit', $node) ?: null,
-            );
-        }
-
-        return $taxes;
+        // The first Tax of each code plus every code 27, with a Percent or an
+        // Amount: the selection BookingV2 priced with
+        return self::taxesAt($response, "//res:RoomStays/res:RoomStay/res:RoomRates/res:RoomRate/res:Total/res:Taxes/res:Tax[(not(@Code = preceding::res:Tax/@Code) or @Code = '27') and (@Percent or @Amount)]");
     }
 
     /**
@@ -134,33 +176,5 @@ final class HotelPricingResponse
         }
 
         return $rates;
-    }
-
-    /**
-     * @return CancelPenalty[]
-     */
-    private static function parseCancelPenalties(AmadeusResponse $response): array
-    {
-        $penalties = [];
-        $penaltyNodes = self::nodes($response, '//res:CancelPenalties/res:CancelPenalty');
-
-        foreach ($penaltyNodes as $node) {
-            $descriptions = [];
-            $descNodes = self::nodes($response, './res:PenaltyDescription', $node);
-            foreach ($descNodes as $descNode) {
-                $descriptions[] = $descNode->nodeValue;
-            }
-
-            $penalties[] = new CancelPenalty(
-                // OTA booleans arrive as "true"/"false" or "1"/"0"
-                nonRefundable: self::otaBoolean($response, './@NonRefundable', $node) === true,
-                amount: self::float($response, './res:AmountPercent/@Amount', $node),
-                currencyCode: self::str($response, './res:AmountPercent/@CurrencyCode', $node),
-                absoluteDeadline: self::str($response, './res:Deadline/@AbsoluteDeadline', $node) ?: null,
-                descriptions: $descriptions,
-            );
-        }
-
-        return $penalties;
     }
 }

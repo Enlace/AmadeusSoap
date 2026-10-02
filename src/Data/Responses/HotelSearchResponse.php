@@ -9,6 +9,7 @@ use Aldogtz\AmadeusSoap\Data\Responses\Values\CurrencyConversion;
 use Aldogtz\AmadeusSoap\Data\Responses\Values\DailyRate;
 use Aldogtz\AmadeusSoap\Data\Responses\Values\MealsIncluded;
 use Aldogtz\AmadeusSoap\Data\Responses\Values\RoomTotal;
+use Aldogtz\AmadeusSoap\Data\Responses\Values\Warning;
 use Aldogtz\AmadeusSoap\RateFiltering\RateFilter;
 use Aldogtz\AmadeusSoap\RateFiltering\RateFilterCriteria;
 
@@ -21,6 +22,7 @@ final class HotelSearchResponse
      * @param  HotelResult[]  $hotels
      * @param  RoomStayResult[]  $roomStays  Room stays for single-hotel search
      * @param  CurrencyConversion[]  $currencyConversions
+     * @param  Warning[]  $warnings  Every Warning of the reply, the OK marker included
      */
     public function __construct(
         public readonly bool $ok,
@@ -31,6 +33,7 @@ final class HotelSearchResponse
         public readonly array $currencyConversions,
         public readonly ?string $moreIndicator,
         public readonly AmadeusResponse $raw,
+        public readonly array $warnings = [],
     ) {}
 
     public static function fromResponse(AmadeusResponse $response): self
@@ -59,6 +62,7 @@ final class HotelSearchResponse
             currencyConversions: $currencyConversions,
             moreIndicator: $moreIndicator,
             raw: $response,
+            warnings: self::parseOtaWarnings($response),
         );
     }
 
@@ -113,6 +117,7 @@ final class HotelSearchResponse
                 : $next->currencyConversions,
             moreIndicator: $next->moreIndicator,
             raw: $this->raw,
+            warnings: array_merge($this->warnings, $next->warnings),
         );
     }
 
@@ -133,6 +138,7 @@ final class HotelSearchResponse
             currencyConversions: $this->currencyConversions,
             moreIndicator: $this->moreIndicator,
             raw: $this->raw,
+            warnings: $this->warnings,
         );
     }
 
@@ -205,6 +211,8 @@ final class HotelSearchResponse
                 ? null
                 : self::nodes($response, '//res:RoomStay[@RPH = '.self::xpathLiteral($primaryRPH).']')->item(0);
 
+            $addressNode = self::nodes($response, './res:BasicPropertyInfo/res:Address', $node)->item(0);
+
             $hotels[] = new HotelResult(
                 hotelCode: self::str($response, './res:BasicPropertyInfo/@HotelCode', $node),
                 hotelName: self::str($response, './res:BasicPropertyInfo/@HotelName', $node),
@@ -219,29 +227,13 @@ final class HotelSearchResponse
                 start: $roomStay === null ? '' : self::str($response, './res:TimeSpan/@Start', $roomStay),
                 end: $roomStay === null ? '' : self::str($response, './res:TimeSpan/@End', $roomStay),
                 roomStayRPHs: $roomStayRPHs,
+                chainName: self::str($response, './res:BasicPropertyInfo/@ChainName', $node),
+                hotelCityCode: self::str($response, './res:BasicPropertyInfo/@HotelCityCode', $node),
+                address: $addressNode === null ? null : self::addressFrom($response, $addressNode),
             );
         }
 
         return $hotels;
-    }
-
-    /**
-     * Quote a value for safe interpolation into an XPath expression.
-     */
-    private static function xpathLiteral(string $value): string
-    {
-        if (! str_contains($value, "'")) {
-            return "'".$value."'";
-        }
-
-        if (! str_contains($value, '"')) {
-            return '"'.$value.'"';
-        }
-
-        return 'concat('.implode(", \"'\", ", array_map(
-            fn (string $part) => "'".$part."'",
-            explode("'", $value),
-        )).')';
     }
 
     /**
@@ -304,6 +296,12 @@ final class HotelSearchResponse
                 hotelCode: $hotelByRph[$rph] ?? self::str($response, './res:BasicPropertyInfo/@HotelCode', $node),
                 adults: $adults,
                 children: $children,
+                commissionStatusType: self::str($response, './res:RatePlans/res:RatePlan/res:Commission/@StatusType', $node),
+                commissionPercent: self::str($response, './res:RatePlans/res:RatePlan/res:Commission/@Percent', $node),
+                cancelPenalties: self::cancelPenaltiesAt($response, './res:RatePlans/res:RatePlan/res:CancelPenalties/res:CancelPenalty', $node),
+                taxes: self::taxesAt($response, './res:RoomRates/res:RoomRate/res:Total/res:Taxes/res:Tax', $node),
+                acceptedCardCodes: self::cardCodesAt($response, './res:RatePlans/res:RatePlan/res:Guarantee/res:GuaranteesAccepted/res:GuaranteeAccepted/res:PaymentCard/@CardCode', $node),
+                availabilityStatus: self::str($response, './@AvailabilityStatus', $node),
             );
         }
 
@@ -381,17 +379,6 @@ final class HotelSearchResponse
      */
     private static function parseCurrencyConversions(AmadeusResponse $response): array
     {
-        $conversions = [];
-        $conversionNodes = self::nodes($response, '//res:CurrencyConversions/res:CurrencyConversion');
-
-        foreach ($conversionNodes as $node) {
-            $conversions[] = new CurrencyConversion(
-                sourceCurrencyCode: self::str($response, './@SourceCurrencyCode', $node),
-                requestedCurrencyCode: self::str($response, './@RequestedCurrencyCode', $node),
-                rateConversion: self::float($response, './@RateConversion', $node),
-            );
-        }
-
-        return $conversions;
+        return self::currencyConversionsAt($response, '//res:CurrencyConversions/res:CurrencyConversion');
     }
 }

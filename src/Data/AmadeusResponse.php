@@ -61,6 +61,44 @@ class AmadeusResponse
     }
 
     /**
+     * Wrap reply XML without knowing its namespace: it is read from the
+     * reply element (the first child of the SOAP Body, or the root element
+     * of a bare reply).
+     *
+     * @throws XmlParseException If the XML cannot be parsed.
+     */
+    public static function fromXml(string $xml): self
+    {
+        if (trim($xml) === '') {
+            throw XmlParseException::emptyResponse();
+        }
+
+        $document = new DOMDocument;
+        $previousUseErrors = libxml_use_internal_errors(true);
+        $loaded = $document->loadXML($xml);
+        libxml_clear_errors();
+        libxml_use_internal_errors($previousUseErrors);
+
+        $namespace = '';
+        if ($loaded && $document->documentElement !== null) {
+            $reply = $document->documentElement;
+            $body = $document->getElementsByTagNameNS('http://schemas.xmlsoap.org/soap/envelope/', 'Body')->item(0);
+
+            foreach ($body?->childNodes ?? [] as $node) {
+                if ($node instanceof \DOMElement) {
+                    $reply = $node;
+                    break;
+                }
+            }
+
+            $namespace = (string) $reply->namespaceURI;
+        }
+
+        // A document that failed to load is rejected by the constructor
+        return new self($xml, $namespace);
+    }
+
+    /**
      * Evaluate an XPath expression (backward-compatible with DOMXPath::evaluate).
      */
     public function evaluate(string $expression, ?DOMNode $contextNode = null): mixed

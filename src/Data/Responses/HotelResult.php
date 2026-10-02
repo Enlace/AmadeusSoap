@@ -2,6 +2,7 @@
 
 namespace Aldogtz\AmadeusSoap\Data\Responses;
 
+use Aldogtz\AmadeusSoap\Data\Responses\Values\Address;
 use Aldogtz\AmadeusSoap\Data\Responses\Values\DailyRate;
 use Aldogtz\AmadeusSoap\Data\Responses\Values\RoomTotal;
 
@@ -10,6 +11,7 @@ final readonly class HotelResult
     /**
      * @param  DailyRate[]  $dailyRates
      * @param  string[]  $roomStayRPHs  Every RPH this property offers
+     * @param  Address|null  $address  BasicPropertyInfo/Address; null when the reply has none
      */
     public function __construct(
         public string $hotelCode,
@@ -25,6 +27,9 @@ final readonly class HotelResult
         public string $start,
         public string $end,
         public array $roomStayRPHs = [],
+        public string $chainName = '',
+        public string $hotelCityCode = '',
+        public ?Address $address = null,
     ) {}
 
     /**
@@ -49,6 +54,9 @@ final readonly class HotelResult
             start: $this->start,
             end: $this->end,
             roomStayRPHs: $roomStayRPHs,
+            chainName: $this->chainName,
+            hotelCityCode: $this->hotelCityCode,
+            address: $this->address,
         );
     }
 

@@ -2,9 +2,11 @@
 
 namespace Aldogtz\AmadeusSoap\Data\Responses;
 
+use Aldogtz\AmadeusSoap\Data\Responses\Values\CancelPenalty;
 use Aldogtz\AmadeusSoap\Data\Responses\Values\DailyRate;
 use Aldogtz\AmadeusSoap\Data\Responses\Values\MealsIncluded;
 use Aldogtz\AmadeusSoap\Data\Responses\Values\RoomTotal;
+use Aldogtz\AmadeusSoap\Data\Responses\Values\Tax;
 
 final readonly class RoomStayResult
 {
@@ -14,6 +16,11 @@ final readonly class RoomStayResult
      * @param  string  $hotelCode  Property the rate belongs to (from the HotelStay listing its RPH)
      * @param  int  $adults  Occupancy the rate was quoted for; 0 when the reply omits it
      * @param  array<int, array{age: string, count: string}>  $children
+     * @param  string  $commissionStatusType  e.g. Commissionable, Non-paying; '' when the reply omits it
+     * @param  CancelPenalty[]  $cancelPenalties
+     * @param  Tax[]  $taxes  Taxes of the rate's total, as listed (not deduplicated)
+     * @param  string[]  $acceptedCardCodes  Cards the guarantee accepts (VI, MC, AX…);
+     *                                       empty when the reply lists none
      */
     public function __construct(
         public string $rph,
@@ -36,6 +43,12 @@ final readonly class RoomStayResult
         public string $hotelCode = '',
         public int $adults = 0,
         public array $children = [],
+        public string $commissionStatusType = '',
+        public string $commissionPercent = '',
+        public array $cancelPenalties = [],
+        public array $taxes = [],
+        public array $acceptedCardCodes = [],
+        public string $availabilityStatus = '',
     ) {}
 
     /**
@@ -64,6 +77,12 @@ final readonly class RoomStayResult
             hotelCode: $this->hotelCode,
             adults: $this->adults,
             children: $this->children,
+            commissionStatusType: $this->commissionStatusType,
+            commissionPercent: $this->commissionPercent,
+            cancelPenalties: $this->cancelPenalties,
+            taxes: $this->taxes,
+            acceptedCardCodes: $this->acceptedCardCodes,
+            availabilityStatus: $this->availabilityStatus,
         );
     }
 }

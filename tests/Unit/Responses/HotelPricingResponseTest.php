@@ -155,6 +155,66 @@ class HotelPricingResponseTest extends TestCase
         }
     }
 
+    public function test_accepted_cards_are_those_of_the_priced_rate_plan(): void
+    {
+        $cards = '<GuaranteesAccepted>'
+            .'<GuaranteeAccepted><PaymentCard CardCode="VI"/></GuaranteeAccepted>'
+            .'<GuaranteeAccepted><PaymentCard CardCode="mc"/></GuaranteeAccepted>'
+            .'<GuaranteeAccepted><PaymentCard CardCode="VI"/></GuaranteeAccepted>'
+            .'</GuaranteesAccepted>';
+        $xml = str_replace(
+            '<Guarantee GuaranteeCode="31"/>',
+            "<Guarantee GuaranteeCode=\"31\">{$cards}</Guarantee>",
+            $this->pricingXml(),
+        );
+        // Another rate plan in the reply: its cards are not the priced rate's
+        $xml = str_replace(
+            '</RatePlans>',
+            '<RatePlan RatePlanCode="OTH"><Guarantee GuaranteeCode="31"><GuaranteesAccepted><GuaranteeAccepted><PaymentCard CardCode="AX"/></GuaranteeAccepted></GuaranteesAccepted></Guarantee></RatePlan></RatePlans>',
+            $xml,
+        );
+
+        $response = HotelPricingResponse::fromResponse(new AmadeusResponse($xml, 'http://www.opentravel.org/OTA/2003/05'));
+
+        $this->assertSame(['VI', 'MC'], $response->acceptedCardCodes);
+    }
+
+    public function test_a_priced_rate_listing_no_cards_has_none(): void
+    {
+        $response = HotelPricingResponse::fromResponse(new AmadeusResponse($this->pricingXml(), 'http://www.opentravel.org/OTA/2003/05'));
+
+        $this->assertSame([], $response->acceptedCardCodes);
+    }
+
+    public function test_cards_are_unknown_when_no_rate_plan_matches_the_booking_code(): void
+    {
+        $xml = str_replace('<RatePlan RatePlanCode="ENF">', '<RatePlan RatePlanCode="NOPE">', $this->pricingXml());
+
+        $response = HotelPricingResponse::fromResponse(new AmadeusResponse($xml, 'http://www.opentravel.org/OTA/2003/05'));
+
+        $this->assertNull($response->acceptedCardCodes);
+    }
+
+    public function test_it_parses_the_rate_category_and_currency_conversions(): void
+    {
+        $xml = str_replace(
+            ['<RoomRate BookingCode="XYZ"', '<RoomStays>'],
+            [
+                '<RoomRate RatePlanCategory="Converted:BAR:P" BookingCode="XYZ"',
+                '<CurrencyConversions><CurrencyConversion SourceCurrencyCode="USD" RequestedCurrencyCode="MXN" RateConversion="17.5133"/></CurrencyConversions><RoomStays>',
+            ],
+            $this->pricingXml(),
+        );
+
+        $response = HotelPricingResponse::fromResponse(new AmadeusResponse($xml, 'http://www.opentravel.org/OTA/2003/05'));
+
+        $this->assertSame('Converted:BAR:P', $response->ratePlanCategory);
+        $this->assertCount(1, $response->currencyConversions);
+        $this->assertSame('USD', $response->currencyConversions[0]->sourceCurrencyCode);
+        $this->assertSame('MXN', $response->currencyConversions[0]->requestedCurrencyCode);
+        $this->assertSame(17.5133, $response->currencyConversions[0]->rateConversion);
+    }
+
     public function test_it_parses_errors(): void
     {
         $raw = new AmadeusResponse($this->errorXml(), 'http://www.opentravel.org/OTA/2003/05');

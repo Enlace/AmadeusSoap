@@ -89,6 +89,21 @@ final class AddMultiElementsResponse
     }
 
     /**
+     * The traveler a PNR reference points at, e.g. a segment's
+     * passengerReference (the room's principal guest).
+     */
+    public function travelerByReference(string $referenceNumber): ?TravelerReference
+    {
+        foreach ($this->travelers as $traveler) {
+            if ($traveler->referenceNumber === $referenceNumber) {
+                return $traveler;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Check if a segment has been deleted (for cancel operations).
      */
     public function isSegmentDeleted(string $segmentNumber): bool
@@ -216,6 +231,9 @@ final class AddMultiElementsResponse
                 hotelCode: $chainCode . $cityCode . $hotelCode,
                 companionReferences: $companionNumbers,
                 companions: $companions,
+                start: self::dateAt($response, './res:hotelReservationInfo/res:requestedDates/res:beginDateTime', $node) ?? '',
+                end: self::dateAt($response, './res:hotelReservationInfo/res:requestedDates/res:endDateTime', $node) ?? '',
+                ratePlanCode: self::str($response, './res:hotelProduct/res:negotiated/res:rateCode', $node),
             );
         }
 

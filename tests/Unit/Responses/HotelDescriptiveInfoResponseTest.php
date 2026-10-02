@@ -26,15 +26,6 @@ class HotelDescriptiveInfoResponseTest extends TestCase
                                     <CountryName Code="MX">Mexico</CountryName>
                                     <StateProv StateCode="NL">Nuevo Leon</StateProv>
                                 </Address>
-                                <Addresses>
-                                    <Address UseType="PHYSICAL">
-                                        <AddressLine>Av. Insurgentes 1234</AddressLine>
-                                        <AddressLine>Col. Centro</AddressLine>
-                                        <CityName>Monterrey</CityName>
-                                        <PostalCode>64000</PostalCode>
-                                        <CountryName Code="MX">Mexico</CountryName>
-                                    </Address>
-                                </Addresses>
                                 <Descriptions>
                                     <MultimediaDescriptions>
                                         <MultimediaDescription InfoCode="1" AdditionalDetailCode="MAIN">
@@ -81,7 +72,31 @@ class HotelDescriptiveInfoResponseTest extends TestCase
                                         </Amenities>
                                     </GuestRoom>
                                 </GuestRooms>
+                                <Restaurants>
+                                    <Restaurant RestaurantName="Lobby Bar">
+                                        <ContactInfos>
+                                            <ContactInfo>
+                                                <Addresses>
+                                                    <Address><CityName>Not the hotel</CityName></Address>
+                                                </Addresses>
+                                            </ContactInfo>
+                                        </ContactInfos>
+                                    </Restaurant>
+                                </Restaurants>
                             </FacilityInfo>
+                            <ContactInfos>
+                                <ContactInfo>
+                                    <Addresses>
+                                        <Address UseType="7">
+                                            <AddressLine>Av. Insurgentes 1234</AddressLine>
+                                            <AddressLine>Col. Centro</AddressLine>
+                                            <CityName>Monterrey</CityName>
+                                            <PostalCode>64000</PostalCode>
+                                            <CountryName Code="MX">Mexico</CountryName>
+                                        </Address>
+                                    </Addresses>
+                                </ContactInfo>
+                            </ContactInfos>
                         </HotelDescriptiveContent>
                     </HotelDescriptiveContents>
                 </OTA_HotelDescriptiveInfoRS>
@@ -130,10 +145,12 @@ class HotelDescriptiveInfoResponseTest extends TestCase
         $raw = new AmadeusResponse($this->descriptiveInfoXml(), 'http://www.opentravel.org/OTA/2003/05');
         $response = HotelDescriptiveInfoResponse::fromResponse($raw);
 
+        // The restaurant's ContactInfos are not the property's
         $addresses = $response->hotel()->addresses;
         $this->assertCount(1, $addresses);
-        $this->assertEquals('PHYSICAL', $addresses[0]->useType);
-        $this->assertStringContainsString('Av. Insurgentes 1234', $addresses[0]->addressLine);
+        $this->assertEquals('7', $addresses[0]->useType);
+        $this->assertSame("Av. Insurgentes 1234\nCol. Centro", $addresses[0]->addressLine);
+        $this->assertSame('Monterrey', $addresses[0]->cityName);
     }
 
     public function test_it_parses_texts(): void

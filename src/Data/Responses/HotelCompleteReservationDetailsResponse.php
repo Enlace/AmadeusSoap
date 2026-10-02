@@ -78,15 +78,8 @@ final class HotelCompleteReservationDetailsResponse
             $timeUnit = self::str($response, './res:timeUnit', $node);
 
             // Date range for per-day taxes
-            $beginYear = self::str($response, '../res:taxFeeValidity/res:beginDateTime/res:year', $node);
-            $beginMonth = self::str($response, '../res:taxFeeValidity/res:beginDateTime/res:month', $node);
-            $beginDay = self::str($response, '../res:taxFeeValidity/res:beginDateTime/res:day', $node);
-            $endYear = self::str($response, '../res:taxFeeValidity/res:endDateTime/res:year', $node);
-            $endMonth = self::str($response, '../res:taxFeeValidity/res:endDateTime/res:month', $node);
-            $endDay = self::str($response, '../res:taxFeeValidity/res:endDateTime/res:day', $node);
-
-            $beginDate = ($beginYear && $beginMonth && $beginDay) ? "$beginYear-$beginMonth-$beginDay" : null;
-            $endDate = ($endYear && $endMonth && $endDay) ? "$endYear-$endMonth-$endDay" : null;
+            $beginDate = self::dateAt($response, '../res:taxFeeValidity/res:beginDateTime', $node);
+            $endDate = self::dateAt($response, '../res:taxFeeValidity/res:endDateTime', $node);
 
             $taxes[] = new ReservationTax(
                 amount: $amount,

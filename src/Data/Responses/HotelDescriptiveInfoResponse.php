@@ -75,39 +75,19 @@ final class HotelDescriptiveInfoResponse
         $lng = self::str($response, './res:HotelInfo/res:Position/@Longitude', $node);
         $position = ($lat !== '' || $lng !== '') ? new Position($lat, $lng) : null;
 
-        // Addresses
+        // Addresses: the property's are under ContactInfos (restaurants
+        // have their own ContactInfos deeper in FacilityInfo)
         $addresses = [];
-        $addressNodes = self::nodes($response, './res:HotelInfo/res:Addresses/res:Address', $node);
-        foreach ($addressNodes as $addrNode) {
-            $addressLines = [];
-            $lineNodes = self::nodes($response, './res:AddressLine', $addrNode);
-            foreach ($lineNodes as $lineNode) {
-                $addressLines[] = $lineNode->nodeValue;
-            }
-
-            $addresses[] = new Address(
-                addressLine: implode("\n", $addressLines),
-                cityName: self::str($response, './res:CityName', $addrNode),
-                postalCode: self::str($response, './res:PostalCode', $addrNode),
-                countryCode: self::str($response, './res:CountryName/@Code', $addrNode),
-                countryName: self::str($response, './res:CountryName', $addrNode),
-                stateCode: self::str($response, './res:StateProv/@StateCode', $addrNode),
-                stateName: self::str($response, './res:StateProv', $addrNode),
-                useType: self::str($response, './@UseType', $addrNode),
-            );
+        foreach (self::nodes($response, './res:ContactInfos/res:ContactInfo/res:Addresses/res:Address', $node) as $addrNode) {
+            $addresses[] = self::addressFrom($response, $addrNode);
         }
 
-        // HotelInfo-level address (used in show() method)
-        $infoAddress = new Address(
-            addressLine: self::str($response, './res:HotelInfo/res:Address/res:AddressLine', $node),
-            cityName: self::str($response, './res:HotelInfo/res:Address/res:CityName', $node),
-            postalCode: self::str($response, './res:HotelInfo/res:Address/res:PostalCode', $node),
-            countryCode: self::str($response, './res:HotelInfo/res:Address/res:CountryName/@Code', $node),
-            countryName: self::str($response, './res:HotelInfo/res:Address/res:CountryName', $node),
-            stateCode: self::str($response, './res:HotelInfo/res:Address/res:StateProv/@StateCode', $node),
-            stateName: self::str($response, './res:HotelInfo/res:Address/res:StateProv', $node),
-            useType: '',
-        );
+        // Amadeus replies carry no HotelInfo/Address; when it is missing the
+        // street address is the physical one (UseType 7), else the first
+        $infoAddressNode = self::nodes($response, './res:HotelInfo/res:Address', $node)->item(0);
+        $infoAddress = $infoAddressNode !== null
+            ? self::addressFrom($response, $infoAddressNode)
+            : self::physicalAddress($addresses);
 
         // Texts
         $texts = [];
@@ -222,6 +202,24 @@ final class HotelDescriptiveInfoResponse
             attractions: $attractions,
             areaRefPoints: $areaRefPoints,
             guestRooms: $guestRooms,
+            hotelName: self::str($response, './@HotelName', $node),
+            chainCode: self::str($response, './@ChainCode', $node),
+            checkInTime: self::str($response, './res:Policies/res:Policy/res:PolicyInfo/@CheckInTime', $node),
+            checkOutTime: self::str($response, './res:Policies/res:Policy/res:PolicyInfo/@CheckOutTime', $node),
         );
+    }
+
+    /**
+     * @param  Address[]  $addresses
+     */
+    private static function physicalAddress(array $addresses): Address
+    {
+        foreach ($addresses as $address) {
+            if ($address->useType === '7') {
+                return $address;
+            }
+        }
+
+        return $addresses[0] ?? new Address('', '', '', '', '', '', '', '');
     }
 }
