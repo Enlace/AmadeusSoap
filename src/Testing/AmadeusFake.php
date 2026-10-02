@@ -24,7 +24,7 @@ use PHPUnit\Framework\Assert as PHPUnit;
 class AmadeusFake
 {
     public function __construct(
-        protected ReplaySoapClient $client,
+        protected ReplaySoapClientFactory $factory,
     ) {}
 
     /**
@@ -54,7 +54,7 @@ class AmadeusFake
         }
         Facade::clearResolvedInstance('amadeus-soap');
 
-        return (new self($factory->client(self::wsdlDirectory().'/Amadeus_All.wsdl')))->push(...$replies);
+        return (new self($factory))->push(...$replies);
     }
 
     /**
@@ -71,7 +71,7 @@ class AmadeusFake
     public function push(string ...$replies): static
     {
         foreach ($replies as $reply) {
-            $this->client->queueResponse($reply);
+            $this->factory->queue($reply);
         }
 
         return $this;
@@ -87,7 +87,7 @@ class AmadeusFake
                 throw new \InvalidArgumentException("Amadeus reply fixture not found: {$path}");
             }
 
-            $this->client->queueResponse((string) file_get_contents($path));
+            $this->factory->queue((string) file_get_contents($path));
         }
 
         return $this;
@@ -122,7 +122,7 @@ class AmadeusFake
      */
     public function requests(): array
     {
-        return $this->client->requests;
+        return $this->factory->current()?->requests ?? [];
     }
 
     /**
@@ -133,14 +133,14 @@ class AmadeusFake
     public function sent(string $operation): array
     {
         return array_values(array_filter(
-            $this->client->requests,
+            $this->requests(),
             fn (array $request) => $request['operation'] === $operation,
         ));
     }
 
     public function pendingReplies(): int
     {
-        return $this->client->pendingResponses();
+        return $this->factory->pendingResponses();
     }
 
     /**
@@ -172,7 +172,7 @@ class AmadeusFake
 
     public function assertSentCount(int $count): static
     {
-        PHPUnit::assertCount($count, $this->client->requests, "Expected {$count} Amadeus requests, ".count($this->client->requests).' were sent.');
+        PHPUnit::assertCount($count, $this->requests(), "Expected {$count} Amadeus requests, ".count($this->requests()).' were sent.');
 
         return $this;
     }

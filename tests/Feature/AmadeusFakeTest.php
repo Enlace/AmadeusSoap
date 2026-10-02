@@ -3,6 +3,7 @@
 namespace Aldogtz\AmadeusSoap\Tests\Feature;
 
 use Aldogtz\AmadeusSoap\AmadeusSoap;
+use Aldogtz\AmadeusSoap\Client\SoapClientFactory;
 use Aldogtz\AmadeusSoap\Data\AmadeusResponse;
 use Aldogtz\AmadeusSoap\Data\Responses\HotelSearchResponse;
 use Aldogtz\AmadeusSoap\Exceptions\SoapFaultException;
@@ -58,6 +59,15 @@ class AmadeusFakeTest extends TestCase
             ->assertNoPendingReplies();
 
         $this->assertCount(1, $fake->sent('Hotel_EnhancedPricing'));
+    }
+
+    public function test_a_fake_nobody_calls_builds_no_soap_client(): void
+    {
+        $fake = Amadeus::fake()->pushFile($this->fixture('hotel-search-single'));
+
+        $this->assertNull($this->app->make(SoapClientFactory::class)->current());
+        $this->assertSame(1, $fake->pendingReplies());
+        $this->assertSame([], $fake->requests());
     }
 
     public function test_replies_can_be_queued_as_xml(): void

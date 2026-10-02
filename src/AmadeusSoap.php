@@ -198,7 +198,8 @@ class AmadeusSoap
      * $checkOutDate dates the retention segment (check-out + 7 days + the
      * configured months); passengers' check_out_date is used when it is null.
      *
-     * @param  array<int|string, mixed>|Traveler|Traveler[]  $params
+     * @param  Traveler|array<int|string, mixed>  $params  A Traveler, a list of
+     *                                                  them, or the params array
      */
     public function addMultiElements(string $type = 'create', array|Traveler $params = [], array $remarks = [], ?string $checkOutDate = null): AddMultiElementsResponse
     {

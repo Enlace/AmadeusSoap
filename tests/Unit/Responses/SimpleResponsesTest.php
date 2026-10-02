@@ -93,5 +93,6 @@ class SimpleResponsesTest extends TestCase
         $response = SignOutResponse::fromResponse($raw);
 
         $this->assertSame($raw, $response->raw);
+        $this->assertSame('http://xml.amadeus.com/VLSSOQ_04_1_1A', SignOutResponse::fromXml($xml)->raw->getResponseNamespace());
     }
 }
