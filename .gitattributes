@@ -1,0 +1,11 @@
+# Keep the archive Composer downloads (Packagist dist) to what applications
+# need: src/, config/, docs and the env template. Development files stay in git.
+/.github            export-ignore
+/scripts            export-ignore
+/tests              export-ignore
+/.env.tst.example   export-ignore
+/.gitattributes     export-ignore
+/.gitignore         export-ignore
+/CLAUDE.md          export-ignore
+/composer.lock      export-ignore
+/phpunit.xml        export-ignore
