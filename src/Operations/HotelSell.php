@@ -131,21 +131,41 @@ class HotelSell implements Operation
                     ],
                     'groupCreditCardInfo' => [
                         'creditCardInfo' => [
-                            'ccInfo' => [
-                                'vendorCode' => $params['vendorCode'],
-                                'cardNumber' => $params['cardNumber'],
-                                'securityId' => $params['securityId'],
-                                'expiryDate' => $params['expiryDate'],
-                                'ccHolderName' => ($params['firstName'] ?? '').' '.($params['surname'] ?? $params['ccHolderName'] ?? ''),
-                                'surname' => $params['surname'] ?? '',
-                                'firstName' => $params['firstName'] ?? '',
-                            ],
+                            'ccInfo' => $this->buildCardInfo($params),
                         ],
                     ],
                 ],
                 'guestList' => $guestList,
             ],
         ];
+    }
+
+    /**
+     * The guarantee card. An explicit ccHolderName is sent as given; without
+     * one it is "firstName surname". firstName/surname are only sent when the
+     * caller passes either of them: a room keyed by ccHolderName alone is the
+     * shape BookingV2 sells multi-room bookings with in production.
+     */
+    protected function buildCardInfo(array $params): array
+    {
+        $hasName = array_key_exists('firstName', $params) || array_key_exists('surname', $params);
+        $firstName = (string) ($params['firstName'] ?? '');
+        $surname = (string) ($params['surname'] ?? '');
+
+        $card = [
+            'vendorCode' => $params['vendorCode'],
+            'cardNumber' => $params['cardNumber'],
+            'securityId' => $params['securityId'],
+            'expiryDate' => $params['expiryDate'],
+            'ccHolderName' => trim((string) ($params['ccHolderName'] ?? $firstName.' '.$surname)),
+        ];
+
+        if ($hasName) {
+            $card['surname'] = $surname;
+            $card['firstName'] = $firstName;
+        }
+
+        return $card;
     }
 
     protected function isMultiRoom(): bool
