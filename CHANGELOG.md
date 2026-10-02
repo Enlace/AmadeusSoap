@@ -20,18 +20,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `RoomStayResult::$hotelCode`, `$adults` and `$children`, read from the reply
 - snake_case keys in every method (`travel_agent_ref`, `pnr_number`,
   `segment_number`, `hotel_code`…); the camelCase spelling stays accepted
+- Reply fields applications read with their own XPaths until now:
+  - `RoomStayResult`: `acceptedCardCodes`, `commissionStatusType`,
+    `commissionPercent`, `cancelPenalties`, `taxes`, `availabilityStatus`
+  - `HotelResult`: `chainName`, `hotelCityCode`, `address`
+  - `HotelSearchResponse::$warnings` (every OTA Warning, e.g. the per-provider
+    statuses of a multi-hotel search)
+  - `HotelPricingResponse`: `acceptedCardCodes` of the priced rate (`null`
+    when no rate plan matches its booking code), `ratePlanCategory`,
+    `currencyConversions`
+  - `HotelDescriptiveContent`: `hotelName`, `chainCode`, `checkInTime`,
+    `checkOutTime`
+  - `PnrSegment`: `start`, `end`, `ratePlanCode`;
+    `AddMultiElementsResponse::travelerByReference()` for a segment's
+    principal guest
+  - `Tax::$type` (Inclusive / Exclusive)
+- `AmadeusSoap::usingSession($key, $callback, signOut: false)` runs a flow on
+  its own session (a queued job, an inspection) and restores the previous key
+  afterwards; `SessionManager::usingKey()` underneath
+- `addMultiElements()` takes the check-out date for the retention segment
+  (`checkOutDate:`); a single passenger's `check_out_date` is read too
+- `Amadeus::fake()` for applications' tests: queued reply XML, no network,
+  real request building and parsing, with `assertSent()`,
+  `assertSentCount()`, `assertNoPendingReplies()` and `pushFault()`. The
+  test WSDL it loads ships in `resources/testing/wsdl`.
+- `fromXml()` on every response DTO and `AmadeusResponse::fromXml()`, which
+  read the namespace from the reply
 
 ### Changed
 - The response cache keys entries by the endpoint the WSDL points at, so
   environments sharing a cache store, an office ID and even the WSDL directory
   path never share entries
+- Card numbers (all but the last four digits) and security codes are masked
+  in `getLastRequest()`/`getLastResponse()`, the SOAP log and the
+  request/response carried by `SoapFaultException`, `ConnectionException`
+  and `AuthenticationException`. Amadeus still receives the card as given.
+- `Hotel_Sell` sends an explicit `ccHolderName` as given and no longer pads
+  the composed one; `firstName`/`surname` are sent only when the caller
+  passes either
 
 ### Deprecated
+- `Facades\AmadeusSoapFacade`, the facade name of the unversioned `dev-main`
+  generation, kept as an alias of `Facades\Amadeus`; removed in 3.0
 - `SoapTransport`'s `$wsdlManager` constructor parameter (optional now; it was
   never used) and `WsdlManager::getWsdlDomDoc()` / `getWsdlDomXpath()` (they
   always returned `[]`). All three are removed in 3.0.
 
 ### Fixed
+- `HotelDescriptiveContent::$addresses` and `$infoAddress` were empty for
+  every real reply: Amadeus sends the property's addresses under
+  `ContactInfos/ContactInfo/Addresses`, not `HotelInfo/Addresses`. With no
+  `HotelInfo/Address` in the reply, `infoAddress` is now the physical
+  (UseType 7) address, or the first one.
+- A multi-room sell keyed by `ccHolderName` alone sent `" NAME"` plus empty
+  `firstName`/`surname` elements; it now sends the holder name alone, as the
+  `dev-main` package did
+- `ReservationTax::$beginDate` / `$endDate` read `2026-8-30`: Amadeus does not
+  zero-pad month and day. They are Y-m-d dates now.
 - 2.0.0 could not be installed on Laravel 13: `illuminate/contracts` was
   capped at ^12.0. Laravel 13 is now supported and tested (Testbench 11,
   Pest 4, PHPUnit 12), and CI covers it on PHP 8.3 and 8.4

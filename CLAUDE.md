@@ -57,12 +57,14 @@ src/
 ├── Events/                      # OperationStarting, OperationCompleted, OperationFailed
 ├── Exceptions/                  # Typed exceptions (Connection, Auth, Session, SoapFault, etc.)
 ├── Headers/                     # HeaderBuilder, BodyBuilder, SessionHeader, AddressingHeaders
-├── Logging/SoapLogger.php
+├── Logging/                     # SoapLogger; CardDataMasker (card number/CVC out of everything handed out)
 ├── Performance/PerformanceMonitor.php  # Event subscriber; metrics in a cache store
 ├── Operations/                  # Operation builders (implement Operation interface)
 │   ├── Contracts/Operation.php  # Interface: getOperationName(), build()
 │   └── Concerns/BuildsGuestCounts.php
-├── Facades/Amadeus.php          # Facade (composer alias: AmadeusSoap)
+├── Facades/Amadeus.php          # Facade (composer alias: AmadeusSoap), Amadeus::fake()
+├── Facades/AmadeusSoapFacade.php # Deprecated alias: the dev-main facade name BookingV2 imports
+├── Testing/                     # AmadeusFake, ReplaySoapClient(+Factory): shipped for apps' tests
 ├── Security/                    # WsSecurityHeader, AmaSecurityHeader
 ├── Session/
 │   ├── Contracts/SessionStore.php
@@ -72,6 +74,7 @@ src/
 ├── RateFiltering/               # RateFilterStrategy (BestOnlyIndicator), RateFilterCriteria,
 │                                # RateFilter (local, per hotel), TwoPhaseSearchService
 └── Wsdl/                        # WsdlManager, OperationRegistry, OperationMetadata
+resources/testing/wsdl/          # Test WSDL with all 9 operations, loaded by Amadeus::fake()
 ```
 
 Performance features (all opt-in, see `docs/performance.md`):
@@ -154,6 +157,16 @@ covered by tests — do not undo these:
 - **`HotelSearchResponse` parses nothing without `//Warnings/Warning[@Tag='OK']`.**
   A reply missing that marker yields `ok=false` and empty collections, not
   partial data. Response fixtures must include it.
+- **The property's addresses are under `ContactInfos/ContactInfo/Addresses`**
+  in `OTA_HotelDescriptiveInfoRS` (UseType 7 = physical), never under
+  `HotelInfo`. Restaurants carry their own `ContactInfos` deeper in
+  `FacilityInfo`, so read the direct child of `HotelDescriptiveContent`.
+  Reading `HotelInfo/Addresses` left every real reply without an address.
+- **EDIFACT dates are not zero-padded** (`<month>8</month>`). Build them with
+  `ParsesAmadeusXml::dateAt()`, which returns Y-m-d.
+- **A multi-hotel search reports one `Warning` per provider** (`Tag` AVL, CLS,
+  OK, PE…, `Status` PRV.n). `Tag="OK"` is what `ok` keys on; the others are
+  in `HotelSearchResponse::$warnings`.
 - **Operation builders return associative arrays.** Pass them straight to
   `executeStandardOperation()` / `BodyBuilder::build()`. Wrapping in `[$body]`
   produces a sequential array, which `spatie/array-to-xml` rejects with
@@ -179,6 +192,14 @@ Worth knowing before changing anything here:
   until it times out.
 - Requests always go to the endpoint in the WSDL (`soap:address`); there is no
   config override.
+- `SoapTransport::getLastRequest()`/`getLastResponse()` mask card numbers and
+  security codes (`CardDataMasker`). The logger, the exceptions' payloads and
+  `AmadeusSoap::getLastRequest()` all read through them; only the
+  ReplaySoapClient's recorded requests hold what was really sent.
+- `SessionManager` is a singleton: `withKey()` pins a key for the rest of the
+  process (next queue jobs included). Scoped flows use
+  `AmadeusSoap::usingSession()` / `SessionManager::usingKey()`, which restore
+  the previous key.
 
 ### Session Management
 
@@ -238,7 +259,8 @@ AmadeusSoapException (base)
   `PHPUnit\Framework\TestCase`; only `tests/Feature/` gets Pest's `uses()` binding
 - Tests needing the container extend `Aldogtz\AmadeusSoap\Tests\TestCase`
   (Orchestra Testbench)
-- Test doubles in `tests/Doubles/`; WSDL fixtures in `tests/Fixtures/wsdl/` and `wsdl-full/`
+- Test doubles in `tests/Doubles/` (the replay ones extend `src/Testing/`); WSDL
+  fixtures in `tests/Fixtures/wsdl/`, plus the shipped `resources/testing/wsdl/`
 - Never commit raw captures (`storage/`) or `.env.tst`: they hold credentials and PII
 
 ## Configuration
@@ -279,7 +301,8 @@ Tests configure via `TestCase::getEnvironmentSetUp()`:
 Fixture layout:
 - `tests/Fixtures/wsdl/` — the two WSDL shapes `WsdlManagerTest` asserts on.
   Its tests check the exact operation list, so adding a WSDL here breaks them.
-- `tests/Fixtures/wsdl-full/` — one WSDL declaring all 9 operations with the
+- `resources/testing/wsdl/` (outside `tests/`: it ships, `Amadeus::fake()`
+  loads it; `AmadeusFake::wsdlDirectory()`) — one WSDL declaring all 9 operations with the
   real response namespaces, used by `BookingChainTest`. The namespaces matter:
   they are what `OperationMetadata` hands to `AmadeusResponse` for XPath, so a
   wrong one makes the chain silently parse nothing.

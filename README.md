@@ -17,6 +17,8 @@ A robust Laravel package for integrating with Amadeus Globalizer SOAP Web Servic
 - **WSDL Management** - Lazy loading and caching of WSDL metadata
 - **Compact Calls** - Each step takes the previous reply (room stay, PNR, segment): no re-typing hotel, codes, agent or passenger
 - **Tested Against Real Traffic** - Feature tests replay sanitized Amadeus TST requests and responses
+- **Testing Fake** - `Amadeus::fake()` answers your application's calls with queued reply XML, no network
+- **Card Data Masking** - Card numbers and security codes never reach logs, debug output or exceptions
 - **Response Cache** - Optional caching of stateless searches and descriptive info
 - **Rate Filtering** - Best-only or all-rates searches, plus local filtering of a hotel's rates (refundable, breakfast, rate plans, price)
 - **Performance Monitoring** - Optional response-time and success-rate metrics per operation
@@ -173,6 +175,19 @@ foreach ($search->hotels as $hotel) {
 > `$hotel->roomStays($search->roomStays)`, or `$hotel->roomStayRPHs` for the
 > parsed list.
 
+Each `RoomStayResult` carries what deciding on a rate takes: `guaranteeCode`
+(31 guarantee, 8 deposit), `acceptedCardCodes` (`['AX', 'VI', 'CA']`, empty
+when the reply lists none), `commissionStatusType` (`Commissionable`,
+`Non-paying`) and `commissionPercent`, `cancelPenalties` (with
+`absoluteDeadline`), `nonRefundable`, `meals`, `availabilityStatus` and the
+`taxes` of its total — each `Tax` with its `code`, `percent` or `amount`,
+`chargeUnit` (19 = per night) and `type` (`Inclusive`, `Exclusive`).
+`HotelResult` adds `chainName`, `hotelCityCode` and `address`.
+
+`$search->warnings` lists every OTA `Warning` of the reply. A multi-hotel
+search reports one per provider (`tag` `AVL`, `CLS`, `PE`…, `status`
+`PRV.4`), the `OK` marker included.
+
 At least one search criterion is required: `hotel_code`, `hotel_city_code`,
 `hotel_name`, or both `latitude` and `longitude`. Omitting all four throws
 `InvalidParameterException`. `start` and `end` default to today and today + 7 days.
@@ -223,6 +238,12 @@ foreach ($pricing->cancelPenalties as $penalty) {
 }
 ```
 
+`$pricing->acceptedCardCodes` lists the cards the priced rate's guarantee
+accepts: `[]` when the rate lists none, `null` when no rate plan in the reply
+matches the priced booking code (the guarantee cannot be checked). The reply
+also has `ratePlanCategory` (`Converted:BAR:P`, which names the rate's source)
+and `currencyConversions`.
+
 The array form still works — `start`, `end`, `hotel_code`, `rate_plan_code`,
 `booking_code`, `room_type_code`, `quantity` and `guest_count` are then
 required. A rate without a room type code cannot be priced either way.
@@ -265,8 +286,19 @@ Amadeus::signOut();
 `var_dump()`/`dd()`.
 
 For several passengers pass a list — `addMultiElements('create', [new Traveler('DOE', 'JOHN'), new Traveler('DOE', 'JANE')])`.
+The fourth argument dates the PNR's retention segment from the check-out
+(`addMultiElements('create', $travelers, checkOutDate: '2024-12-28')`);
+without it the segment is dated a week from today.
+
 For several rooms, give `hotelSell` the array form: one room array per room
-alongside `travel_agent_ref`.
+alongside `travel_agent_ref`. A room may name the card holder with
+`cc_holder_name` alone, or with `first_name` and `surname`.
+
+Each HHL segment of the end-transaction reply has its `segmentNumber`,
+`confirmationNumber`, `start` and `end` (Y-m-d), `ratePlanCode` and the
+`passengerReference` of its principal guest:
+`$end->travelerByReference($segment->passengerReference)` returns that
+traveler, and `$segment->companions` the others.
 
 Array keys are snake_case in every method (`travel_agent_ref`, `booking_code`,
 `pnr_number`, `segment_number`, …); the camelCase spelling some methods used
@@ -286,9 +318,10 @@ $info = Amadeus::hotelDescriptiveInfo('NYC12345');
 // hotel() returns one by code, or the first when called with no argument.
 $hotel = $info->hotel('NYC12345');
 
-echo "Code: {$hotel->hotelCode}\n";
+echo "{$hotel->hotelName} ({$hotel->hotelCode}, chain {$hotel->chainCode})\n";
 echo "Address: {$hotel->infoAddress->addressLine}, {$hotel->infoAddress->cityName}\n";
-echo "Country: {$hotel->infoAddress->countryName}\n";
+echo "Country: {$hotel->infoAddress->countryCode}\n";
+echo "Check-in {$hotel->checkInTime}, check-out {$hotel->checkOutTime}\n";
 echo "Thumbnail: {$hotel->thumbnailUrl}\n";
 
 foreach ($hotel->texts as $text) {
@@ -305,6 +338,11 @@ foreach ($hotel->attractions as $attraction) {
     echo "Nearby: {$attraction->name} ({$attraction->categoryCode})\n";
 }
 ```
+
+`$hotel->addresses` holds the property's contact addresses
+(`ContactInfos/ContactInfo/Addresses`), each with its `useType` (`7` is the
+physical address). Amadeus replies carry no `HotelInfo/Address`, so
+`infoAddress` is the physical address, or the first one.
 
 The send-flags (`sendGuestRooms`, `sendPolicies`, `sendAttractions`, …) all
 default to `'true'`; pass `'false'` to trim the response.
@@ -332,6 +370,30 @@ element number inside the PNR, not the record locator. The array forms still
 work: `pnrRetrieve(['pnr_number' => 'ABC123'])`,
 `hotelCompleteReservationDetails(['pnr_number' => 'ABC123', 'segment_number' => '2'])`,
 `pnrCancel(['segment_number' => '2'])`.
+
+### Running a Flow on Its Own Session
+
+The session is stored per authenticated user (`session.key_resolver`, default
+`Auth::id() ?? 'system'`). A queued job, a console command or an inspection
+tool should not share it: give the flow its own key with `usingSession()`.
+
+```php
+use Aldogtz\AmadeusSoap\AmadeusSoap;
+
+$end = Amadeus::usingSession("approval:{$approval->id}", function (AmadeusSoap $amadeus) use ($traveler, $card) {
+    $room = $amadeus->hotelSearch('single', [/* … */])->roomStays[0];
+    $amadeus->hotelPricing($room);
+    $pnr = $amadeus->addMultiElements('create', $traveler);
+    $amadeus->hotelSell($room, $pnr, $card);
+
+    return $amadeus->addMultiElements('end');
+}, signOut: true);
+```
+
+The previous key is restored when the callback returns or throws. With
+`signOut: true` the flow's session is signed out at the end either way; a
+failed sign-out is reported, never thrown. `session()->withKey()` also sets a
+key, but for the rest of the process — in a queue worker, the next jobs too.
 
 ### Advanced: Recursive Hotel Search (Pagination)
 
@@ -527,24 +589,46 @@ for how captures from `scripts/tst-chain.php` become fixtures.
 
 ### Testing Your Integration
 
-For testing, use the `array` session driver:
-
-```env
-# In your phpunit.xml or .env.testing
-AMADEUS_SESSION_DRIVER=array
-```
-
-You can also mock the service in your tests:
+`Amadeus::fake()` answers calls with reply XML you queue, in order, with no
+network access. Only the HTTP exchange is replaced: params, request building,
+headers, sessions and parsing run for real, against a test WSDL shipped with
+the package. Sessions are kept in memory and the response cache is off, so
+your test config needs no WSDLs, credentials or Redis.
 
 ```php
 use Aldogtz\AmadeusSoap\Facades\Amadeus;
+
+$fake = Amadeus::fake()->pushFile(
+    base_path('tests/Fixtures/amadeus/search-single.xml'),
+    base_path('tests/Fixtures/amadeus/pricing.xml'),
+);
+
+$this->postJson('/api/hotels/rate', [/* … */])->assertOk();
+
+$fake->assertSent('Hotel_EnhancedPricing', fn (string $xml) => str_contains($xml, 'B2DRAFNOV'))
+    ->assertSentCount(2)
+    ->assertNoPendingReplies();
+```
+
+`push(...$xml)` queues XML strings, `pushFault('code|Category|text')` a SOAP
+fault; `requests()` and `sent($operation)` return what was sent. A call with
+nothing queued throws. Install the fake before the code under test resolves
+the service: an `AmadeusSoap` instance injected earlier keeps the real client.
+
+To mock the service instead, build the reply objects from your fixtures —
+`fromXml()` reads the namespace from the reply itself:
+
+```php
 use Aldogtz\AmadeusSoap\Data\Responses\HotelSearchResponse;
 
 Amadeus::shouldReceive('hotelSearch')
     ->once()
-    ->with('multi', ['hotel_city_code' => 'NYC'])
-    ->andReturn(new HotelSearchResponse(/* ... */));
+    ->andReturn(HotelSearchResponse::fromXml(file_get_contents($fixture)));
 ```
+
+Code written against the facade name of the unversioned `dev-main` package
+keeps working: `AmadeusSoapFacade` is a deprecated alias of `Amadeus`
+(removed in 3.0).
 
 ## Performance
 
@@ -620,6 +704,10 @@ If you discover a security vulnerability, please email security@enlaceforte.com.
 
 - Never commit your `.env` file
 - Use environment variables for credentials
+- Card numbers and security codes are masked in everything the package hands
+  out after a call — `getLastRequest()`/`getLastResponse()`, the SOAP log and
+  the request/response carried by exceptions — so they can be logged or sent
+  to an error tracker. Amadeus still receives the card as given.
 - Enable logging only in development
 - Use Redis with authentication in production
 - Implement rate limiting on your API endpoints
