@@ -452,6 +452,10 @@ php scripts/tst-chain.php --city=MTY --dry-run
 
 # full chain, creates and then cancels a PNR in TST
 php scripts/tst-chain.php --city=MTY --book
+
+# same, with the params BookingV2 sends in production (occupants with the
+# retention check-out, loyalty remark, room list keyed by ccHolderName alone)
+php scripts/tst-chain.php --hotel=MCMEXSFM --guests=2 --book --bookingv2
 ```
 
 ### Dependency Injection

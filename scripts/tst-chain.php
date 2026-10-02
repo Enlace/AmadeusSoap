@@ -88,6 +88,7 @@ $options = getopt('h', [
     'max-sell-attempts:',
     'dump-dir:',
     'book',
+    'bookingv2',
     'keep',
     'yes',
     'dry-run',
@@ -115,6 +116,12 @@ Runs the Amadeus booking chain against the TST environment.
   --max-sell-attempts=N how many rates to try when Amadeus refuses the sell
                         with errorGroup CTL (default 4)
   --book                also run PNR create / hotel sell / end transaction
+  --bookingv2           with --book, send the shapes BookingV2 sends in
+                        production: create with every occupant, check_out_date
+                        (retention segment) and a loyalty RM remark; sell as a
+                        list of room arrays keyed by ccHolderName alone, with
+                        BHO/BOP passenger references; end with no params.
+                        --guests=2 adds a companion (BOP).
   --keep                leave the created PNR in place instead of cancelling
   --yes                 skip the confirmation prompt for --book
   --dry-run             validate config, WSDL and endpoint, then stop without
@@ -132,6 +139,7 @@ TXT);
 }
 
 $book = isset($options['book']);
+$bookingV2 = isset($options['bookingv2']);
 $keep = isset($options['keep']);
 $city = strtoupper((string) ($options['city'] ?? 'MTY'));
 $hotelCodeArg = isset($options['hotel']) ? strtoupper((string) $options['hotel']) : null;
@@ -616,11 +624,30 @@ try {
         $note('hotelDescriptiveInfo se posterga: es stateless y rompería el contexto de venta');
 
         // -- 4. PNR create --------------------------------------------------
-        $create = $step('pnr-create', "addMultiElements('create')", fn () => $amadeus->addMultiElements('create', [
-            'surname' => $env('AMADEUS_TST_PAX_SURNAME') ?? 'TEST',
-            'name' => $env('AMADEUS_TST_PAX_FIRSTNAME') ?? 'TESTER',
-            'type' => 'ADT',
-        ]));
+        $paxSurname = $env('AMADEUS_TST_PAX_SURNAME') ?? 'TEST';
+        $paxFirstName = $env('AMADEUS_TST_PAX_FIRSTNAME') ?? 'TESTER';
+
+        if ($bookingV2) {
+            // AmadeusController::store: one name element per occupant, each
+            // carrying the stay's check-out (it dates the RU retention
+            // segment), plus the loyalty remark when a program applies.
+            $passengers = [['surname' => $paxSurname, 'name' => $paxFirstName, 'type' => 'ADT', 'check_out_date' => $checkOut]];
+            for ($i = 2; $i <= (int) $guests; $i++) {
+                $passengers[] = ['surname' => $paxSurname, 'name' => 'COMPANION'.chr(64 + $i), 'type' => 'ADT', 'check_out_date' => $checkOut];
+            }
+            $remarks = ['loyalty_programs' => [mb_substr(
+                "LEALTAD NUM TST1234 PROGRAMA TEST REWARDS TITULAR {$paxSurname}/{$paxFirstName} FAVOR DE AGREGAR PUNTOS",
+                0, 199,
+            )]];
+
+            $create = $step('pnr-create', "addMultiElements('create') — forma BookingV2", fn () => $amadeus->addMultiElements('create', $passengers, $remarks));
+        } else {
+            $create = $step('pnr-create', "addMultiElements('create')", fn () => $amadeus->addMultiElements('create', [
+                'surname' => $paxSurname,
+                'name' => $paxFirstName,
+                'type' => 'ADT',
+            ]));
+        }
 
         if ($create === null) {
             throw new RuntimeException('no se pudo crear el PNR; se detiene la cadena');
@@ -628,6 +655,14 @@ try {
 
         $note('travelAgentRef: '.$create->travelAgentRef);
         $note(sprintf('%d viajero(s)', count($create->travelers)));
+
+        if ($bookingV2) {
+            // What Amadeus recorded: the RU retention segment's date and the RM remark
+            $retention = $create->raw->evaluate("string(//res:originDestinationDetails/res:itineraryInfo[res:elementManagementItinerary/res:segmentName = 'RU']/res:travelProduct/res:product/res:depDate)");
+            $remark = $create->raw->evaluate("string(//res:dataElementsIndiv[res:elementManagementData/res:segmentName = 'RM']//res:freetext)");
+            $note('retención (RU): '.($retention !== '' ? $retention : '(no aparece)'));
+            $note('remark de lealtad (RM): '.($remark !== '' ? 'registrado' : '(no aparece)'));
+        }
 
         $traveler = $create->travelers[0] ?? null;
 
@@ -665,12 +700,41 @@ try {
         $candidates = array_slice($candidates, 0, $maxSellAttempts);
         $sell = null;
 
+        // AmadeusController::store: always the list form, one array per room,
+        // the holder in ccHolderName alone, the principal BHO and companions BOP
+        $bookingV2Sell = fn ($rate) => [
+            'travelAgentRef' => $create->travelAgentRef,
+            [
+                'chainCode' => $hotel->chainCode,
+                'cityCode' => substr($hotel->hotelCode, 2, 3),
+                'hotelCode' => $hotel->hotelCode,
+                'paymentType' => $paymentType,
+                'bookingCode' => $rate->bookingCode,
+                'passengerReference' => array_map(
+                    fn ($traveler) => [
+                        'value' => $traveler->referenceNumber,
+                        'type' => strcasecmp($traveler->firstName, $paxFirstName) === 0 ? 'BHO' : 'BOP',
+                    ],
+                    $create->travelers,
+                ),
+                'ccHolderName' => $cardHolder,
+                'vendorCode' => $env('AMADEUS_TST_CARD_VENDOR'),
+                'cardNumber' => $env('AMADEUS_TST_CARD_NUMBER'),
+                'securityId' => $env('AMADEUS_TST_CARD_CVC'),
+                'expiryDate' => $env('AMADEUS_TST_CARD_EXPIRY'),
+            ],
+        ];
+
         foreach ($candidates as $attempt => $rate) {
             $label = $attempt === 0
                 ? 'hotelSell'
                 : sprintf('hotelSell (intento %d: %s)', $attempt + 1, $rate->bookingCode);
 
-            $sell = $step($attempt === 0 ? 'sell' : 'sell-'.$rate->bookingCode, $label, fn () => $amadeus->hotelSell([
+            $sellParams = $bookingV2
+                ? $bookingV2Sell($rate)
+                : null;
+
+            $sell = $step($attempt === 0 ? 'sell' : 'sell-'.$rate->bookingCode, $label, fn () => $amadeus->hotelSell($sellParams ?? [
                 'travelAgentRef' => $create->travelAgentRef,
                 'chainCode' => $hotel->chainCode,
                 // An Amadeus property code is chain(2) + city(3) + property(3):
@@ -744,11 +808,13 @@ try {
         $note(sprintf('%d cuarto(s) en la respuesta', count($sell->roomResults)));
 
         // -- 6. End transaction ---------------------------------------------
-        $end = $step('pnr-end', "addMultiElements('end')", fn () => $amadeus->addMultiElements('end', [
-            'surname' => $env('AMADEUS_TST_PAX_SURNAME') ?? 'TEST',
-            'name' => $env('AMADEUS_TST_PAX_FIRSTNAME') ?? 'TESTER',
-            'type' => 'ADT',
-        ]));
+        $end = $step('pnr-end', "addMultiElements('end')", fn () => $bookingV2
+            ? $amadeus->addMultiElements('end')
+            : $amadeus->addMultiElements('end', [
+                'surname' => $paxSurname,
+                'name' => $paxFirstName,
+                'type' => 'ADT',
+            ]));
 
         if ($end !== null && $end->pnrNumber !== null) {
             $pnrNumber = $end->pnrNumber;
@@ -763,6 +829,17 @@ try {
         if ($end !== null && isset($end->segments[0])) {
             $hotelSegment = $end->segments[0]->segmentNumber;
             $note('segmento de hotel: '.$hotelSegment);
+
+            if ($bookingV2) {
+                $principal = $end->travelerByReference($end->segments[0]->passengerReference);
+                $note(sprintf(
+                    'titular del segmento: %s · acompañantes: %d · fechas %s → %s',
+                    $principal !== null ? 'encontrado' : '(no aparece)',
+                    count($end->segments[0]->companions),
+                    $end->segments[0]->start ?: '?',
+                    $end->segments[0]->end ?: '?',
+                ));
+            }
         }
 
         // -- 7. Retrieve ----------------------------------------------------

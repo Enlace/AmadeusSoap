@@ -96,7 +96,12 @@ for the segment — with `hotelCompleteReservationDetails` returning the propert
 cancellation policy and total. On 2026-10-02 the whole chain ran again on
 `MCMEXSFM` (Mexico City), through the cancellation and its end transaction:
 those captures are the `pnr-end`, `pnr-retrieve`, details, `pnr-cancel` and
-`pnr-cancel-end` fixtures.
+`pnr-cancel-end` fixtures. The same day it booked and cancelled twice more with
+`--bookingv2`, the params BookingV2 sends in production: every occupant with
+the check-out that dates the retention segment, a loyalty RM remark, a deposit
+rate (guarantee 8, payment type 2) and a room list keyed by `ccHolderName`
+alone with a BHO principal and a BOP companion (`pnr-create-occupants`,
+`hotel-sell-holder-only`, `pnr-end-companion`).
 
 Operational constraints learned from those runs, none of them visible from the
 API surface:
@@ -352,6 +357,8 @@ WSDL's endpoint is not a test endpoint.
 php scripts/tst-chain.php --city=MTY --dry-run   # validate config, no calls
 php scripts/tst-chain.php --city=MTY             # read-only chain
 php scripts/tst-chain.php --city=MTY --book      # creates and cancels a PNR
+php scripts/tst-chain.php --hotel=MCMEXSFM --guests=2 --book --bookingv2
+                                                 # same, with BookingV2's params
 ```
 
 Real Amadeus WSDLs are never in the repo: point `AMADEUS_WSDL_PATH` (in

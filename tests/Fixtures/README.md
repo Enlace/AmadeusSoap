@@ -35,7 +35,9 @@ Amadeus TST"). The requests from the end transaction on (`pnr-end`,
 `pnr-retrieve`, `hotel-complete-reservation-details`, `pnr-cancel`,
 `pnr-cancel-end`) and the `pnr-cancel*` replies come from a later complete
 booking that was cancelled (PNR `TST003`, hotel segment 2); the other replies
-are from the earlier run (PNR `TST002`).
+are from the earlier run (PNR `TST002`). `pnr-create-occupants`,
+`hotel-sell-holder-only` and `pnr-end-companion` come from a booking made with
+the params BookingV2 sends (`scripts/tst-chain.php --bookingv2 --guests=2`).
 
 New captures go at the **end** of `FIXTURES`: fake locators are numbered in
 map order, and tests pin `TST002` and `10000001`. Appending only renumbers the

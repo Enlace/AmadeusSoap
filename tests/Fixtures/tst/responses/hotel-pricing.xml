@@ -9,9 +9,9 @@
     <wsa:MessageID>urn:uuid:0e9ffa4f-24e3-cca4-4127-9304dd30f6ad</wsa:MessageID>
     <wsa:RelatesTo RelationshipType="http://www.w3.org/2005/08/addressing/reply">3909440f-7771-4a65-9620-05f50f2ef59f</wsa:RelatesTo>
     <awsse:Session TransactionStatusCode="InSeries">
-      <awsse:SessionId>SESSION0006</awsse:SessionId>
+      <awsse:SessionId>SESSION0008</awsse:SessionId>
       <awsse:SequenceNumber>2</awsse:SequenceNumber>
-      <awsse:SecurityToken>SECURITYTOKEN0015</awsse:SecurityToken>
+      <awsse:SecurityToken>SECURITYTOKEN0018</awsse:SecurityToken>
     </awsse:Session>
   </soap:Header>
   <soap:Body>

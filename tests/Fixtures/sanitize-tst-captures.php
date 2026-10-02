@@ -51,6 +51,13 @@ const FIXTURES = [
     'requests/pnr-cancel-end.xml' => '232336-pnr-cancel-end-request.xml',
     'responses/pnr-cancel.xml' => '232335-pnr-cancel-response.xml',
     'responses/pnr-cancel-end.xml' => '232336-pnr-cancel-end-response.xml',
+    // The same property booked with the shapes BookingV2 sends in production
+    // (scripts/tst-chain.php --bookingv2 --guests=2): every occupant with the
+    // check-out for the retention segment, a loyalty remark, and a room list
+    // keyed by ccHolderName alone with a BHO principal and a BOP companion
+    'requests/pnr-create-occupants.xml' => '235336-pnr-create-request.xml',
+    'requests/hotel-sell-holder-only.xml' => '235337-sell-request.xml',
+    'responses/pnr-end-companion.xml' => '235338-pnr-end-response.xml',
 ];
 
 const FAKE_OFFICE_ID = 'TEST01';
@@ -192,6 +199,23 @@ if (empty($env['AMADEUS_USERNAME']) || empty($env['AMADEUS_OFFICE_ID'])) {
     fail('AMADEUS_USERNAME and AMADEUS_OFFICE_ID must be set in the env file');
 }
 
+// Values that are themselves one of the fakes (e.g. a test passenger named
+// "TEST") are not secrets.
+$fakeWords = array_map('strtolower', preg_split('/\W+/', implode(' ', [
+    FAKE_SURNAME, FAKE_FIRST_NAME, FAKE_CARD_HOLDER, FAKE_EMAIL, FAKE_OFFICE_ID, FAKE_USERNAME, FAKE_CVC, FAKE_EXPIRY,
+])));
+
+// Passenger names that free texts repeat: the loyalty remark names its holder
+// ("TITULAR SURNAME/NAME"). Names that are already fakes stay: replacing
+// "TEST" as a word would also rewrite unrelated text.
+$paxNames = [];
+foreach (['AMADEUS_TST_PAX_SURNAME' => FAKE_SURNAME, 'AMADEUS_TST_PAX_FIRSTNAME' => FAKE_FIRST_NAME] as $key => $fake) {
+    $name = $env[$key] ?? '';
+    if (strlen($name) >= 3 && ! in_array(strtolower($name), $fakeWords, true)) {
+        $paxNames[] = [$name, $fake];
+    }
+}
+
 $output = [];
 
 foreach ($captures as $fixture => $xml) {
@@ -211,6 +235,10 @@ foreach ($captures as $fixture => $xml) {
     // People
     $xml = replaceElement($xml, 'surname|Surname', FAKE_SURNAME);
     $xml = replaceElement($xml, 'firstName|givenName|GivenName', FAKE_FIRST_NAME);
+
+    foreach ($paxNames as [$name, $fake]) {
+        $xml = replaceElement($xml, 'longFreetext|freetext|freeText', fn (string $text) => preg_replace('/\b'.preg_quote($name, '/').'\b/i', $fake, $text));
+    }
 
     // PNR free texts (AP contacts, RM remarks) may hold phone or loyalty
     // numbers: zero the digits of any such text with 7+ digits
@@ -258,11 +286,6 @@ $fixedFields = [
     'surname|Surname' => [FAKE_SURNAME],
     'firstName|givenName|GivenName' => [FAKE_FIRST_NAME],
 ];
-// Values that are themselves one of the fakes (e.g. a test passenger named
-// "TEST") are not secrets.
-$fakeWords = array_map('strtolower', preg_split('/\W+/', implode(' ', [
-    FAKE_SURNAME, FAKE_FIRST_NAME, FAKE_CARD_HOLDER, FAKE_EMAIL, FAKE_OFFICE_ID, FAKE_USERNAME, FAKE_CVC, FAKE_EXPIRY,
-])));
 $shortSecrets = array_filter(
     array_map(fn ($key) => $env[$key] ?? '', ['AMADEUS_TST_PAX_SURNAME', 'AMADEUS_TST_PAX_FIRSTNAME', 'AMADEUS_TST_CARD_CVC', 'AMADEUS_TST_CARD_EXPIRY']),
     fn (string $value) => strlen($value) >= 3 && ! in_array(strtolower($value), $fakeWords, true),
