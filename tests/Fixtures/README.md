@@ -7,13 +7,18 @@ committed.
 | Directory | What | Used by |
 |---|---|---|
 | `wsdl/` | The two WSDL shapes `WsdlManager` handles (self-contained and `wsdl:import`) | `WsdlManagerTest` asserts its exact operation list: adding a WSDL here breaks it |
-| `wsdl-full/` | One WSDL with all 9 operations, the real response namespaces and the `AMA_SecurityHostedUser` header type | `BookingChainTest`, `RecursiveSearchTest`, and every test using `fakeAmadeus()` |
 | `responses/` | Hand-written replies shaped like Amadeus output | `BookingChainTest` and unit tests |
 | `tst/` | Real Amadeus TST traffic, sanitized | `tests/Feature/Tst`, cache, monitoring and failure tests |
 
-The `AMA_SecurityHostedUser` declaration in `wsdl-full/` matters for envelope
-tests: without it SoapClient serializes the header as a generic
-`item/key/value` map instead of `<UserID PseudoCityCode="..."/>`.
+The WSDL with all 9 operations, the real response namespaces and the
+`AMA_SecurityHostedUser` header type lives outside this directory, in
+`resources/testing/wsdl/`: it ships with the package because `Amadeus::fake()`
+loads it. `BookingChainTest`, `RecursiveSearchTest` and every test using
+`fakeAmadeus()` load it too (`AmadeusFake::wsdlDirectory()`).
+
+Its `AMA_SecurityHostedUser` declaration matters for envelope tests: without
+it SoapClient serializes the header as a generic `item/key/value` map instead
+of `<UserID PseudoCityCode="..."/>`.
 
 ## `tst/`
 

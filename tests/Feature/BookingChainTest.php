@@ -11,6 +11,7 @@ use Aldogtz\AmadeusSoap\Security\AmaSecurityHeader;
 use Aldogtz\AmadeusSoap\Security\WsSecurityHeader;
 use Aldogtz\AmadeusSoap\Session\SessionManager;
 use Aldogtz\AmadeusSoap\Session\Stores\ArraySessionStore;
+use Aldogtz\AmadeusSoap\Testing\AmadeusFake;
 use Aldogtz\AmadeusSoap\Tests\Doubles\FakeTransport;
 use Aldogtz\AmadeusSoap\Tests\TestCase;
 use Aldogtz\AmadeusSoap\Wsdl\WsdlManager;
@@ -68,7 +69,7 @@ class BookingChainTest extends TestCase
     protected function amadeusWith(FakeTransport $transport): AmadeusSoap
     {
         return new AmadeusSoap(
-            wsdlManager: new WsdlManager(dirname(__DIR__).'/Fixtures/wsdl-full'),
+            wsdlManager: new WsdlManager(AmadeusFake::wsdlDirectory()),
             sessionManager: $this->sessionManager,
             transport: $transport,
             logger: new SoapLogger(enabled: false),

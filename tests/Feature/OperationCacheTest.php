@@ -5,6 +5,7 @@ namespace Aldogtz\AmadeusSoap\Tests\Feature;
 use Aldogtz\AmadeusSoap\AmadeusSoap;
 use Aldogtz\AmadeusSoap\Cache\OperationCache;
 use Aldogtz\AmadeusSoap\Events\OperationCompleted;
+use Aldogtz\AmadeusSoap\Testing\AmadeusFake;
 use Aldogtz\AmadeusSoap\Tests\TestCase;
 use Illuminate\Support\Facades\Event;
 
@@ -139,7 +140,7 @@ class OperationCacheTest extends TestCase
         // Same office ID and WSDL directory path, but the WSDL behind it points
         // at another environment (e.g. TST and production sharing a Redis)
         $dir = sys_get_temp_dir().'/amadeus-wsdl-'.bin2hex(random_bytes(4));
-        $wsdl = file_get_contents(dirname(__DIR__).'/Fixtures/wsdl-full/Amadeus_All.wsdl');
+        $wsdl = file_get_contents(AmadeusFake::wsdlDirectory().'/Amadeus_All.wsdl');
         $production = str_replace('nodeD2.test.webservices.amadeus.com/1ASIWTEST', 'production.webservices.amadeus.test/1ASIWPROD', $wsdl, $replaced);
         $this->assertSame(1, $replaced);
 

@@ -6,6 +6,7 @@ use Aldogtz\AmadeusSoap\AmadeusSoap;
 use Aldogtz\AmadeusSoap\Logging\SoapLogger;
 use Aldogtz\AmadeusSoap\Session\SessionManager;
 use Aldogtz\AmadeusSoap\Session\Stores\ArraySessionStore;
+use Aldogtz\AmadeusSoap\Testing\AmadeusFake;
 use Aldogtz\AmadeusSoap\Tests\Doubles\FakeTransport;
 use Aldogtz\AmadeusSoap\Tests\TestCase;
 use Aldogtz\AmadeusSoap\Wsdl\WsdlManager;
@@ -25,7 +26,7 @@ class RecursiveSearchTest extends TestCase
     protected function amadeus(FakeTransport $transport): AmadeusSoap
     {
         return new AmadeusSoap(
-            wsdlManager: new WsdlManager(dirname(__DIR__).'/Fixtures/wsdl-full'),
+            wsdlManager: new WsdlManager(AmadeusFake::wsdlDirectory()),
             sessionManager: new SessionManager(
                 store: new ArraySessionStore,
                 keyResolver: fn () => 'recursive-test',

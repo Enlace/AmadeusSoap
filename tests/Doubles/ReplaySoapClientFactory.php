@@ -2,28 +2,25 @@
 
 namespace Aldogtz\AmadeusSoap\Tests\Doubles;
 
-use Aldogtz\AmadeusSoap\Client\AmadeusSoapClient;
-use Aldogtz\AmadeusSoap\Client\SoapClientFactory;
+use Aldogtz\AmadeusSoap\Testing\ReplaySoapClient as BaseReplaySoapClient;
+use Aldogtz\AmadeusSoap\Testing\ReplaySoapClientFactory as BaseReplaySoapClientFactory;
 
 /**
- * Hands out a single ReplaySoapClient, so one response queue serves every
- * operation regardless of the WSDL it belongs to.
+ * Hands out the tests' ReplaySoapClient (with lastResponseOverride).
  */
-class ReplaySoapClientFactory extends SoapClientFactory
+class ReplaySoapClientFactory extends BaseReplaySoapClientFactory
 {
-    protected ?ReplaySoapClient $client = null;
-
-    public function create(string $wsdlPath): AmadeusSoapClient
+    public function client(string $wsdlPath): ReplaySoapClient
     {
-        return $this->client ??= new ReplaySoapClient($wsdlPath, [
+        return $this->create($wsdlPath);
+    }
+
+    protected function newClient(string $wsdlPath): BaseReplaySoapClient
+    {
+        return new ReplaySoapClient($wsdlPath, [
             'trace' => true,
             'exceptions' => true,
             'cache_wsdl' => WSDL_CACHE_NONE,
         ]);
-    }
-
-    public function client(string $wsdlPath): ReplaySoapClient
-    {
-        return $this->create($wsdlPath);
     }
 }

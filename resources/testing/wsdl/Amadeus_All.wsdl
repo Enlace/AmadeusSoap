@@ -2,11 +2,12 @@
 <!--
   Test WSDL declaring every operation the package supports, with the response
   namespaces the real Amadeus WSDLs use. Response namespaces matter: they are
-  what OperationMetadata hands to AmadeusResponse for XPath resolution, so the
-  chain test would silently parse nothing if they were wrong.
+  what OperationMetadata hands to AmadeusResponse for XPath resolution, so a
+  replayed reply would silently parse nothing if they were wrong.
 
-  Kept in its own directory so the WsdlManager unit tests can keep asserting
-  the exact contents of tests/Fixtures/wsdl.
+  Loaded by Amadeus::fake() (Testing\AmadeusFake) and by the package's own
+  replay and chain tests. No request ever reaches the endpoint below: the
+  fake answers from its queue.
 -->
 <wsdl:definitions
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"

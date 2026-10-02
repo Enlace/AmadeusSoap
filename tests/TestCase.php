@@ -6,6 +6,7 @@ use Aldogtz\AmadeusSoap\AmadeusSoap;
 use Aldogtz\AmadeusSoap\AmadeusSoapServiceProvider;
 use Aldogtz\AmadeusSoap\Client\SoapClientFactory;
 use Aldogtz\AmadeusSoap\RateFiltering\TwoPhaseSearchService;
+use Aldogtz\AmadeusSoap\Testing\AmadeusFake;
 use Aldogtz\AmadeusSoap\Tests\Doubles\ReplaySoapClient;
 use Aldogtz\AmadeusSoap\Tests\Doubles\ReplaySoapClientFactory;
 use Aldogtz\AmadeusSoap\Wsdl\WsdlManager;
@@ -21,7 +22,7 @@ class TestCase extends Orchestra
 {
     protected const SOAP_ENVELOPE_NS = 'http://schemas.xmlsoap.org/soap/envelope/';
 
-    /** Directory holding the Amadeus_All.wsdl fakeAmadeus() loads (default: Fixtures/wsdl-full). */
+    /** Directory holding the Amadeus_All.wsdl fakeAmadeus() loads (default: the shipped resources/testing/wsdl). */
     protected ?string $replayWsdlDirectory = null;
 
     protected function getPackageProviders($app): array
@@ -48,12 +49,12 @@ class TestCase extends Orchestra
      * Replace the HTTP layer with a client answering with sanitized TST
      * responses (tests/Fixtures/tst/responses/{name}.xml), in order.
      *
-     * Everything above HTTP is real: the WSDL (wsdl-full, all operations),
+     * Everything above HTTP is real: the WSDL (resources/testing/wsdl, all operations),
      * headers and envelope serialization.
      */
     protected function fakeAmadeus(string ...$responses): ReplaySoapClient
     {
-        $wsdlPath = $this->replayWsdlDirectory ?? __DIR__.'/Fixtures/wsdl-full';
+        $wsdlPath = $this->replayWsdlDirectory ?? AmadeusFake::wsdlDirectory();
         $factory = new ReplaySoapClientFactory;
 
         config(['amadeus-soap.wsdl_path' => $wsdlPath]);
