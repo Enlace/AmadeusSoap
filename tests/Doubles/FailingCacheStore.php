@@ -55,6 +55,12 @@ class FailingCacheStore implements Store
         $this->fail();
     }
 
+    // Part of the Store contract from Laravel 13
+    public function touch($key, $seconds)
+    {
+        $this->fail();
+    }
+
     public function flush()
     {
         $this->fail();

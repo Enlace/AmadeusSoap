@@ -17,6 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   never used) and `WsdlManager::getWsdlDomDoc()` / `getWsdlDomXpath()` (they
   always returned `[]`). All three are removed in 3.0.
 
+### Fixed
+- 2.0.0 could not be installed on Laravel 13: `illuminate/contracts` was
+  capped at ^12.0. Laravel 13 is now supported and tested (Testbench 11,
+  Pest 4, PHPUnit 12), and CI covers it on PHP 8.3 and 8.4
+
 ### Removed
 - The `endpoint` (`AMADEUS_ENDPOINT`) and `debug` (`AMADEUS_DEBUG`) config
   options. Nothing read them: requests always went to the WSDL's endpoint,

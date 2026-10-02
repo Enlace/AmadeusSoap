@@ -3,6 +3,7 @@
 namespace Aldogtz\AmadeusSoap\Tests\Unit\Session;
 
 use Aldogtz\AmadeusSoap\Session\SessionData;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class SessionDataTest extends TestCase
@@ -94,9 +95,8 @@ class SessionDataTest extends TestCase
         $this->assertSame(0, $data->sequenceNumber);
     }
 
-    /**
-     * @dataProvider unusablePayloads
-     */
+    // Attribute, not @dataProvider: PHPUnit 12 (Laravel 13) dropped annotations
+    #[DataProvider('unusablePayloads')]
     public function test_try_from_array_rejects_unusable_payloads(mixed $payload): void
     {
         $this->assertNull(SessionData::tryFromArray($payload));

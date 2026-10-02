@@ -1,7 +1,7 @@
 # Amadeus SOAP Client for Laravel
 
 [![PHP Version](https://img.shields.io/badge/php-%5E8.2-blue)](https://php.net)
-[![Laravel](https://img.shields.io/badge/laravel-%5E10.0%7C%5E11.0%7C%5E12.0-red)](https://laravel.com)
+[![Laravel](https://img.shields.io/badge/laravel-%5E10.0%7C%5E11.0%7C%5E12.0%7C%5E13.0-red)](https://laravel.com)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 A robust Laravel package for integrating with Amadeus Globalizer SOAP Web Services. This package provides a clean, type-safe interface for hotel booking operations, PNR management, and other GDS functionalities.
@@ -37,7 +37,7 @@ A robust Laravel package for integrating with Amadeus Globalizer SOAP Web Servic
 ## Requirements
 
 - PHP ^8.2
-- Laravel ^10.0, ^11.0 or ^12.0
+- Laravel ^10.0, ^11.0, ^12.0 or ^13.0 (Laravel 13 needs PHP 8.3)
 - PHP SOAP extension (`ext-soap`)
 - PHP DOM extension (`ext-dom`)
 - Redis (recommended for production) or another cache driver
