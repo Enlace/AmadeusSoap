@@ -6,6 +6,7 @@ use Aldogtz\AmadeusSoap\Exceptions\AuthenticationException;
 use Aldogtz\AmadeusSoap\Exceptions\ConnectionException;
 use Aldogtz\AmadeusSoap\Exceptions\SoapFaultException;
 use Aldogtz\AmadeusSoap\Headers\HeaderBuilder;
+use Aldogtz\AmadeusSoap\Logging\CardDataMasker;
 use Aldogtz\AmadeusSoap\Wsdl\OperationMetadata;
 use Aldogtz\AmadeusSoap\Wsdl\WsdlManager;
 use SoapFault;
@@ -107,8 +108,8 @@ class SoapTransport
     /**
      * Get the raw (unformatted) last SOAP request XML.
      *
-     * This is the fast path — returns the XML string exactly as PHP's
-     * SoapClient captured it, with no DOM parsing or re-serialization.
+     * As PHP's SoapClient captured it, with no re-serialization, except
+     * that card numbers and security codes are masked (CardDataMasker).
      */
     public function getLastRequest(): ?string
     {
@@ -118,14 +119,14 @@ class SoapTransport
 
         $xml = $this->client->__getLastRequest();
 
-        return empty($xml) ? null : $xml;
+        return empty($xml) ? null : CardDataMasker::mask($xml);
     }
 
     /**
      * Get the raw (unformatted) last SOAP response XML.
      *
-     * This is the fast path — returns the XML string exactly as PHP's
-     * SoapClient captured it, with no DOM parsing or re-serialization.
+     * As PHP's SoapClient captured it, with no re-serialization, except
+     * that card numbers and security codes are masked (CardDataMasker).
      */
     public function getLastResponse(): ?string
     {
@@ -135,7 +136,7 @@ class SoapTransport
 
         $xml = $this->client->__getLastResponse();
 
-        return empty($xml) ? null : $xml;
+        return empty($xml) ? null : CardDataMasker::mask($xml);
     }
 
     /**
