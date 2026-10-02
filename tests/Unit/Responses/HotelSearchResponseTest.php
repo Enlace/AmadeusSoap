@@ -160,6 +160,20 @@ class HotelSearchResponseTest extends TestCase
         $this->assertEquals('true', $roomStay->meals->breakfast);
     }
 
+    public function test_room_stays_carry_their_hotel_and_occupancy(): void
+    {
+        $guests = '<GuestCounts><GuestCount AgeQualifyingCode="10" Count="2"/><GuestCount AgeQualifyingCode="8" Count="1" Age="5"/></GuestCounts>
+                            <TimeSpan Start="2026-03-01" End="2026-03-03"/>';
+        $xml = str_replace('<TimeSpan Start="2026-03-01" End="2026-03-03"/>', $guests, $this->multiSearchXml());
+
+        $roomStay = HotelSearchResponse::fromResponse(new AmadeusResponse($xml, 'http://www.opentravel.org/OTA/2003/05'))->roomStays[0];
+
+        // HotelStay RoomStayRPH="1" → BasicPropertyInfo HotelCode
+        $this->assertSame('MTYHLT', $roomStay->hotelCode);
+        $this->assertSame(2, $roomStay->adults);
+        $this->assertSame([['age' => '5', 'count' => '1']], $roomStay->children);
+    }
+
     public function test_non_refundable_accepts_ota_boolean_forms_and_unknown(): void
     {
         $parse = function (string $cancelPenalty): ?bool {

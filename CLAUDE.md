@@ -227,7 +227,13 @@ AmadeusSoapException (base)
   element, with root attributes under `'_attributes'`
 - Session stores implement `SessionStore` interface
 - XPath queries use `res` namespace prefix for response elements
-- Request params are snake_case array keys; response DTO properties are camelCase
+- Request params are snake_case array keys in every method; the camelCase keys
+  sell / descriptive info / PNR retrieve, cancel and details used before stay
+  accepted (`ValidatesParams::acceptSnakeCase()`, `HotelSellParams::normalize()`).
+  Response DTO properties are camelCase
+- Methods also take the previous step's reply objects instead of arrays
+  (`HotelPricingParams::fromRoomStay()`, `HotelSellParams::forRoom()`); keep the
+  array form working whenever adding one
 - Unit tests are PHPUnit-style classes with `test_*` methods extending
   `PHPUnit\Framework\TestCase`; only `tests/Feature/` gets Pest's `uses()` binding
 - Tests needing the container extend `Aldogtz\AmadeusSoap\Tests\TestCase`

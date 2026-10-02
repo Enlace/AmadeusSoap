@@ -3,6 +3,7 @@
 namespace Aldogtz\AmadeusSoap\Data\Concerns;
 
 use Aldogtz\AmadeusSoap\Exceptions\InvalidParameterException;
+use Illuminate\Support\Str;
 
 /**
  * Shared validation helpers for Params classes.
@@ -61,6 +62,24 @@ trait ValidatesParams
         if (! empty($errors)) {
             throw InvalidParameterException::forValidation($class, $errors);
         }
+    }
+
+    /**
+     * Accept snake_case keys for params whose canonical keys are camelCase
+     * (hotel_code → hotelCode). An explicit camelCase key wins.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    protected static function acceptSnakeCase(array $data): array
+    {
+        foreach ($data as $key => $value) {
+            if (is_string($key) && str_contains($key, '_')) {
+                $data[Str::camel($key)] ??= $value;
+            }
+        }
+
+        return $data;
     }
 
     /**

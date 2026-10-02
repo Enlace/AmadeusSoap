@@ -14,6 +14,8 @@ final readonly class PnrCancelParams
 
     public static function fromArray(array $data): self
     {
+        $data = self::acceptSnakeCase($data);
+
         self::validateRequired($data, ['segmentNumber'], 'PnrCancelParams');
 
         return new self(

@@ -252,7 +252,19 @@ final class HotelSearchResponse
         $roomStays = [];
         $roomStayNodes = self::nodes($response, '//res:RoomStay');
 
+        // A property lists its rates in HotelStay@RoomStayRPH ("0 1 2")
+        $hotelByRph = [];
+        foreach (self::nodes($response, '//res:HotelStays/res:HotelStay') as $hotelStay) {
+            $hotelCode = self::str($response, './res:BasicPropertyInfo/@HotelCode', $hotelStay);
+
+            foreach (preg_split('/\s+/', self::str($response, './@RoomStayRPH', $hotelStay), -1, PREG_SPLIT_NO_EMPTY) as $rph) {
+                $hotelByRph[$rph] = $hotelCode;
+            }
+        }
+
         foreach ($roomStayNodes as $node) {
+            $rph = self::str($response, './@RPH', $node);
+            [$adults, $children] = self::parseGuestCounts($response, $node);
             $total = self::parseRoomTotal($response, $node);
             $dailyRates = self::parseDailyRates($response, $node);
 
@@ -269,7 +281,7 @@ final class HotelSearchResponse
             $nonRefundable = self::otaBoolean($response, './res:RatePlans/res:RatePlan/res:CancelPenalties/res:CancelPenalty/@NonRefundable', $node);
 
             $roomStays[] = new RoomStayResult(
-                rph: self::str($response, './@RPH', $node),
+                rph: $rph,
                 roomType: self::str($response, './res:RoomTypes/res:RoomType/@RoomType', $node),
                 roomTypeCode: self::str($response, './res:RoomRates/res:RoomRate/@RoomTypeCode', $node),
                 bookingCode: self::str($response, './res:RoomRates/res:RoomRate/@BookingCode', $node),
@@ -289,10 +301,38 @@ final class HotelSearchResponse
                     breakfast: self::str($response, './res:RatePlans/res:RatePlan/res:MealsIncluded/@Breakfast', $node),
                     mealPlanIndicator: self::str($response, './res:RatePlans/res:RatePlan/res:MealsIncluded/@MealPlanIndicator', $node),
                 ),
+                hotelCode: $hotelByRph[$rph] ?? self::str($response, './res:BasicPropertyInfo/@HotelCode', $node),
+                adults: $adults,
+                children: $children,
             );
         }
 
         return $roomStays;
+    }
+
+    /**
+     * Occupancy a rate was quoted for: AgeQualifyingCode 10 counts adults,
+     * 8 counts children (with their age).
+     *
+     * @return array{0: int, 1: array<int, array{age: string, count: string}>}
+     */
+    private static function parseGuestCounts(AmadeusResponse $response, \DOMNode $roomStayNode): array
+    {
+        $adults = 0;
+        $children = [];
+
+        foreach (self::nodes($response, './res:GuestCounts/res:GuestCount', $roomStayNode) as $guestCount) {
+            $code = self::str($response, './@AgeQualifyingCode', $guestCount);
+            $count = self::str($response, './@Count', $guestCount);
+
+            if ($code === '10') {
+                $adults += (int) $count;
+            } elseif ($code === '8') {
+                $children[] = ['age' => self::str($response, './@Age', $guestCount), 'count' => $count];
+            }
+        }
+
+        return [$adults, $children];
     }
 
     private static function parseRoomTotal(AmadeusResponse $response, ?\DOMNode $roomStayNode): ?RoomTotal

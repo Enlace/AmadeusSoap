@@ -11,6 +11,9 @@ final readonly class RoomStayResult
     /**
      * @param  DailyRate[]  $dailyRates
      * @param  string[]  $amenities
+     * @param  string  $hotelCode  Property the rate belongs to (from the HotelStay listing its RPH)
+     * @param  int  $adults  Occupancy the rate was quoted for; 0 when the reply omits it
+     * @param  array<int, array{age: string, count: string}>  $children
      */
     public function __construct(
         public string $rph,
@@ -30,6 +33,9 @@ final readonly class RoomStayResult
         public array $dailyRates,
         public array $amenities,
         public MealsIncluded $meals,
+        public string $hotelCode = '',
+        public int $adults = 0,
+        public array $children = [],
     ) {}
 
     /**
@@ -55,6 +61,9 @@ final readonly class RoomStayResult
             dailyRates: $this->dailyRates,
             amenities: $this->amenities,
             meals: $this->meals,
+            hotelCode: $this->hotelCode,
+            adults: $this->adults,
+            children: $this->children,
         );
     }
 }

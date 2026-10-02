@@ -14,6 +14,8 @@ final readonly class PnrRetrieveParams
 
     public static function fromArray(array $data): self
     {
+        $data = self::acceptSnakeCase($data);
+
         self::validateRequired($data, ['pnrNumber'], 'PnrRetrieveParams');
 
         return new self(

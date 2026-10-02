@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Every call accepts what the previous step returned, so the booking flow no
+  longer re-types hotel, dates, codes, agent or passenger:
+  `hotelPricing($roomStay)`, `hotelSell($roomStay, $pnrReply, $card)`,
+  `addMultiElements('create', new Traveler(...))`, `pnrRetrieve('ABC123'|$reply)`,
+  `hotelCompleteReservationDetails($reply)`, `pnrCancel($segment)` and
+  `hotelDescriptiveInfo('CODE'|$hotel|$roomStay)`. Arrays keep working.
+- `PaymentCard` (number and CVC redacted from traces and dumps) and `Traveler`
+  value objects; `HotelPricingParams::fromRoomStay()` and
+  `HotelSellParams::forRoom()` build the params from the replies
+- `RoomStayResult::$hotelCode`, `$adults` and `$children`, read from the reply
+- snake_case keys in every method (`travel_agent_ref`, `pnr_number`,
+  `segment_number`, `hotel_code`…); the camelCase spelling stays accepted
+
 ### Changed
 - The response cache keys entries by the endpoint the WSDL points at, so
   environments sharing a cache store, an office ID and even the WSDL directory

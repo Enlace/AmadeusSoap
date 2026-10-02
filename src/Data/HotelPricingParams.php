@@ -3,6 +3,7 @@
 namespace Aldogtz\AmadeusSoap\Data;
 
 use Aldogtz\AmadeusSoap\Data\Concerns\ValidatesParams;
+use Aldogtz\AmadeusSoap\Data\Responses\RoomStayResult;
 
 final readonly class HotelPricingParams
 {
@@ -20,6 +21,25 @@ final readonly class HotelPricingParams
         public string $guestCount,
         public array $children = [],
     ) {}
+
+    /**
+     * Price a rate from a single-hotel search: hotel, dates, codes and
+     * occupancy come from the room stay. $overrides wins over all of them.
+     */
+    public static function fromRoomStay(RoomStayResult $roomStay, array $overrides = []): self
+    {
+        return self::fromArray(array_merge([
+            'start' => $roomStay->start,
+            'end' => $roomStay->end,
+            'hotel_code' => $roomStay->hotelCode,
+            'rate_plan_code' => $roomStay->ratePlanCode,
+            'booking_code' => $roomStay->bookingCode,
+            'room_type_code' => $roomStay->roomTypeCode,
+            'quantity' => $roomStay->numberOfUnits ?: '1',
+            'guest_count' => (string) max(1, $roomStay->adults),
+            'children' => $roomStay->children,
+        ], $overrides));
+    }
 
     public static function fromArray(array $data): self
     {

@@ -9,8 +9,15 @@ use Aldogtz\AmadeusSoap\Data\HotelCompleteReservationDetailsParams;
 use Aldogtz\AmadeusSoap\Data\HotelDescriptiveInfoParams;
 use Aldogtz\AmadeusSoap\Data\HotelPricingParams;
 use Aldogtz\AmadeusSoap\Data\HotelSearchParams;
+use Aldogtz\AmadeusSoap\Data\HotelSellParams;
+use Aldogtz\AmadeusSoap\Data\PaymentCard;
 use Aldogtz\AmadeusSoap\Data\PnrCancelParams;
 use Aldogtz\AmadeusSoap\Data\PnrRetrieveParams;
+use Aldogtz\AmadeusSoap\Data\Responses\HotelResult;
+use Aldogtz\AmadeusSoap\Data\Responses\PnrRetrieveSegment;
+use Aldogtz\AmadeusSoap\Data\Responses\PnrSegment;
+use Aldogtz\AmadeusSoap\Data\Responses\RoomStayResult;
+use Aldogtz\AmadeusSoap\Data\Traveler;
 use Aldogtz\AmadeusSoap\Data\Responses\AddMultiElementsResponse;
 use Aldogtz\AmadeusSoap\Data\Responses\HotelCompleteReservationDetailsResponse;
 use Aldogtz\AmadeusSoap\Data\Responses\HotelDescriptiveInfoResponse;
@@ -25,6 +32,7 @@ use Aldogtz\AmadeusSoap\Events\OperationFailed;
 use Aldogtz\AmadeusSoap\Events\OperationStarting;
 use Aldogtz\AmadeusSoap\Exceptions\AuthenticationException;
 use Aldogtz\AmadeusSoap\Exceptions\ConnectionException;
+use Aldogtz\AmadeusSoap\Exceptions\InvalidParameterException;
 use Aldogtz\AmadeusSoap\Exceptions\OperationNotFoundException;
 use Aldogtz\AmadeusSoap\Exceptions\SessionException;
 use Aldogtz\AmadeusSoap\Exceptions\SoapFaultException;
@@ -89,10 +97,14 @@ class AmadeusSoap
     /**
      * Get enhanced pricing for a hotel.
      *
+     * Pass the room stay from a single-hotel search to take hotel, dates,
+     * codes and occupancy from it ($overrides wins), or the params array.
      */
-    public function hotelPricing(array $params = []): HotelPricingResponse
+    public function hotelPricing(array|RoomStayResult $params = [], array $overrides = []): HotelPricingResponse
     {
-        $pricingParams = HotelPricingParams::fromArray($params);
+        $pricingParams = $params instanceof RoomStayResult
+            ? HotelPricingParams::fromRoomStay($params, $overrides)
+            : HotelPricingParams::fromArray(array_merge($params, $overrides));
         $operation = new HotelPricing($pricingParams);
         $body = $operation->build();
         $operationName = $operation->getOperationName();
@@ -105,10 +117,24 @@ class AmadeusSoap
     /**
      * Sell a hotel room (create a booking segment).
      *
+     * Pass the room stay, the PNR reply and the card to derive every sell
+     * param (see HotelSellParams::forRoom()), or the params array.
+     *
+     * @throws InvalidParameterException
      */
-    public function hotelSell(array $params = []): HotelSellResponse
+    public function hotelSell(array|RoomStayResult $params = [], ?AddMultiElementsResponse $pnr = null, ?PaymentCard $card = null): HotelSellResponse
     {
-        $operation = new HotelSell($params);
+        if ($params instanceof RoomStayResult) {
+            if ($pnr === null || $card === null) {
+                throw InvalidParameterException::forValidation('HotelSellParams', [
+                    'pnr' => 'selling a room stay needs the PNR reply and the guarantee card',
+                ]);
+            }
+
+            $params = HotelSellParams::forRoom($params, $pnr, $card);
+        }
+
+        $operation = new HotelSell(HotelSellParams::normalize($params));
         $body = $operation->build();
         $operationName = $operation->getOperationName();
 
@@ -123,9 +149,13 @@ class AmadeusSoap
      * @throws SoapFaultException
      * @throws OperationNotFoundException
      */
-    public function hotelDescriptiveInfo(array $params = []): HotelDescriptiveInfoResponse
+    public function hotelDescriptiveInfo(array|string|HotelResult|RoomStayResult $params = []): HotelDescriptiveInfoResponse
     {
-        $infoParams = HotelDescriptiveInfoParams::fromArray($params);
+        $infoParams = HotelDescriptiveInfoParams::fromArray(match (true) {
+            is_string($params) => ['hotelCode' => $params],
+            $params instanceof HotelResult, $params instanceof RoomStayResult => ['hotelCode' => $params->hotelCode],
+            default => $params,
+        });
         $operation = new HotelDescriptiveInfo($infoParams);
         $body = $operation->build();
         $operationName = $operation->getOperationName();
@@ -142,10 +172,16 @@ class AmadeusSoap
     /**
      * Get complete hotel reservation details.
      *
+     * Pass the end-transaction or retrieve reply to use its PNR and first
+     * hotel segment, or the params array.
      */
-    public function hotelCompleteReservationDetails(array $params = []): HotelCompleteReservationDetailsResponse
+    public function hotelCompleteReservationDetails(array|AddMultiElementsResponse|PnrRetrieveResponse $params = []): HotelCompleteReservationDetailsResponse
     {
-        $detailParams = HotelCompleteReservationDetailsParams::fromArray($params);
+        if (! is_array($params)) {
+            $params = ['pnrNumber' => $params->pnrNumber, 'segmentNumber' => $params->segments[0]->segmentNumber ?? null];
+        }
+
+        $detailParams = HotelCompleteReservationDetailsParams::fromArray(array_filter($params, fn ($value) => $value !== null));
         $operation = new HotelCompleteReservationDetails($detailParams);
         $body = $operation->build();
         $operationName = $operation->getOperationName();
@@ -158,9 +194,22 @@ class AmadeusSoap
     /**
      * Add multi elements to PNR (create, end, cancel).
      *
+     * For 'create', pass a Traveler (or a list of them) or the params array.
+     *
+     * @param  array<int|string, mixed>|Traveler|Traveler[]  $params
      */
-    public function addMultiElements(string $type = 'create', array $params = [], array $remarks = []): AddMultiElementsResponse
+    public function addMultiElements(string $type = 'create', array|Traveler $params = [], array $remarks = []): AddMultiElementsResponse
     {
+        $params = match (true) {
+            $params instanceof Traveler => $params->toArray(),
+            default => array_map(fn ($traveler) => $traveler instanceof Traveler ? $traveler->toArray() : $traveler, $params),
+        };
+
+        // first_name is accepted as the snake_case spelling of name
+        if (isset($params['first_name'])) {
+            $params['name'] ??= $params['first_name'];
+        }
+
         $operation = new PnrAddMultiElements(
             type: $type,
             params: $params,
@@ -182,9 +231,13 @@ class AmadeusSoap
      * @throws SoapFaultException
      * @throws OperationNotFoundException
      */
-    public function pnrRetrieve(array $params = []): PnrRetrieveResponse
+    public function pnrRetrieve(array|string|AddMultiElementsResponse|PnrRetrieveResponse $params = []): PnrRetrieveResponse
     {
-        $retrieveParams = PnrRetrieveParams::fromArray($params);
+        $retrieveParams = PnrRetrieveParams::fromArray(match (true) {
+            is_string($params) => ['pnrNumber' => $params],
+            is_array($params) => $params,
+            default => ['pnrNumber' => $params->pnrNumber],
+        });
         $operation = new PnrRetrieve($retrieveParams);
         $body = $operation->build();
         $operationName = $operation->getOperationName();
@@ -203,10 +256,16 @@ class AmadeusSoap
     /**
      * Cancel PNR segments.
      *
+     * Pass the segment (from the end-transaction or retrieve reply), its
+     * number, or the params array.
      */
-    public function pnrCancel(array $params = []): PnrCancelResponse
+    public function pnrCancel(array|string|int|PnrSegment|PnrRetrieveSegment $params = []): PnrCancelResponse
     {
-        $cancelParams = PnrCancelParams::fromArray($params);
+        $cancelParams = PnrCancelParams::fromArray(match (true) {
+            is_array($params) => $params,
+            is_object($params) => ['segmentNumber' => $params->segmentNumber],
+            default => ['segmentNumber' => (string) $params],
+        });
         $operation = new PnrCancel($cancelParams);
         $body = $operation->build();
         $operationName = $operation->getOperationName();

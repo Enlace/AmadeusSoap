@@ -15,6 +15,7 @@ A robust Laravel package for integrating with Amadeus Globalizer SOAP Web Servic
 - **Event-Driven Architecture** - Dispatches Laravel events for monitoring and logging
 - **Comprehensive Error Handling** - Typed exception hierarchy for different error scenarios
 - **WSDL Management** - Lazy loading and caching of WSDL metadata
+- **Compact Calls** - Each step takes the previous reply (room stay, PNR, segment): no re-typing hotel, codes, agent or passenger
 - **Tested Against Real Traffic** - Feature tests replay sanitized Amadeus TST requests and responses
 - **Response Cache** - Optional caching of stateless searches and descriptive info
 - **Rate Filtering** - Best-only or all-rates searches, plus local filtering of a hotel's rates (refundable, breakfast, rate plans, price)
@@ -193,15 +194,12 @@ At least one search criterion is required: `hotel_code`, `hotel_city_code`,
 ```php
 // Step 2: re-search the chosen property to open a session and refresh the rate
 $single = Amadeus::hotelSearch('single', [
-    'start' => '2024-12-25',
-    'end' => '2024-12-28',
-    'hotel_code' => $hotel->hotelCode,
-    'quantity' => 1,
+    'hotel_code' => $hotel->hotelCode, 'start' => '2024-12-25', 'end' => '2024-12-28',
     'guest_count' => 2,
     'rate_code' => [],   // no filter: return whatever is loaded
 ]);
 
-$fresh = $single->roomStays[0];
+$room = $single->roomStays[0];
 ```
 
 **On `rate_code`.** It defaults to `'RAC'`, and `[]` omits the
@@ -210,20 +208,11 @@ $fresh = $single->roomStays[0];
 answers `RATE NOT LOADED` (`Error Code="842"`). Filter by rate plan codes your
 office actually has loaded, or by nothing.
 
-`hotelPricing` needs the rate identifiers from that single-hotel search.
+Pass that room stay to `hotelPricing`: the hotel, dates, rate identifiers and
+occupancy come from it (the second argument overrides any of them).
 
 ```php
-$pricing = Amadeus::hotelPricing([
-    'start' => '2024-12-25',
-    'end' => '2024-12-28',
-    'hotel_code' => $hotel->hotelCode,
-    'rate_plan_code' => $fresh->ratePlanCode,
-    'booking_code' => $fresh->bookingCode,
-    'room_type_code' => $fresh->roomTypeCode,
-    'quantity' => 1,
-    'guest_count' => 2,
-    'is_per_room' => 'true',   // optional, defaults to 'true'
-]);
+$pricing = Amadeus::hotelPricing($room);
 
 echo "Room: {$pricing->roomType} · guarantee {$pricing->guaranteeCode}\n";
 
@@ -234,8 +223,9 @@ foreach ($pricing->cancelPenalties as $penalty) {
 }
 ```
 
-All of `start`, `end`, `hotel_code`, `rate_plan_code`, `booking_code`,
-`room_type_code`, `quantity` and `guest_count` are required.
+The array form still works — `start`, `end`, `hotel_code`, `rate_plan_code`,
+`booking_code`, `room_type_code`, `quantity` and `guest_count` are then
+required. A rate without a room type code cannot be priced either way.
 
 ### Creating a Booking
 
@@ -244,44 +234,26 @@ The booking chain is **PNR first, hotel segment second**: `hotelSell` needs the
 returns.
 
 ```php
+use Aldogtz\AmadeusSoap\Data\PaymentCard;
+use Aldogtz\AmadeusSoap\Data\Traveler;
+
 // 1. Open the PNR with the passenger
-$create = Amadeus::addMultiElements('create', [
-    'surname' => 'DOE',
-    'name' => 'JOHN',
-    'type' => 'ADT',
-]);
+$pnr = Amadeus::addMultiElements('create', new Traveler('DOE', 'JOHN'));
 
-$traveler = $create->travelers[0];
+// 2. Attach the hotel segment. Agent and passenger come from the PNR reply,
+//    hotel and booking code from the room stay, payment type from its guarantee.
+$card = new PaymentCard('VI', config('services.amadeus.card_number'), config('services.amadeus.card_cvc'), '1226', 'JOHN DOE');
+$sell = Amadeus::hotelSell($room, $pnr, $card);
 
-// 2. Attach the hotel segment (needs a card for the guarantee)
-$sell = Amadeus::hotelSell([
-    'travelAgentRef' => $create->travelAgentRef,
-    'chainCode' => $hotel->chainCode,
-    'cityCode' => 'NYC',
-    'hotelCode' => $hotel->hotelCode,
-    'bookingCode' => $rate->bookingCode,
-    'paymentType' => 'CC',
-    'vendorCode' => 'VI',
-    'cardNumber' => config('services.amadeus.card_number'),
-    'securityId' => config('services.amadeus.card_cvc'),
-    'expiryDate' => '1226',              // MMYY
-    'surname' => 'DOE',
-    'firstName' => 'JOHN',
-    'passengerReference' => [
-        'type' => 'BHO',                 // booking holder occupant
-        'value' => $traveler->referenceNumber,
-    ],
-]);
+if ($sell->hasErrors) {
+    // e.g. CTL: Amadeus refuses this rate. It is per rate, so another room
+    // stay of the same search (same session) may sell.
+}
 
-echo "Booking reference: {$sell->bookingReference}\n";
 echo "Confirmation: {$sell->confirmationNumber}\n";
 
 // 3. Commit the PNR and get the record locator
-$end = Amadeus::addMultiElements('end', [
-    'surname' => 'DOE',
-    'name' => 'JOHN',
-    'type' => 'ADT',
-]);
+$end = Amadeus::addMultiElements('end');
 
 echo "PNR: {$end->pnrNumber}\n";
 
@@ -289,9 +261,16 @@ echo "PNR: {$end->pnrNumber}\n";
 Amadeus::signOut();
 ```
 
-For multiple passengers or rooms, pass a list of arrays instead of a flat one —
-`addMultiElements('create', [['surname' => ..., 'name' => ..., 'type' => 'ADT'], ...])`
-and give `hotelSell` one keyed room array per room alongside `travelAgentRef`.
+`PaymentCard` keeps the number and CVC out of stack traces and masks them in
+`var_dump()`/`dd()`.
+
+For several passengers pass a list — `addMultiElements('create', [new Traveler('DOE', 'JOHN'), new Traveler('DOE', 'JANE')])`.
+For several rooms, give `hotelSell` the array form: one room array per room
+alongside `travel_agent_ref`.
+
+Array keys are snake_case in every method (`travel_agent_ref`, `booking_code`,
+`pnr_number`, `segment_number`, …); the camelCase spelling some methods used
+before (`travelAgentRef`, `pnrNumber`) is still accepted.
 
 Never hardcode card details. Read them from config or environment.
 
@@ -300,9 +279,8 @@ Never hardcode card details. Read them from config or environment.
 Stateless — no session is opened for this call.
 
 ```php
-$info = Amadeus::hotelDescriptiveInfo([
-    'hotelCode' => 'NYC12345',   // string, or an array of codes
-]);
+// A hotel code, a HotelResult or RoomStayResult, or ['hotel_code' => [...]] for several
+$info = Amadeus::hotelDescriptiveInfo('NYC12345');
 
 // $info->hotels holds HotelDescriptiveContent objects.
 // hotel() returns one by code, or the first when called with no argument.
@@ -334,34 +312,26 @@ default to `'true'`; pass `'false'` to trim the response.
 ### PNR Management
 
 ```php
-// Retrieve a PNR by record locator
-$pnr = Amadeus::pnrRetrieve([
-    'pnrNumber' => 'ABC123',
-]);
-
-echo "PNR: {$pnr->pnrNumber}\n";
+// Retrieve a PNR by record locator (or pass the end-transaction reply)
+$pnr = Amadeus::pnrRetrieve('ABC123');
 
 foreach ($pnr->segments as $segment) {
     echo "Segment {$segment->segmentNumber}\n";
 }
 
-// Complete reservation details for one hotel segment
-$details = Amadeus::hotelCompleteReservationDetails([
-    'pnrNumber' => 'ABC123',
-    'segmentNumber' => '1',
-]);
+// Complete reservation details: PNR and first hotel segment from the reply
+$details = Amadeus::hotelCompleteReservationDetails($pnr);
 
-// Cancel a segment by its number within the PNR
-$cancel = Amadeus::pnrCancel([
-    'segmentNumber' => '1',        // string, or an array of numbers
-]);
-
-// Commit the cancellation
-Amadeus::addMultiElements('cancel', []);
+// Cancel a hotel segment, then commit the cancellation
+Amadeus::pnrCancel($pnr->segments[0]);
+Amadeus::addMultiElements('cancel');
 ```
 
-`pnrRetrieve` takes `pnrNumber` (the record locator). `pnrCancel` takes
-`segmentNumber` — the element number inside the PNR, not the record locator.
+`pnrCancel` takes the segment (or its number, or an array of numbers): the
+element number inside the PNR, not the record locator. The array forms still
+work: `pnrRetrieve(['pnr_number' => 'ABC123'])`,
+`hotelCompleteReservationDetails(['pnr_number' => 'ABC123', 'segment_number' => '2'])`,
+`pnrCancel(['segment_number' => '2'])`.
 
 ### Advanced: Recursive Hotel Search (Pagination)
 

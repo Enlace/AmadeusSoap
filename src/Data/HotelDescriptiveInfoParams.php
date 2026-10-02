@@ -26,6 +26,8 @@ final readonly class HotelDescriptiveInfoParams
 
     public static function fromArray(array $data): self
     {
+        $data = self::acceptSnakeCase($data);
+
         self::validateRequired($data, ['hotelCode'], 'HotelDescriptiveInfoParams');
 
         return new self(
