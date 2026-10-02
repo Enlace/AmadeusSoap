@@ -67,6 +67,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   always returned `[]`). All three are removed in 3.0.
 
 ### Fixed
+- The default contact email (`contact_email`, the PNR AP element) was
+  misspelled `desarollo@enlaceforte.com`; it is `desarrollo@enlaceforte.com`.
+  Set `AMADEUS_CONTACT_EMAIL` to keep sending to another mailbox.
 - `HotelDescriptiveContent::$addresses` and `$infoAddress` were empty for
   every real reply: Amadeus sends the property's addresses under
   `ContactInfos/ContactInfo/Addresses`, not `HotelInfo/Addresses`. With no

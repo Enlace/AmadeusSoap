@@ -276,8 +276,9 @@ Env vars that actually have an effect (read by the ServiceProvider):
 - `AMADEUS_RETRY_ENABLED` and the other `AMADEUS_RETRY_*` values
 - `AMADEUS_LOGGING`, `AMADEUS_LOG_CHANNEL`
 - `AMADEUS_SOAP_TRACE`, `AMADEUS_CONNECTION_TIMEOUT`, `AMADEUS_TIMEOUT`
-- `AMADEUS_CONTACT_EMAIL` — PNR AP element (default is a hardcoded
-  `desarollo@enlaceforte.com`, note the misspelling)
+- `AMADEUS_CONTACT_EMAIL` — PNR AP element (default
+  `desarrollo@enlaceforte.com`; dev-main and 2.0 sent the misspelled
+  `desarollo@`)
 
 - `AMADEUS_CACHE_*`, `AMADEUS_MONITORING_*`, `AMADEUS_DEFAULT_SEARCH_CACHE_LEVEL`,
   `AMADEUS_LISTING_CACHE_LEVEL`, `AMADEUS_DETAILS_CACHE_LEVEL`,

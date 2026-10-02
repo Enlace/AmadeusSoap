@@ -12,7 +12,7 @@ class PnrAddMultiElements implements Operation
         protected array $params,
         protected array $remarks = [],
         protected array $retentionConfig = [],
-        protected string $contactEmail = 'desarollo@enlaceforte.com',
+        protected string $contactEmail = 'desarrollo@enlaceforte.com',
         protected ?string $checkOutDate = null,
     ) {}
 

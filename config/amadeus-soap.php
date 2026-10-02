@@ -135,7 +135,7 @@ return [
     | Default Contact Email
     |--------------------------------------------------------------------------
     */
-    'contact_email' => env('AMADEUS_CONTACT_EMAIL', 'desarollo@enlaceforte.com'),
+    'contact_email' => env('AMADEUS_CONTACT_EMAIL', 'desarrollo@enlaceforte.com'),
 
 
     /*

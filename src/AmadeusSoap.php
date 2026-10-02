@@ -217,7 +217,7 @@ class AmadeusSoap
             params: $params,
             remarks: $remarks,
             retentionConfig: $this->config['retention'] ?? [],
-            contactEmail: $this->config['contact_email'] ?? 'desarollo@enlaceforte.com',
+            contactEmail: $this->config['contact_email'] ?? 'desarrollo@enlaceforte.com',
             checkOutDate: $checkOutDate,
         );
         $body = $operation->build();
