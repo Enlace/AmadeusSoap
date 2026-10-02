@@ -6,12 +6,12 @@
       <wsa:Address>https://webservices.amadeus.test/1ASIWTEST</wsa:Address>
     </wsa:From>
     <wsa:Action>http://webservices.amadeus.com/PNRADD_21_1_1A</wsa:Action>
-    <wsa:MessageID>urn:uuid:e05a19e0-fee1-1f74-e95f-0405e597b072</wsa:MessageID>
-    <wsa:RelatesTo RelationshipType="http://www.w3.org/2005/08/addressing/reply">e212f991-d9b5-49e9-b019-146a3056b05e</wsa:RelatesTo>
+    <wsa:MessageID>urn:uuid:9f1e9c95-5e1f-1334-3d18-476159e78cc9</wsa:MessageID>
+    <wsa:RelatesTo RelationshipType="http://www.w3.org/2005/08/addressing/reply">304241c4-5f83-4ade-90da-2cb216bda656</wsa:RelatesTo>
     <awsse:Session TransactionStatusCode="InSeries">
-      <awsse:SessionId>SESSION0006</awsse:SessionId>
-      <awsse:SequenceNumber>3</awsse:SequenceNumber>
-      <awsse:SecurityToken>SECURITYTOKEN0015</awsse:SecurityToken>
+      <awsse:SessionId>SESSION0014</awsse:SessionId>
+      <awsse:SequenceNumber>4</awsse:SequenceNumber>
+      <awsse:SecurityToken>SECURITYTOKEN0023</awsse:SecurityToken>
     </awsse:Session>
   </SOAP-ENV:Header>
   <SOAP-ENV:Body>
@@ -20,12 +20,16 @@
         <reservationInfo>
           <reservation>
             <companyId>1A</companyId>
+            <controlNumber>TST003</controlNumber>
+            <date>021026</date>
+            <time>2323</time>
           </reservation>
         </reservationInfo>
       </pnrHeader>
       <securityInformation>
         <responsibilityInformation>
           <typeOfPnrElement>RP</typeOfPnrElement>
+          <agentId>WSSU</agentId>
           <officeId>TEST01</officeId>
           <iataCode>00000000</iataCode>
         </responsibilityInformation>
@@ -33,38 +37,51 @@
           <queueingOfficeId>TEST01</queueingOfficeId>
         </queueingInformation>
         <cityCode>MTY</cityCode>
+        <secondRpInformation>
+          <creationOfficeId>TEST01</creationOfficeId>
+          <agentSignature>9999WS</agentSignature>
+          <creationDate>021026</creationDate>
+          <creatorIataCode>00000000</creatorIataCode>
+          <creationTime>2323</creationTime>
+        </secondRpInformation>
       </securityInformation>
       <sbrPOSDetails>
         <sbrUserIdentificationOwn>
           <originIdentification>
-            <inHouseIdentification1> </inHouseIdentification1>
+            <originatorId>00000000</originatorId>
+            <inHouseIdentification1>TEST01</inHouseIdentification1>
           </originIdentification>
+          <originatorTypeCode>T</originatorTypeCode>
         </sbrUserIdentificationOwn>
         <sbrSystemDetails>
           <deliveringSystem>
-            <companyId> </companyId>
+            <companyId>1A</companyId>
+            <locationId>MTY</locationId>
           </deliveringSystem>
         </sbrSystemDetails>
         <sbrPreferences>
           <userPreferences>
-            <codedCountry> </codedCountry>
+            <codedCountry>MX</codedCountry>
           </userPreferences>
         </sbrPreferences>
       </sbrPOSDetails>
       <sbrCreationPosDetails>
         <sbrUserIdentificationOwn>
           <originIdentification>
-            <inHouseIdentification1> </inHouseIdentification1>
+            <originatorId>00000000</originatorId>
+            <inHouseIdentification1>TEST01</inHouseIdentification1>
           </originIdentification>
+          <originatorTypeCode>T</originatorTypeCode>
         </sbrUserIdentificationOwn>
         <sbrSystemDetails>
           <deliveringSystem>
-            <companyId> </companyId>
+            <companyId>1A</companyId>
+            <locationId>MTY</locationId>
           </deliveringSystem>
         </sbrSystemDetails>
         <sbrPreferences>
           <userPreferences>
-            <codedCountry> </codedCountry>
+            <codedCountry>MX</codedCountry>
           </userPreferences>
         </sbrPreferences>
       </sbrCreationPosDetails>
@@ -88,6 +105,23 @@
           </userPreferences>
         </sbrPreferences>
       </sbrUpdatorPosDetails>
+      <technicalData>
+        <enveloppeNumberData>
+          <sequenceDetails>
+            <number>2</number>
+          </sequenceDetails>
+        </enveloppeNumberData>
+        <lastTransmittedEnvelopeNumber>
+          <currentRecord>1</currentRecord>
+        </lastTransmittedEnvelopeNumber>
+        <purgeDateData>
+          <dateTime>
+            <year>2026</year>
+            <month>11</month>
+            <day>21</day>
+          </dateTime>
+        </purgeDateData>
+      </technicalData>
       <travellerInfo>
         <elementManagementPassenger>
           <reference>
@@ -138,7 +172,7 @@
           </elementManagementItinerary>
           <travelProduct>
             <product>
-              <depDate>070826</depDate>
+              <depDate>091026</depDate>
             </product>
             <boardpointDetail>
               <cityCode>MTY</cityCode>
@@ -169,18 +203,6 @@
         <marker2/>
         <dataElementsIndiv>
           <elementManagementData>
-            <segmentName>RF</segmentName>
-          </elementManagementData>
-          <otherDataFreetext>
-            <freetextDetail>
-              <subjectQualifier>3</subjectQualifier>
-              <type>P22</type>
-            </freetextDetail>
-            <longFreetext>ADDED VIA WEBSERVICE-LATAM/WSTESTUSR</longFreetext>
-          </otherDataFreetext>
-        </dataElementsIndiv>
-        <dataElementsIndiv>
-          <elementManagementData>
             <reference>
               <qualifier>OT</qualifier>
               <number>1</number>
@@ -208,10 +230,32 @@
           <ticketElement>
             <ticket>
               <indicator>OK</indicator>
-              <date>310726</date>
+              <date>021026</date>
               <officeId>TEST01</officeId>
             </ticket>
           </ticketElement>
+        </dataElementsIndiv>
+        <dataElementsIndiv>
+          <elementManagementData>
+            <reference>
+              <qualifier>OT</qualifier>
+              <number>7</number>
+            </reference>
+            <segmentName>RM</segmentName>
+            <lineNumber>5</lineNumber>
+          </elementManagementData>
+          <miscellaneousRemarks>
+            <remarks>
+              <type>RM</type>
+              <freetext>HHL MC HX0 MEX 00NOV SFM/CF-00000000/CX-00000000</freetext>
+            </remarks>
+          </miscellaneousRemarks>
+          <extendedRemark>
+            <structuredRemark>
+              <type>RM</type>
+              <freetext>HHL MC HX0 MEX 00NOV SFM/CF-00000000/CX-00000000</freetext>
+            </structuredRemark>
+          </extendedRemark>
         </dataElementsIndiv>
       </dataElementsMaster>
     </PNR_Reply>

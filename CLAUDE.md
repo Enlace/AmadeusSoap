@@ -93,7 +93,10 @@ All nine operations have run against the real TST endpoint. A full booking
 completed on `CPMTYE71` (hotel segment 2), returning the hotel confirmation in
 `HotelSellResponse::$confirmationNumber` — the same number PNR_Reply reports
 for the segment — with `hotelCompleteReservationDetails` returning the property's real
-cancellation policy and total.
+cancellation policy and total. On 2026-10-02 the whole chain ran again on
+`MCMEXSFM` (Mexico City), through the cancellation and its end transaction:
+those captures are the `pnr-end`, `pnr-retrieve`, details, `pnr-cancel` and
+`pnr-cancel-end` fixtures.
 
 Operational constraints learned from those runs, none of them visible from the
 API surface:
@@ -111,6 +114,12 @@ API surface:
   Nothing in the rate's shape predicts it: `*RH` with a `Converted:BAR:P`
   category sells, and two earlier attempts to guess from those markers (first
   "unsellable placeholder", then "property-specific") were both wrong.
+- **TST availability comes and goes.** On 2026-10-02 every Monterrey property
+  (`YZMTY045`, `CPMTYE71`, `RTMTYNOV`) refused all twelve rates tried with
+  `CTL`, sells took ~8 s, and searches then reported the provider as
+  `Warning Tag="PE"` with no availability, while `MCMEXSFM` in Mexico City
+  booked and cancelled normally. Read `HotelSearchResponse::$warnings` before
+  blaming a request; try another city.
 - **`errorGroup` can carry only a code**, with no `errorWarningDescription`.
   `HotelSellResponse` used to report nothing for that shape, which made a
   refused sell look like a completed one.

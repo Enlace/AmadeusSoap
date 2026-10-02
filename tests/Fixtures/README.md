@@ -28,11 +28,18 @@ of `<UserID PseudoCityCode="..."/>`.
   (`fakeAmadeus()` in `tests/TestCase.php`), which only intercepts HTTP, so
   parsing runs on real data through the real SOAP layer.
 
-They do not form one consistent booking: the captures have no single chain
-where every step succeeded. `hotel-sell.xml` (success) and
+They come from several runs, not one booking. `hotel-sell.xml` (success) and
 `hotel-sell-ctl-error.xml` (error `CTL`, nothing booked) come from different
 attempts — `CTL` is a per-rate refusal (see CLAUDE.md, "Verified against
-Amadeus TST").
+Amadeus TST"). The requests from the end transaction on (`pnr-end`,
+`pnr-retrieve`, `hotel-complete-reservation-details`, `pnr-cancel`,
+`pnr-cancel-end`) and the `pnr-cancel*` replies come from a later complete
+booking that was cancelled (PNR `TST003`, hotel segment 2); the other replies
+are from the earlier run (PNR `TST002`).
+
+New captures go at the **end** of `FIXTURES`: fake locators are numbered in
+map order, and tests pin `TST002` and `10000001`. Appending only renumbers the
+fake session IDs and tokens in the other replies, which no test pins.
 
 ### Regenerating
 

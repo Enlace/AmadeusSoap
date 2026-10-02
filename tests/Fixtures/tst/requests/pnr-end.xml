@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PNR_AddMultiElements>
+  <pnrActions>
+    <optionCode>11</optionCode>
+  </pnrActions>
+  <dataElementsMaster>
+    <marker1/>
+    <dataElementsIndiv>
+      <elementManagementData>
+        <segmentName>RF</segmentName>
+      </elementManagementData>
+      <freetextData>
+        <freetextDetail>
+          <subjectQualifier>3</subjectQualifier>
+          <type>P22</type>
+        </freetextDetail>
+        <longFreetext>hotel reservation via WebServices</longFreetext>
+      </freetextData>
+    </dataElementsIndiv>
+  </dataElementsMaster>
+</PNR_AddMultiElements>

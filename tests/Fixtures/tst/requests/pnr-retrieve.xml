@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PNR_Retrieve>
+  <retrievalFacts>
+    <retrieve>
+      <type>2</type>
+    </retrieve>
+    <reservationOrProfileIdentifier>
+      <reservation>
+        <controlNumber>TST003</controlNumber>
+      </reservation>
+    </reservationOrProfileIdentifier>
+  </retrievalFacts>
+</PNR_Retrieve>

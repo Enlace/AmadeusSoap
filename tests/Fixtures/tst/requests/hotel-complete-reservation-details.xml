@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Hotel_CompleteReservationDetails>
+  <retrievalKeyGroup>
+    <retrievalKey>
+      <reservation>
+        <companyId>1A</companyId>
+        <controlNumber>TST003</controlNumber>
+        <controlType>P</controlType>
+      </reservation>
+    </retrievalKey>
+    <tattooID>
+      <referenceDetails>
+        <type>S</type>
+        <value>2</value>
+      </referenceDetails>
+    </tattooID>
+  </retrievalKeyGroup>
+</Hotel_CompleteReservationDetails>

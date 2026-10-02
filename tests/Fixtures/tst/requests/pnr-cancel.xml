@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PNR_Cancel>
+  <pnrActions>
+    <optionCode>0</optionCode>
+  </pnrActions>
+  <cancelElements>
+    <entryType>E</entryType>
+    <element>
+      <identifier>ST</identifier>
+      <number>2</number>
+    </element>
+  </cancelElements>
+</PNR_Cancel>

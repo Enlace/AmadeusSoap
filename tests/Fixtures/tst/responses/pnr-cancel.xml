@@ -5,13 +5,13 @@
     <wsa:From>
       <wsa:Address>https://webservices.amadeus.test/1ASIWTEST</wsa:Address>
     </wsa:From>
-    <wsa:Action>http://webservices.amadeus.com/PNRADD_21_1_1A</wsa:Action>
-    <wsa:MessageID>urn:uuid:29b10fc1-03b6-1e74-4d03-43a9581c0201</wsa:MessageID>
-    <wsa:RelatesTo RelationshipType="http://www.w3.org/2005/08/addressing/reply">1a16eb53-351c-4a51-9754-0f79199a8343</wsa:RelatesTo>
+    <wsa:Action>http://webservices.amadeus.com/PNRXCL_21_1_1A</wsa:Action>
+    <wsa:MessageID>urn:uuid:e937914b-e25c-1614-a93b-87f36d0d0fe9</wsa:MessageID>
+    <wsa:RelatesTo RelationshipType="http://www.w3.org/2005/08/addressing/reply">2418b521-089b-4167-9772-03bc424a8a7e</wsa:RelatesTo>
     <awsse:Session TransactionStatusCode="InSeries">
-      <awsse:SessionId>SESSION0011</awsse:SessionId>
-      <awsse:SequenceNumber>5</awsse:SequenceNumber>
-      <awsse:SecurityToken>SECURITYTOKEN0020</awsse:SecurityToken>
+      <awsse:SessionId>SESSION0014</awsse:SessionId>
+      <awsse:SequenceNumber>3</awsse:SequenceNumber>
+      <awsse:SecurityToken>SECURITYTOKEN0023</awsse:SecurityToken>
     </awsse:Session>
   </SOAP-ENV:Header>
   <SOAP-ENV:Body>
@@ -20,9 +20,9 @@
         <reservationInfo>
           <reservation>
             <companyId>1A</companyId>
-            <controlNumber>TST002</controlNumber>
-            <date>310726</date>
-            <time>2004</time>
+            <controlNumber>TST003</controlNumber>
+            <date>021026</date>
+            <time>2323</time>
           </reservation>
         </reservationInfo>
       </pnrHeader>
@@ -40,9 +40,9 @@
         <secondRpInformation>
           <creationOfficeId>TEST01</creationOfficeId>
           <agentSignature>9999WS</agentSignature>
-          <creationDate>310726</creationDate>
+          <creationDate>021026</creationDate>
           <creatorIataCode>00000000</creatorIataCode>
-          <creationTime>2004</creationTime>
+          <creationTime>2323</creationTime>
         </secondRpInformation>
       </securityInformation>
       <sbrPOSDetails>
@@ -117,10 +117,15 @@
         <purgeDateData>
           <dateTime>
             <year>2026</year>
-            <month>9</month>
-            <day>4</day>
+            <month>11</month>
+            <day>21</day>
           </dateTime>
         </purgeDateData>
+        <generalPNRInformation>
+          <statusDetails>
+            <isPNRModifDuringTrans>MOD</isPNRModifDuringTrans>
+          </statusDetails>
+        </generalPNRInformation>
       </technicalData>
       <travellerInfo>
         <elementManagementPassenger>
@@ -172,7 +177,7 @@
           </elementManagementItinerary>
           <travelProduct>
             <product>
-              <depDate>070826</depDate>
+              <depDate>091026</depDate>
             </product>
             <boardpointDetail>
               <cityCode>MTY</cityCode>
@@ -209,14 +214,14 @@
           </elementManagementItinerary>
           <travelProduct>
             <product>
-              <depDate>300826</depDate>
-              <arrDate>310826</arrDate>
+              <depDate>161126</depDate>
+              <arrDate>171126</arrDate>
             </product>
             <boardpointDetail>
-              <cityCode>MTY</cityCode>
+              <cityCode>MEX</cityCode>
             </boardpointDetail>
             <companyDetail>
-              <identification>HI</identification>
+              <identification>MC</identification>
             </companyDetail>
           </travelProduct>
           <itineraryMessageAction>
@@ -226,33 +231,34 @@
           </itineraryMessageAction>
           <relatedProduct>
             <quantity>1</quantity>
-            <status>HK</status>
+            <status>HX</status>
           </relatedProduct>
           <selectionDetails>
             <selection>
               <option>P2</option>
             </selection>
           </selectionDetails>
+          <itineraryfreeFormText/>
           <hotelProduct>
             <property>
-              <providerName>HOLIDAY INN</providerName>
-              <code>8D2</code>
-              <name>HOLIDAY INN NORTE</name>
+              <providerName>MARRIOTT HTLS RSTS</providerName>
+              <code>SFM</code>
+              <name>JW MARRIOTT MEX CITY SANTA FE</name>
             </property>
             <hotelRoom>
               <occupancy>1</occupancy>
-              <typeCode>*RH</typeCode>
+              <typeCode>SM3</typeCode>
             </hotelRoom>
             <negotiated>
-              <rateCode>57J</rateCode>
+              <rateCode>RAC</rateCode>
             </negotiated>
             <otherHotelInfo>
-              <currencyCode>MXN</currencyCode>
+              <currencyCode>USD</currencyCode>
             </otherHotelInfo>
           </hotelProduct>
           <rateInformations>
             <ratePrice>
-              <rateAmount>5140.00</rateAmount>
+              <rateAmount>243.66</rateAmount>
             </ratePrice>
             <rateInfo>
               <ratePlan>DY</ratePlan>
@@ -261,19 +267,13 @@
           <generalOption>
             <optionDetail>
               <type>BC</type>
-              <freetext>STN57JU</freetext>
+              <freetext>SM3A00</freetext>
             </optionDetail>
           </generalOption>
           <generalOption>
             <optionDetail>
-              <type>G</type>
+              <type>DP</type>
               <freetext>CCAXXXXXXXXXXXX0005EXP1230</freetext>
-            </optionDetail>
-          </generalOption>
-          <generalOption>
-            <optionDetail>
-              <type>CHK</type>
-              <freetext>IN-15:00 LT OUT-11:00 LT</freetext>
             </optionDetail>
           </generalOption>
           <generalOption>
@@ -285,13 +285,13 @@
           <generalOption>
             <optionDetail>
               <type>COM</type>
-              <freetext>10 PERCENT INCL</freetext>
+              <freetext>COMMISSIONABLE</freetext>
             </optionDetail>
           </generalOption>
           <generalOption>
             <optionDetail>
               <type>TTL</type>
-              <freetext>MXN5140</freetext>
+              <freetext>USD288.96</freetext>
             </optionDetail>
           </generalOption>
           <generalOption>
@@ -309,81 +309,77 @@
           <generalOption>
             <optionDetail>
               <type>CF</type>
-              <freetext>10000001</freetext>
+              <freetext>10000004</freetext>
             </optionDetail>
           </generalOption>
           <generalOption>
             <optionDetail>
               <type>PRI</type>
-              <freetext>30AUG        5140</freetext>
+              <freetext>16NOV      243.66</freetext>
             </optionDetail>
           </generalOption>
           <generalOption>
             <optionDetail>
               <type>DES</type>
-              <freetext>BEST FLEXIBLE RATE</freetext>
-              <freetext>Take advantage of our best and least restrictive publicly</freetext>
-              <freetext>available rate. Changes to your reservation are usually</freetext>
-              <freetext>acceptable, but always check the hotel's cancellation policy</freetext>
-              <freetext>before booking for cancellation fees that may apply depending</freetext>
-              <freetext>upon arrival date and hotel selected.</freetext>
+              <freetext>Prepay Non-refundable, prepay in full, non-refundable</freetext>
+              <freetext>PREPAY NON-REFUNDABLE, PREPAY IN FULL, NON-REFUNDABLE</freetext>
             </optionDetail>
           </generalOption>
           <generalOption>
             <optionDetail>
               <type>CXL</type>
-              <freetext>CANCEL ON 30Aug2026 BY 00:00 LT TO AVOID 1 NI GHT(S) CHARGE.Canceling your reservation befo re 6:00 PM (local hotel time) onSaturday, 29 August, 2026 will result in no charge. Cancel ingyour reservation after 6:00 PM (local hote </freetext>
+              <freetext>CXL FEE IF CXLD MORE THAN 1 DAYS AFTER BKING NON-REFUNDABLE RATE </freetext>
             </optionDetail>
           </generalOption>
           <generalOption>
             <optionDetail>
               <type>BOO</type>
-              <freetext>GUARANTEE: CC ACCEPTED CREDIT CARD: AX DC DS JC MC VI </freetext>
+              <freetext>DEPOSIT: </freetext>
             </optionDetail>
           </generalOption>
           <generalOption>
             <optionDetail>
-              <type>ADV</type>
-              <freetext>Advance Purchase Required Indicator</freetext>
+              <type>CX</type>
+              <freetext>10000005</freetext>
             </optionDetail>
           </generalOption>
           <hotelReservationInfo>
             <hotelPropertyInfo>
               <hotelReference>
-                <chainCode>HI</chainCode>
-                <cityCode>MTY</cityCode>
-                <hotelCode>8D2</hotelCode>
+                <chainCode>MC</chainCode>
+                <cityCode>MEX</cityCode>
+                <hotelCode>SFM</hotelCode>
               </hotelReference>
-              <hotelName>HOLIDAY INN NORTE</hotelName>
+              <hotelName>JW MARRIOTT MEX CITY SANTA FE</hotelName>
             </hotelPropertyInfo>
             <companyIdentification>
               <travelSector>HTL</travelSector>
               <companyCodeContext>1A</companyCodeContext>
-              <companyCode>HI</companyCode>
-              <companyName>HOLIDAY INN</companyName>
+              <companyCode>MC</companyCode>
+              <companyName>MARRIOTT HTLS RSTS</companyName>
             </companyIdentification>
             <requestedDates>
               <businessSemantic>CHK</businessSemantic>
               <timeMode>LT</timeMode>
               <beginDateTime>
                 <year>2026</year>
-                <month>8</month>
-                <day>30</day>
+                <month>11</month>
+                <day>16</day>
               </beginDateTime>
               <endDateTime>
                 <year>2026</year>
-                <month>8</month>
-                <day>31</day>
+                <month>11</month>
+                <day>17</day>
               </endDateTime>
             </requestedDates>
             <roomRateDetails>
               <roomInformation>
                 <roomRateIdentifier>
-                  <roomType>*RH</roomType>
-                  <ratePlanCode>57J</ratePlanCode>
+                  <roomType>SM3</roomType>
+                  <ratePlanCode>RAC</ratePlanCode>
                   <rateQualifiedIndic>P</rateQualifiedIndic>
                 </roomRateIdentifier>
-                <bookingCode>STN57JU</bookingCode>
+                <bookingCode>SM3A00</bookingCode>
                 <guestCountDetails>
                   <numberOfUnit>1</numberOfUnit>
                   <unitQualifier>A</unitQualifier>
@@ -392,8 +388,8 @@
               <tariffDetails>
                 <tariffInfo>
                   <rateType>1</rateType>
-                  <amount>5140</amount>
-                  <currency>MXN</currency>
+                  <amount>243.66</amount>
+                  <currency>USD</currency>
                   <ratePlanIndicator>DY</ratePlanIndicator>
                 </tariffInfo>
               </tariffDetails>
@@ -401,8 +397,15 @@
             <cancelOrConfirmNbr>
               <reservation>
                 <companyId>1A</companyId>
-                <controlNumber>10000001</controlNumber>
+                <controlNumber>10000004</controlNumber>
                 <controlType>2</controlType>
+              </reservation>
+            </cancelOrConfirmNbr>
+            <cancelOrConfirmNbr>
+              <reservation>
+                <companyId>1A</companyId>
+                <controlNumber>10000005</controlNumber>
+                <controlType>X</controlType>
               </reservation>
             </cancelOrConfirmNbr>
             <bookingSource>
@@ -414,7 +417,7 @@
               <paymentInfo>
                 <paymentDetails>
                   <formOfPaymentCode>1</formOfPaymentCode>
-                  <paymentType>1</paymentType>
+                  <paymentType>2</paymentType>
                   <serviceToPay>3</serviceToPay>
                 </paymentDetails>
               </paymentInfo>
@@ -469,10 +472,32 @@
           <ticketElement>
             <ticket>
               <indicator>OK</indicator>
-              <date>310726</date>
+              <date>021026</date>
               <officeId>TEST01</officeId>
             </ticket>
           </ticketElement>
+        </dataElementsIndiv>
+        <dataElementsIndiv>
+          <elementManagementData>
+            <reference>
+              <qualifier>OT</qualifier>
+              <number>7</number>
+            </reference>
+            <segmentName>RM</segmentName>
+            <lineNumber>6</lineNumber>
+          </elementManagementData>
+          <miscellaneousRemarks>
+            <remarks>
+              <type>RM</type>
+              <freetext>HHL MC HX0 MEX 00NOV SFM/CF-00000000/CX-00000000</freetext>
+            </remarks>
+          </miscellaneousRemarks>
+          <extendedRemark>
+            <structuredRemark>
+              <type>RM</type>
+              <freetext>HHL MC HX0 MEX 00NOV SFM/CF-00000000/CX-00000000</freetext>
+            </structuredRemark>
+          </extendedRemark>
         </dataElementsIndiv>
       </dataElementsMaster>
     </PNR_Reply>

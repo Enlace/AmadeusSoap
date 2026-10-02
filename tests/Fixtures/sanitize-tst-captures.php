@@ -42,6 +42,15 @@ const FIXTURES = [
     'responses/pnr-retrieve.xml' => '200416-pnr-retrieve-response.xml',
     'responses/hotel-complete-reservation-details.xml' => '200416-details-response.xml',
     'responses/signout.xml' => '172302-signout-response.xml',
+    // A later, complete booking (MCMEXSFM): the rest of the chain. Appended
+    // last so the fakes above keep their numbers (TST002, 10000001…).
+    'requests/pnr-end.xml' => '232332-pnr-end-request.xml',
+    'requests/pnr-retrieve.xml' => '232333-pnr-retrieve-request.xml',
+    'requests/hotel-complete-reservation-details.xml' => '232333-details-request.xml',
+    'requests/pnr-cancel.xml' => '232335-pnr-cancel-request.xml',
+    'requests/pnr-cancel-end.xml' => '232336-pnr-cancel-end-request.xml',
+    'responses/pnr-cancel.xml' => '232335-pnr-cancel-response.xml',
+    'responses/pnr-cancel-end.xml' => '232336-pnr-cancel-end-response.xml',
 ];
 
 const FAKE_OFFICE_ID = 'TEST01';
