@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OTA_HotelDescriptiveInfoRQ EchoToken="withParsing" Version="6.001" PrimaryLangID="en">
+  <HotelDescriptiveInfos>
+    <HotelDescriptiveInfo HotelCode="YZMTY045">
+      <HotelInfo SendData="true"/>
+      <FacilityInfo SendGuestRooms="true" SendMeetingRooms="true" SendRestaurants="true"/>
+      <Policies SendPolicies="true"/>
+      <AreaInfo SendAttractions="true" SendRefPoints="true" SendRecreations="true"/>
+      <AffiliationInfo SendAwards="true" SendLoyalPrograms="true"/>
+      <ContactInfo SendData="true"/>
+      <MultimediaObjects SendData="true"/>
+      <ContentInfos>
+        <ContentInfo Name="SecureMultimediaURLs"/>
+      </ContentInfos>
+    </HotelDescriptiveInfo>
+  </HotelDescriptiveInfos>
+</OTA_HotelDescriptiveInfoRQ>

@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Test WSDL declaring every operation the package supports, with the response
+  namespaces the real Amadeus WSDLs use. Response namespaces matter: they are
+  what OperationMetadata hands to AmadeusResponse for XPath resolution, so the
+  chain test would silently parse nothing if they were wrong.
+
+  Kept in its own directory so the WsdlManager unit tests can keep asserting
+  the exact contents of tests/Fixtures/wsdl.
+-->
+<wsdl:definitions
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://webservices.amadeus.com/definitions"
+    xmlns:ota="http://www.opentravel.org/OTA/2003/05"
+    xmlns:hbk="http://xml.amadeus.com/HBKRCR_20_1_1A"
+    xmlns:hcr="http://xml.amadeus.com/HCRDRR_17_1_1A"
+    xmlns:pnr="http://xml.amadeus.com/PNRACC_21_1_1A"
+    xmlns:vls="http://xml.amadeus.com/VLSSOR_04_1_1A"
+    xmlns:amasec="http://xml.amadeus.com/2010/06/Security_v1"
+    targetNamespace="http://webservices.amadeus.com/definitions"
+    name="AmadeusAllOperationsTest">
+
+    <wsdl:types>
+        <xs:schema targetNamespace="http://www.opentravel.org/OTA/2003/05">
+            <xs:element name="OTA_HotelAvailRQ" type="xs:anyType"/>
+            <xs:element name="OTA_HotelAvailRS" type="xs:anyType"/>
+            <xs:element name="OTA_HotelDescriptiveInfoRQ" type="xs:anyType"/>
+            <xs:element name="OTA_HotelDescriptiveInfoRS" type="xs:anyType"/>
+        </xs:schema>
+        <xs:schema targetNamespace="http://xml.amadeus.com/HBKRCR_20_1_1A">
+            <xs:element name="Hotel_Sell" type="xs:anyType"/>
+            <xs:element name="Hotel_SellReply" type="xs:anyType"/>
+        </xs:schema>
+        <xs:schema targetNamespace="http://xml.amadeus.com/HCRDRR_17_1_1A">
+            <xs:element name="Hotel_CompleteReservationDetails" type="xs:anyType"/>
+            <xs:element name="Hotel_CompleteReservationDetailsReply" type="xs:anyType"/>
+        </xs:schema>
+        <xs:schema targetNamespace="http://xml.amadeus.com/PNRACC_21_1_1A">
+            <xs:element name="PNR_AddMultiElements" type="xs:anyType"/>
+            <xs:element name="PNR_Retrieve" type="xs:anyType"/>
+            <xs:element name="PNR_Cancel" type="xs:anyType"/>
+            <xs:element name="PNR_Reply" type="xs:anyType"/>
+        </xs:schema>
+        <xs:schema targetNamespace="http://xml.amadeus.com/VLSSOR_04_1_1A">
+            <xs:element name="Security_SignOut" type="xs:anyType"/>
+            <xs:element name="Security_SignOutReply" type="xs:anyType"/>
+        </xs:schema>
+        <!-- Declared (and bound as an input header below) so SoapClient
+             serializes AmaSecurityHeader as Amadeus expects:
+             <UserID PseudoCityCode="..."/>, not a generic item/key/value map. -->
+        <xs:schema targetNamespace="http://xml.amadeus.com/2010/06/Security_v1" elementFormDefault="qualified" attributeFormDefault="unqualified">
+            <xs:element name="AMA_SecurityHostedUser">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="UserID">
+                            <xs:complexType>
+                                <xs:simpleContent>
+                                    <xs:extension base="xs:string">
+                                        <xs:attribute name="POS_Type" type="xs:string"/>
+                                        <xs:attribute name="PseudoCityCode" type="xs:string"/>
+                                        <xs:attribute name="AgentDutyCode" type="xs:string"/>
+                                        <xs:attribute name="RequestorType" type="xs:string"/>
+                                    </xs:extension>
+                                </xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+
+    <!-- Request/reply message pairs. The version lookup matches
+         contains(@name, 'Operation_'), so the reply names must not repeat
+         the operation name followed by an underscore. -->
+    <wsdl:message name="AMA_SecurityHostedUser_1.000">
+        <wsdl:part name="security" element="amasec:AMA_SecurityHostedUser"/>
+    </wsdl:message>
+
+    <wsdl:message name="Hotel_MultiSingleAvailability_11_0">
+        <wsdl:part name="Body" element="ota:OTA_HotelAvailRQ"/>
+    </wsdl:message>
+    <wsdl:message name="Hotel_MultiSingleAvailabilityReply_11_0">
+        <wsdl:part name="Body" element="ota:OTA_HotelAvailRS"/>
+    </wsdl:message>
+
+    <wsdl:message name="Hotel_EnhancedPricing_4_000">
+        <wsdl:part name="Body" element="ota:OTA_HotelAvailRQ"/>
+    </wsdl:message>
+    <wsdl:message name="Hotel_EnhancedPricingReply_4_000">
+        <wsdl:part name="Body" element="ota:OTA_HotelAvailRS"/>
+    </wsdl:message>
+
+    <wsdl:message name="Hotel_DescriptiveInfo_1_008">
+        <wsdl:part name="Body" element="ota:OTA_HotelDescriptiveInfoRQ"/>
+    </wsdl:message>
+    <wsdl:message name="Hotel_DescriptiveInfoReply_1_008">
+        <wsdl:part name="Body" element="ota:OTA_HotelDescriptiveInfoRS"/>
+    </wsdl:message>
+
+    <wsdl:message name="Hotel_Sell_20_1">
+        <wsdl:part name="Body" element="hbk:Hotel_Sell"/>
+    </wsdl:message>
+    <wsdl:message name="Hotel_SellReply_20_1">
+        <wsdl:part name="Body" element="hbk:Hotel_SellReply"/>
+    </wsdl:message>
+
+    <wsdl:message name="Hotel_CompleteReservationDetails_17_1">
+        <wsdl:part name="Body" element="hcr:Hotel_CompleteReservationDetails"/>
+    </wsdl:message>
+    <wsdl:message name="Hotel_CompleteReservationDetailsReply_17_1">
+        <wsdl:part name="Body" element="hcr:Hotel_CompleteReservationDetailsReply"/>
+    </wsdl:message>
+
+    <wsdl:message name="PNR_AddMultiElements_21_1">
+        <wsdl:part name="Body" element="pnr:PNR_AddMultiElements"/>
+    </wsdl:message>
+    <wsdl:message name="PNR_AddMultiElementsReply_21_1">
+        <wsdl:part name="Body" element="pnr:PNR_Reply"/>
+    </wsdl:message>
+
+    <wsdl:message name="PNR_Retrieve_21_1">
+        <wsdl:part name="Body" element="pnr:PNR_Retrieve"/>
+    </wsdl:message>
+    <wsdl:message name="PNR_RetrieveReply_21_1">
+        <wsdl:part name="Body" element="pnr:PNR_Reply"/>
+    </wsdl:message>
+
+    <wsdl:message name="PNR_Cancel_21_1">
+        <wsdl:part name="Body" element="pnr:PNR_Cancel"/>
+    </wsdl:message>
+    <wsdl:message name="PNR_CancelReply_21_1">
+        <wsdl:part name="Body" element="pnr:PNR_Reply"/>
+    </wsdl:message>
+
+    <wsdl:message name="Security_SignOut_4_1">
+        <wsdl:part name="Body" element="vls:Security_SignOut"/>
+    </wsdl:message>
+    <wsdl:message name="Security_SignOutReply_4_1">
+        <wsdl:part name="Body" element="vls:Security_SignOutReply"/>
+    </wsdl:message>
+
+    <wsdl:portType name="AmadeusPortType">
+        <wsdl:operation name="Hotel_MultiSingleAvailability">
+            <wsdl:input message="tns:Hotel_MultiSingleAvailability_11_0"/>
+            <wsdl:output message="tns:Hotel_MultiSingleAvailabilityReply_11_0"/>
+        </wsdl:operation>
+        <wsdl:operation name="Hotel_EnhancedPricing">
+            <wsdl:input message="tns:Hotel_EnhancedPricing_4_000"/>
+            <wsdl:output message="tns:Hotel_EnhancedPricingReply_4_000"/>
+        </wsdl:operation>
+        <wsdl:operation name="Hotel_DescriptiveInfo">
+            <wsdl:input message="tns:Hotel_DescriptiveInfo_1_008"/>
+            <wsdl:output message="tns:Hotel_DescriptiveInfoReply_1_008"/>
+        </wsdl:operation>
+        <wsdl:operation name="Hotel_Sell">
+            <wsdl:input message="tns:Hotel_Sell_20_1"/>
+            <wsdl:output message="tns:Hotel_SellReply_20_1"/>
+        </wsdl:operation>
+        <wsdl:operation name="Hotel_CompleteReservationDetails">
+            <wsdl:input message="tns:Hotel_CompleteReservationDetails_17_1"/>
+            <wsdl:output message="tns:Hotel_CompleteReservationDetailsReply_17_1"/>
+        </wsdl:operation>
+        <wsdl:operation name="PNR_AddMultiElements">
+            <wsdl:input message="tns:PNR_AddMultiElements_21_1"/>
+            <wsdl:output message="tns:PNR_AddMultiElementsReply_21_1"/>
+        </wsdl:operation>
+        <wsdl:operation name="PNR_Retrieve">
+            <wsdl:input message="tns:PNR_Retrieve_21_1"/>
+            <wsdl:output message="tns:PNR_RetrieveReply_21_1"/>
+        </wsdl:operation>
+        <wsdl:operation name="PNR_Cancel">
+            <wsdl:input message="tns:PNR_Cancel_21_1"/>
+            <wsdl:output message="tns:PNR_CancelReply_21_1"/>
+        </wsdl:operation>
+        <wsdl:operation name="Security_SignOut">
+            <wsdl:input message="tns:Security_SignOut_4_1"/>
+            <wsdl:output message="tns:Security_SignOutReply_4_1"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="AmadeusBinding" type="tns:AmadeusPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="Hotel_MultiSingleAvailability">
+            <soap:operation soapAction="http://webservices.amadeus.com/Hotel_MultiSingleAvailability_10.0"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+                <soap:header message="tns:AMA_SecurityHostedUser_1.000" part="security" use="literal"/>
+            </wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="Hotel_EnhancedPricing">
+            <soap:operation soapAction="http://webservices.amadeus.com/Hotel_EnhancedPricing_4.000"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+                <soap:header message="tns:AMA_SecurityHostedUser_1.000" part="security" use="literal"/>
+            </wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="Hotel_DescriptiveInfo">
+            <soap:operation soapAction="http://webservices.amadeus.com/OTA_HotelDescriptiveInfoRQ_07.1"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+                <soap:header message="tns:AMA_SecurityHostedUser_1.000" part="security" use="literal"/>
+            </wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="Hotel_Sell">
+            <soap:operation soapAction="http://webservices.amadeus.com/HBKRCQ_20_1_1A"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+                <soap:header message="tns:AMA_SecurityHostedUser_1.000" part="security" use="literal"/>
+            </wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="Hotel_CompleteReservationDetails">
+            <soap:operation soapAction="http://webservices.amadeus.com/HCRDRQ_17_1_1A"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+                <soap:header message="tns:AMA_SecurityHostedUser_1.000" part="security" use="literal"/>
+            </wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="PNR_AddMultiElements">
+            <soap:operation soapAction="http://webservices.amadeus.com/PNRADD_21_1_1A"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+                <soap:header message="tns:AMA_SecurityHostedUser_1.000" part="security" use="literal"/>
+            </wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="PNR_Retrieve">
+            <soap:operation soapAction="http://webservices.amadeus.com/PNRRET_21_1_1A"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+                <soap:header message="tns:AMA_SecurityHostedUser_1.000" part="security" use="literal"/>
+            </wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="PNR_Cancel">
+            <soap:operation soapAction="http://webservices.amadeus.com/PNRXCL_21_1_1A"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+                <soap:header message="tns:AMA_SecurityHostedUser_1.000" part="security" use="literal"/>
+            </wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="Security_SignOut">
+            <soap:operation soapAction="http://webservices.amadeus.com/VLSSOQ_04_1_1A"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+                <soap:header message="tns:AMA_SecurityHostedUser_1.000" part="security" use="literal"/>
+            </wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="AmadeusService">
+        <wsdl:port name="AmadeusPort" binding="tns:AmadeusBinding">
+            <soap:address location="https://nodeD2.test.webservices.amadeus.com/1ASIWTEST"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

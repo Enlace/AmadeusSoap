@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Shape of a real PNR_Cancel reply: the cancelled HHL segment is gone from
+  originDestinationDetails, which is what isSegmentDeleted() checks.
+-->
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+                   xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3"
+                   xmlns:wsa="http://www.w3.org/2005/08/addressing">
+    <SOAP-ENV:Header>
+        <wsa:Action>http://webservices.amadeus.com/PNRXCL_21_1_1A</wsa:Action>
+        <awsse:Session TransactionStatusCode="InSeries">
+            <awsse:SessionId>SESSIONTEST</awsse:SessionId>
+            <awsse:SequenceNumber>7</awsse:SequenceNumber>
+            <awsse:SecurityToken>SECURITYTOKENTEST0000</awsse:SecurityToken>
+        </awsse:Session>
+    </SOAP-ENV:Header>
+    <SOAP-ENV:Body>
+        <PNR_Reply xmlns="http://xml.amadeus.com/PNRACC_21_1_1A">
+            <pnrHeader>
+                <reservationInfo>
+                    <reservation>
+                        <companyId>1A</companyId>
+                        <controlNumber>TEST01</controlNumber>
+                    </reservation>
+                </reservationInfo>
+            </pnrHeader>
+            <travellerInfo>
+                <elementManagementPassenger>
+                    <reference>
+                        <qualifier>PT</qualifier>
+                        <number>2</number>
+                    </reference>
+                    <segmentName>NM</segmentName>
+                </elementManagementPassenger>
+                <passengerData>
+                    <travellerInformation>
+                        <traveller>
+                            <surname>TEST</surname>
+                        </traveller>
+                        <passenger>
+                            <firstName>TRAVELER</firstName>
+                            <type>ADT</type>
+                        </passenger>
+                    </travellerInformation>
+                </passengerData>
+            </travellerInfo>
+            <originDestinationDetails>
+                <itineraryInfo>
+                    <elementManagementItinerary>
+                        <reference>
+                            <qualifier>ST</qualifier>
+                            <number>1</number>
+                        </reference>
+                        <segmentName>RU</segmentName>
+                    </elementManagementItinerary>
+                </itineraryInfo>
+            </originDestinationDetails>
+        </PNR_Reply>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

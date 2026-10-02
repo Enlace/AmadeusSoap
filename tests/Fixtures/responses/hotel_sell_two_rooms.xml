@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Hotel_SellReply for a two-room booking: one roomStayData per room, each with
+  its own reservation number and booking code.
+  Identifiers are placeholders.
+-->
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+                   xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3">
+    <SOAP-ENV:Header>
+        <awsse:Session TransactionStatusCode="InSeries">
+            <awsse:SessionId>SESSIONTEST</awsse:SessionId>
+            <awsse:SequenceNumber>4</awsse:SequenceNumber>
+            <awsse:SecurityToken>SECURITYTOKENTEST0000</awsse:SecurityToken>
+        </awsse:Session>
+    </SOAP-ENV:Header>
+    <SOAP-ENV:Body>
+        <Hotel_SellReply xmlns="http://xml.amadeus.com/HBKRCR_20_1_1A">
+            <roomStayData>
+                <globalBookingInfo>
+                    <hotelPropertyInfo>
+                        <hotelReference>
+                            <chainCode>CI</chainCode>
+                            <cityCode>MTY</cityCode>
+                            <hotelCode>001</hotelCode>
+                        </hotelReference>
+                        <hotelName>TEST HOTEL MONTERREY</hotelName>
+                    </hotelPropertyInfo>
+                    <bookingInfo>
+                        <reservation>
+                            <controlNumber>3357244346</controlNumber>
+                        </reservation>
+                    </bookingInfo>
+                    <representativeParties>
+                        <occupantList>
+                            <passengerReference>
+                                <type>BHO</type>
+                                <value>2</value>
+                            </passengerReference>
+                        </occupantList>
+                    </representativeParties>
+                </globalBookingInfo>
+                <roomListInfo>
+                    <requestableInformation>
+                        <roomRateDetails>
+                            <roomInformation>
+                                <roomRateIdentifier>
+                                    <roomType>N1D</roomType>
+                                    <ratePlanCode>ENF</ratePlanCode>
+                                </roomRateIdentifier>
+                                <bookingCode>BCODE001</bookingCode>
+                            </roomInformation>
+                        </roomRateDetails>
+                    </requestableInformation>
+                </roomListInfo>
+            </roomStayData>
+            <roomStayData>
+                <globalBookingInfo>
+                    <hotelPropertyInfo>
+                        <hotelReference>
+                            <chainCode>CI</chainCode>
+                            <cityCode>MTY</cityCode>
+                            <hotelCode>001</hotelCode>
+                        </hotelReference>
+                        <hotelName>TEST HOTEL MONTERREY</hotelName>
+                    </hotelPropertyInfo>
+                    <bookingInfo>
+                        <reservation>
+                            <controlNumber>3361946553</controlNumber>
+                        </reservation>
+                    </bookingInfo>
+                    <representativeParties>
+                        <occupantList>
+                            <passengerReference>
+                                <type>BHO</type>
+                                <value>3</value>
+                            </passengerReference>
+                        </occupantList>
+                    </representativeParties>
+                </globalBookingInfo>
+                <roomListInfo>
+                    <requestableInformation>
+                        <roomRateDetails>
+                            <roomInformation>
+                                <roomRateIdentifier>
+                                    <roomType>N2D</roomType>
+                                    <ratePlanCode>RAC</ratePlanCode>
+                                </roomRateIdentifier>
+                                <bookingCode>BCODE002</bookingCode>
+                            </roomInformation>
+                        </roomRateDetails>
+                    </requestableInformation>
+                </roomListInfo>
+            </roomStayData>
+        </Hotel_SellReply>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

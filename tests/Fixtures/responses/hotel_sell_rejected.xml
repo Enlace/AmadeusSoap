@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  A real refused Hotel_Sell: the errorGroup carries only a code, with no
+  errorWarningDescription and no roomStayData, and numberOfRooms reports zero.
+  Captured from Amadeus TST.
+-->
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+                   xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3">
+    <SOAP-ENV:Header>
+        <awsse:Session TransactionStatusCode="InSeries">
+            <awsse:SessionId>SESSIONTEST</awsse:SessionId>
+            <awsse:SequenceNumber>4</awsse:SequenceNumber>
+            <awsse:SecurityToken>SECURITYTOKENTEST0000</awsse:SecurityToken>
+        </awsse:Session>
+    </SOAP-ENV:Header>
+    <SOAP-ENV:Body>
+        <Hotel_SellReply xmlns="http://xml.amadeus.com/HBKRCR_20_1_1A">
+            <errorGroup>
+                <messageErrorInformation>
+                    <errorDetails>
+                        <errorCode>CTL</errorCode>
+                        <errorCategory>EC</errorCategory>
+                        <errorCodeOwner>1A</errorCodeOwner>
+                    </errorDetails>
+                </messageErrorInformation>
+            </errorGroup>
+            <bookingTypeIndicator>
+                <numberOfRooms>
+                    <quantity>0</quantity>
+                    <statusCode>HK</statusCode>
+                </numberOfRooms>
+            </bookingTypeIndicator>
+        </Hotel_SellReply>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

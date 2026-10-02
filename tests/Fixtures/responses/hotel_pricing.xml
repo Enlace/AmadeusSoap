@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Shape of a real Hotel_EnhancedPricing reply (OTA_HotelAvailRS). Identifiers
+  and session tokens are placeholders.
+-->
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+                   xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3"
+                   xmlns:wsa="http://www.w3.org/2005/08/addressing">
+    <SOAP-ENV:Header>
+        <wsa:Action>http://webservices.amadeus.com/Hotel_EnhancedPricing_4.000</wsa:Action>
+        <awsse:Session TransactionStatusCode="InSeries">
+            <awsse:SessionId>SESSIONTEST</awsse:SessionId>
+            <awsse:SequenceNumber>2</awsse:SequenceNumber>
+            <awsse:SecurityToken>SECURITYTOKENTEST0000</awsse:SecurityToken>
+        </awsse:Session>
+    </SOAP-ENV:Header>
+    <SOAP-ENV:Body>
+        <OTA_HotelAvailRS xmlns="http://www.opentravel.org/OTA/2003/05" EchoToken="Pricing" Version="6.001">
+            <Success/>
+            <RoomStays>
+                <RoomStay AvailabilityStatus="AvailableForSale" InfoSource="CI" RPH="0">
+                    <RoomTypes>
+                        <RoomType IsConverted="1" RoomType="M1D" RoomTypeCode="N1D"/>
+                    </RoomTypes>
+                    <RatePlans>
+                        <RatePlan RatePlanCode="ENF" RateIndicator="AvailableForSale">
+                            <Guarantee GuaranteeCode="31" GuaranteeType="GuaranteeRequired">
+                                <GuaranteesAccepted>
+                                    <GuaranteeAccepted>
+                                        <PaymentCard CardCode="VI"/>
+                                    </GuaranteeAccepted>
+                                </GuaranteesAccepted>
+                            </Guarantee>
+                            <CancelPenalties CancelPolicyIndicator="1">
+                                <CancelPenalty PolicyCode="Cancellation" NonRefundable="false">
+                                    <Deadline AbsoluteDeadline="2027-05-18T16:00:00"/>
+                                    <AmountPercent NmbrOfNights="1"/>
+                                    <PenaltyDescription>
+                                        <Text>24 hours prior to 4pm of the arrival date</Text>
+                                    </PenaltyDescription>
+                                </CancelPenalty>
+                            </CancelPenalties>
+                            <Commission StatusType="Non-paying" Percent="0"/>
+                            <MealsIncluded Breakfast="1" MealPlanIndicator="1" MealPlanCodes="6"/>
+                        </RatePlan>
+                    </RatePlans>
+                    <RoomRates>
+                        <RoomRate BookingCode="BCODE001" RoomTypeCode="N1D" NumberOfUnits="1"
+                                  RatePlanCode="ENF" RatePlanCategory="Converted:ENF:N">
+                            <Rates>
+                                <Rate EffectiveDate="2027-05-19" ExpireDate="2027-05-20" RateTimeUnit="Day">
+                                    <Base AmountBeforeTax="1666" CurrencyCode="MXN"/>
+                                </Rate>
+                            </Rates>
+                            <RoomRateDescription Name="Room N1D">
+                                <Text Formatted="1">1 DOUBLE BED/NONSMOKING</Text>
+                            </RoomRateDescription>
+                            <Total AmountBeforeTax="1666" AmountAfterTax="1982" CurrencyCode="MXN">
+                                <Taxes>
+                                    <Tax Type="Exclusive" Code="28" Amount="316" CurrencyCode="MXN"/>
+                                </Taxes>
+                            </Total>
+                        </RoomRate>
+                    </RoomRates>
+                    <GuestCounts>
+                        <GuestCount AgeQualifyingCode="10" Count="1"/>
+                    </GuestCounts>
+                    <TimeSpan Start="2027-05-19" End="2027-05-20"/>
+                    <BasicPropertyInfo ChainCode="CI" HotelCode="CITST001" HotelCityCode="MTY"
+                                       HotelName="TEST HOTEL MONTERREY">
+                        <Address>
+                            <CountryName Code="MX"/>
+                        </Address>
+                    </BasicPropertyInfo>
+                    <Total AmountBeforeTax="1666" AmountAfterTax="1982" CurrencyCode="MXN"/>
+                </RoomStay>
+            </RoomStays>
+        </OTA_HotelAvailRS>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

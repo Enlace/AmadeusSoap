@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Shape of a real PNR_AddMultiElements 'create' reply. travelAgentRef comes
+  from the AP element's OT reference number; the traveller reference number
+  is what hotelSell needs as passengerReference/value.
+  Identifiers and session tokens are placeholders.
+-->
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+                   xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3"
+                   xmlns:wsa="http://www.w3.org/2005/08/addressing">
+    <SOAP-ENV:Header>
+        <wsa:Action>http://webservices.amadeus.com/PNRADD_21_1_1A</wsa:Action>
+        <awsse:Session TransactionStatusCode="InSeries">
+            <awsse:SessionId>SESSIONTEST</awsse:SessionId>
+            <awsse:SequenceNumber>3</awsse:SequenceNumber>
+            <awsse:SecurityToken>SECURITYTOKENTEST0000</awsse:SecurityToken>
+        </awsse:Session>
+    </SOAP-ENV:Header>
+    <SOAP-ENV:Body>
+        <PNR_Reply xmlns="http://xml.amadeus.com/PNRACC_21_1_1A">
+            <travellerInfo>
+                <elementManagementPassenger>
+                    <reference>
+                        <qualifier>PT</qualifier>
+                        <number>2</number>
+                    </reference>
+                    <segmentName>NM</segmentName>
+                    <lineNumber>1</lineNumber>
+                </elementManagementPassenger>
+                <passengerData>
+                    <travellerInformation>
+                        <traveller>
+                            <surname>TEST</surname>
+                            <quantity>1</quantity>
+                        </traveller>
+                        <passenger>
+                            <firstName>TRAVELER</firstName>
+                            <type>ADT</type>
+                        </passenger>
+                    </travellerInformation>
+                </passengerData>
+                <enhancedPassengerData>
+                    <enhancedTravellerInformation>
+                        <travellerNameInfo>
+                            <quantity>1</quantity>
+                            <type>ADT</type>
+                        </travellerNameInfo>
+                        <otherPaxNamesDetails>
+                            <nameType>UN</nameType>
+                            <surname>TEST</surname>
+                            <givenName>TRAVELER</givenName>
+                        </otherPaxNamesDetails>
+                    </enhancedTravellerInformation>
+                </enhancedPassengerData>
+            </travellerInfo>
+            <dataElementsMaster>
+                <marker2/>
+                <dataElementsIndiv>
+                    <elementManagementData>
+                        <segmentName>RF</segmentName>
+                    </elementManagementData>
+                    <otherDataFreetext>
+                        <freetextDetail>
+                            <subjectQualifier>3</subjectQualifier>
+                            <type>P22</type>
+                        </freetextDetail>
+                        <longFreetext>ADDED VIA WEBSERVICE</longFreetext>
+                    </otherDataFreetext>
+                </dataElementsIndiv>
+                <dataElementsIndiv>
+                    <elementManagementData>
+                        <reference>
+                            <qualifier>OT</qualifier>
+                            <number>1</number>
+                        </reference>
+                        <segmentName>AP</segmentName>
+                        <lineNumber>2</lineNumber>
+                    </elementManagementData>
+                    <otherDataFreetext>
+                        <freetextDetail>
+                            <subjectQualifier>3</subjectQualifier>
+                            <type>P02</type>
+                        </freetextDetail>
+                        <longFreetext>test@example.test</longFreetext>
+                    </otherDataFreetext>
+                </dataElementsIndiv>
+                <dataElementsIndiv>
+                    <elementManagementData>
+                        <reference>
+                            <qualifier>OT</qualifier>
+                            <number>2</number>
+                        </reference>
+                        <segmentName>TK</segmentName>
+                        <lineNumber>3</lineNumber>
+                    </elementManagementData>
+                    <ticketElement>
+                        <ticket>
+                            <indicator>OK</indicator>
+                        </ticket>
+                    </ticketElement>
+                </dataElementsIndiv>
+            </dataElementsMaster>
+        </PNR_Reply>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

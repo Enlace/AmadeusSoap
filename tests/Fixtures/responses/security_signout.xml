@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Shape of a real Security_SignOut reply. TransactionStatusCode="End" tells
+  the package the session is closed.
+-->
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+                   xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3"
+                   xmlns:wsa="http://www.w3.org/2005/08/addressing">
+    <SOAP-ENV:Header>
+        <wsa:Action>http://webservices.amadeus.com/VLSSOQ_04_1_1A</wsa:Action>
+        <awsse:Session TransactionStatusCode="End">
+            <awsse:SessionId>SESSIONTEST</awsse:SessionId>
+            <awsse:SequenceNumber>8</awsse:SequenceNumber>
+            <awsse:SecurityToken>SECURITYTOKENTEST0000</awsse:SecurityToken>
+        </awsse:Session>
+    </SOAP-ENV:Header>
+    <SOAP-ENV:Body>
+        <Security_SignOutReply xmlns="http://xml.amadeus.com/VLSSOR_04_1_1A">
+            <processStatus>
+                <statusCode>P</statusCode>
+            </processStatus>
+        </Security_SignOutReply>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

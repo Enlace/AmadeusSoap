@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3" xmlns:wsa="http://www.w3.org/2005/08/addressing">
+  <soap:Header>
+    <wsa:To>http://www.w3.org/2005/08/addressing/anonymous</wsa:To>
+    <wsa:From>
+      <wsa:Address>https://webservices.amadeus.test/1ASIWTEST</wsa:Address>
+    </wsa:From>
+    <wsa:Action>http://webservices.amadeus.com/Hotel_MultiSingleAvailability_10.0</wsa:Action>
+    <wsa:MessageID>urn:uuid:6960aee3-11eb-d634-ed37-660b88ed09c8</wsa:MessageID>
+    <wsa:RelatesTo RelationshipType="http://www.w3.org/2005/08/addressing/reply">ec8c8dcc-8e65-4bf2-9070-938b2a1f9bdb</wsa:RelatesTo>
+    <awsse:Session TransactionStatusCode="End">
+      <awsse:SessionId>SESSION0006</awsse:SessionId>
+      <awsse:SequenceNumber>1</awsse:SequenceNumber>
+      <awsse:SecurityToken>SECURITYTOKEN0013</awsse:SecurityToken>
+    </awsse:Session>
+  </soap:Header>
+  <soap:Body>
+    <OTA_HotelAvailRS xmlns="http://www.opentravel.org/OTA/2003/05" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opentravel.org/OTA/2003/05 OTA_HotelAvailRS.xsd" EchoToken="MultiSingle" Version="6.001" PrimaryLangID="EN">
+      <Success/>
+      <Warnings>
+        <Warning Type="3" Status="PRV.2" Tag="AVL"/>
+        <Warning Type="3" Status="PRV.4" Tag="CLS"/>
+        <Warning Type="3" Status="PRV.8" Tag="OK"/>
+        <Warning Type="3" Status="PRV.11" Tag="PE"/>
+        <Warning Type="3" Status="PRV.22" Tag="PUE"/>
+      </Warnings>
+      <HotelStays>
+        <HotelStay RoomStayRPH="0">
+          <BasicPropertyInfo ChainCode="CP" HotelCode="CPMTYE71" HotelCityCode="MTY" HotelName="CROWNE PLAZA AEROPUERTO" HotelCodeContext="1A" ChainName="CROWNE PLAZA HOTELS" AreaID="5" HotelSegmentCategoryCode="7" SupplierIntegrationLevel="3">
+            <VendorMessages>
+              <VendorMessage InfoType="3">
+                <SubSection>
+                  <Paragraph>
+                    <Text Formatted="1">IHG CLEAN PROMISE WWW.IHG.COM/CLEAN</Text>
+                  </Paragraph>
+                </SubSection>
+              </VendorMessage>
+            </VendorMessages>
+            <Position Latitude="2578637" Longitude="-10013559"/>
+            <Address>
+              <AddressLine>BLVD AEROPUERTO 171           </AddressLine>
+              <AddressLine>COL. PARQUE INDUSTRIAL NEXXUS</AddressLine>
+              <CityName>MONTERREY</CityName>
+              <PostalCode>NL 66600</PostalCode>
+              <CountryName Code="MX"/>
+            </Address>
+            <RelativePosition>
+              <Transportations>
+                <Transportation TransportationCode="17"/>
+              </Transportations>
+            </RelativePosition>
+            <HotelAmenity Code="352"/>
+          </BasicPropertyInfo>
+        </HotelStay>
+        <HotelStay RoomStayRPH="1">
+          <BasicPropertyInfo ChainCode="HI" HotelCode="HIMTYB27" HotelCityCode="MTY" HotelName="HOLIDAY INN EXP ZONA APTO" HotelCodeContext="1A" ChainName="HOLIDAY INN" AreaID="5" HotelSegmentCategoryCode="16" SupplierIntegrationLevel="3">
+            <VendorMessages>
+              <VendorMessage InfoType="3">
+                <SubSection>
+                  <Paragraph>
+                    <Text Formatted="1">IHG CLEAN PROMISE WWW.IHG.COM/CLEAN</Text>
+                  </Paragraph>
+                </SubSection>
+              </VendorMessage>
+            </VendorMessages>
+            <Position Latitude="2578682" Longitude="-10013631"/>
+            <Address>
+              <AddressLine>BLVD AEROPUERTO 400</AddressLine>
+              <AddressLine>PARQUE INDUSTRIAL MILENIUM</AddressLine>
+              <CityName>MONTERREY</CityName>
+              <PostalCode>NL 66600</PostalCode>
+              <CountryName Code="MX"/>
+            </Address>
+            <RelativePosition>
+              <Transportations>
+                <Transportation TransportationCode="17"/>
+              </Transportations>
+            </RelativePosition>
+            <HotelAmenity Code="352"/>
+          </BasicPropertyInfo>
+        </HotelStay>
+        <HotelStay RoomStayRPH="2">
+          <BasicPropertyInfo ChainCode="RT" HotelCode="RTMTYNOV" HotelCityCode="MTY" HotelName="NOVOTEL MONTERREY VALLE" HotelCodeContext="1A" ChainName="ACCOR HOTELS" AreaID="9" HotelSegmentCategoryCode="16" SupplierIntegrationLevel="3">
+            <Position Latitude="2564782" Longitude="-10032856"/>
+            <Address>
+              <AddressLine>AVE LAZARO CARDENAS 3000</AddressLine>
+              <AddressLine>ESQ DR ATL COL VALLE ORIENTE</AddressLine>
+              <CityName>SAN PEDRO GARZA GARCIA</CityName>
+              <PostalCode>CP 662699</PostalCode>
+              <CountryName Code="MX"/>
+            </Address>
+            <RelativePosition>
+              <Transportations>
+                <Transportation TransportationCode="20"/>
+              </Transportations>
+            </RelativePosition>
+          </BasicPropertyInfo>
+        </HotelStay>
+        <HotelStay RoomStayRPH="3">
+          <BasicPropertyInfo ChainCode="YZ" HotelCode="YZMTY045" HotelCityCode="MTY" HotelName="STAYBRIDGE SUITES SAN PEDRO" HotelCodeContext="1A" ChainName="STAYBRIDGE SUITES" AreaID="14" HotelSegmentCategoryCode="7" SupplierIntegrationLevel="3">
+            <VendorMessages>
+              <VendorMessage InfoType="3">
+                <SubSection>
+                  <Paragraph>
+                    <Text Formatted="1">IHG CLEAN PROMISE WWW.IHG.COM/CLEAN</Text>
+                  </Paragraph>
+                </SubSection>
+              </VendorMessage>
+            </VendorMessages>
+            <Position Latitude="2565838" Longitude="-10036940"/>
+            <Address>
+              <AddressLine>CALZADA SAN PEDRO 103</AddressLine>
+              <CityName>MONTERREY</CityName>
+              <PostalCode>NL 66220</PostalCode>
+              <CountryName Code="MX"/>
+            </Address>
+            <RelativePosition>
+              <Transportations>
+                <Transportation TransportationCode="20"/>
+              </Transportations>
+            </RelativePosition>
+            <HotelAmenity Code="352"/>
+          </BasicPropertyInfo>
+        </HotelStay>
+        <HotelStay RoomStayRPH="4">
+          <BasicPropertyInfo ChainCode="HI" HotelCode="HIMTY8D2" HotelCityCode="MTY" HotelName="HOLIDAY INN NORTE" HotelCodeContext="1A" ChainName="HOLIDAY INN" AreaID="4" HotelSegmentCategoryCode="7" SupplierIntegrationLevel="3">
+            <VendorMessages>
+              <VendorMessage InfoType="3">
+                <SubSection>
+                  <Paragraph>
+                    <Text Formatted="1">IHG CLEAN PROMISE WWW.IHG.COM/CLEAN</Text>
+                  </Paragraph>
+                </SubSection>
+              </VendorMessage>
+            </VendorMessages>
+            <Position Latitude="2573991" Longitude="-10030277"/>
+            <Address>
+              <AddressLine>AV UNIVERSIDAD 101                </AddressLine>
+              <CityName>MONTERREY</CityName>
+              <PostalCode>66450</PostalCode>
+              <CountryName Code="MX"/>
+            </Address>
+            <RelativePosition>
+              <Transportations>
+                <Transportation TransportationCode="20"/>
+              </Transportations>
+            </RelativePosition>
+          </BasicPropertyInfo>
+        </HotelStay>
+      </HotelStays>
+      <RoomStays>
+        <RoomStay MarketCode="Flat" SourceOfBusiness="Two Step.PricingOptional.PriceNotGuaranted.InvNotGuaranted" AvailabilityStatus="AvailableForSale" InfoSource="CP" RPH="0">
+          <RoomTypes>
+            <RoomType IsConverted="1" RoomType="M1K">
+              <TPA_Extensions>
+                <ProviderRoomCode>KNGN</ProviderRoomCode>
+              </TPA_Extensions>
+            </RoomType>
+          </RoomTypes>
+          <RatePlans>
+            <RatePlan RatePlanCode="57J" RateIndicator="AvailableForSale" AvailabilityStatus="AvailableForSale">
+              <Guarantee GuaranteeCode="31" GuaranteeType="GuaranteeRequired">
+                <GuaranteesAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="AX"/>
+                  </GuaranteeAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="VI"/>
+                  </GuaranteeAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="CA"/>
+                  </GuaranteeAccepted>
+                </GuaranteesAccepted>
+              </Guarantee>
+              <Guarantee HoldTime="18:00:00"/>
+              <CancelPenalties CancelPolicyIndicator="1">
+                <CancelPenalty PolicyCode="Cancellation" NonRefundable="false">
+                  <Deadline AbsoluteDeadline="2026-08-30T18:00:00"/>
+                  <AmountPercent NmbrOfNights="1"/>
+                </CancelPenalty>
+              </CancelPenalties>
+              <Commission StatusType="Commissionable"/>
+              <MealsIncluded MealPlanIndicator="1" MealPlanCodes="14"/>
+            </RatePlan>
+          </RatePlans>
+          <RoomRates>
+            <RoomRate BookingCode="KNG57JU" NumberOfUnits="1" RatePlanCode="57J" RatePlanCategory="Converted:BAR:P" AvailabilityStatus="AvailableForSale">
+              <Rates>
+                <Rate EffectiveDate="2026-08-30" ExpireDate="2026-08-31" RateTimeUnit="Day">
+                  <Base AmountBeforeTax="124.00" CurrencyCode="USD" RateOverrideIndicator="1"/>
+                  <PaymentPolicies>
+                    <GuaranteePayment PaymentCode="31" GuaranteeType="GuaranteeRequired"/>
+                    <GuaranteePayment HoldTime="18:00:00"/>
+                  </PaymentPolicies>
+                  <TPA_Extensions>
+                    <LoyaltyProgram Applicable="Y"/>
+                  </TPA_Extensions>
+                </Rate>
+              </Rates>
+              <RoomRateDescription Name="Room ROH" CreatorID="1">
+                <Text Formatted="1" Language="EN">BEST FLEXIBLE RATE</Text>
+                <Text Formatted="1" Language="EN">1 King Bed Standard  430 SqFt Room   </Text>
+              </RoomRateDescription>
+              <Features>
+                <Feature RoomAmenity="74"/>
+                <Feature RoomAmenity="58"/>
+                <Feature RoomAmenity="74"/>
+                <Feature RoomAmenity="58"/>
+              </Features>
+              <Total AmountBeforeTax="124.00" AmountAfterTax="147.56" CurrencyCode="USD" RateOverrideIndicator="1">
+                <Taxes>
+                  <Tax Type="Exclusive" Code="17" Percent="19.00"/>
+                </Taxes>
+              </Total>
+            </RoomRate>
+          </RoomRates>
+          <GuestCounts>
+            <GuestCount AgeQualifyingCode="10" Count="1"/>
+          </GuestCounts>
+          <TimeSpan Start="2026-08-30" End="2026-08-31">
+            <StartDateWindow DOW="Sun"/>
+            <EndDateWindow DOW="Mon"/>
+          </TimeSpan>
+          <Total AmountBeforeTax="124.00" AmountAfterTax="147.56" CurrencyCode="USD" RateOverrideIndicator="1"/>
+          <ServiceRPHs>
+            <ServiceRPH RPH="0"/>
+          </ServiceRPHs>
+        </RoomStay>
+        <RoomStay MarketCode="Flat" SourceOfBusiness="Two Step.PricingOptional.PriceNotGuaranted.InvNotGuaranted" AvailabilityStatus="AvailableForSale" InfoSource="HI" RPH="1">
+          <RoomTypes>
+            <RoomType IsConverted="1" RoomType="M**" RoomTypeCode="*RH">
+              <TPA_Extensions>
+                <ProviderRoomCode>CSTN</ProviderRoomCode>
+              </TPA_Extensions>
+            </RoomType>
+          </RoomTypes>
+          <RatePlans>
+            <RatePlan RatePlanCode="57J" RateIndicator="AvailableForSale" AvailabilityStatus="AvailableForSale">
+              <Guarantee GuaranteeCode="31" GuaranteeType="GuaranteeRequired">
+                <GuaranteesAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="AX"/>
+                  </GuaranteeAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="VI"/>
+                  </GuaranteeAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="CA"/>
+                  </GuaranteeAccepted>
+                </GuaranteesAccepted>
+              </Guarantee>
+              <CancelPenalties CancelPolicyIndicator="1">
+                <CancelPenalty PolicyCode="Cancellation" NonRefundable="false">
+                  <Deadline AbsoluteDeadline="2026-08-30T18:00:00"/>
+                  <AmountPercent NmbrOfNights="1"/>
+                </CancelPenalty>
+              </CancelPenalties>
+              <Commission StatusType="Commissionable"/>
+              <MealsIncluded Breakfast="1" MealPlanIndicator="1" MealPlanCodes="19"/>
+            </RatePlan>
+          </RatePlans>
+          <RoomRates>
+            <RoomRate BookingCode="STN57JU" RoomTypeCode="*RH" NumberOfUnits="1" RatePlanCode="57J" RatePlanCategory="Converted:BAR:P" AvailabilityStatus="AvailableForSale">
+              <Rates>
+                <Rate EffectiveDate="2026-08-30" ExpireDate="2026-08-31" RateTimeUnit="Day">
+                  <Base AmountBeforeTax="129.00" CurrencyCode="USD" RateOverrideIndicator="1"/>
+                  <PaymentPolicies>
+                    <GuaranteePayment PaymentCode="31" GuaranteeType="GuaranteeRequired"/>
+                  </PaymentPolicies>
+                  <TPA_Extensions>
+                    <LoyaltyProgram Applicable="Y"/>
+                  </TPA_Extensions>
+                </Rate>
+              </Rates>
+              <RoomRateDescription Name="Room *RH" CreatorID="1">
+                <Text Formatted="1" Language="EN">BEST FLEXIBLE RATE</Text>
+                <Text Formatted="1" Language="EN">Standard Room</Text>
+              </RoomRateDescription>
+              <Total AmountBeforeTax="129.00" AmountAfterTax="153.51" CurrencyCode="USD" RateOverrideIndicator="1">
+                <Taxes>
+                  <Tax Type="Exclusive" Code="17" Percent="19.00"/>
+                </Taxes>
+              </Total>
+            </RoomRate>
+          </RoomRates>
+          <GuestCounts>
+            <GuestCount AgeQualifyingCode="10" Count="1"/>
+          </GuestCounts>
+          <TimeSpan Start="2026-08-30" End="2026-08-31">
+            <StartDateWindow DOW="Sun"/>
+            <EndDateWindow DOW="Mon"/>
+          </TimeSpan>
+          <Total AmountBeforeTax="129.00" AmountAfterTax="153.51" CurrencyCode="USD" RateOverrideIndicator="1"/>
+          <ServiceRPHs>
+            <ServiceRPH RPH="1"/>
+          </ServiceRPHs>
+        </RoomStay>
+        <RoomStay MarketCode="Flat" SourceOfBusiness="Two Step.PricingOptional.PriceNotGuaranted.InvNotGuaranted" AvailabilityStatus="AvailableForSale" InfoSource="RT" RPH="2">
+          <RoomTypes>
+            <RoomType IsConverted="1" RoomType="A2D" RoomTypeCode="B2D"/>
+          </RoomTypes>
+          <RatePlans>
+            <RatePlan RatePlanCode="RAFNOV" RateIndicator="AvailableForSale" AvailabilityStatus="AvailableForSale">
+              <Guarantee GuaranteeCode="8" GuaranteeType="Deposit">
+                <GuaranteesAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="AX"/>
+                  </GuaranteeAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="CA"/>
+                  </GuaranteeAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="EC"/>
+                  </GuaranteeAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="IK"/>
+                  </GuaranteeAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="JC"/>
+                  </GuaranteeAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="EE"/>
+                  </GuaranteeAccepted>
+                </GuaranteesAccepted>
+              </Guarantee>
+              <CancelPenalties CancelPolicyIndicator="1">
+                <CancelPenalty PolicyCode="Cancellation">
+                  <Deadline AbsoluteDeadline="2026-08-29T00:00:00"/>
+                  <AmountPercent Percent="100"/>
+                  <PenaltyDescription>
+                    <Text Formatted="1">Full deposit is not refundable even if the booking is cancelled or modified.</Text>
+                  </PenaltyDescription>
+                </CancelPenalty>
+              </CancelPenalties>
+              <Commission StatusType="Non-paying"/>
+              <MealsIncluded Breakfast="0" MealPlanIndicator="0"/>
+            </RatePlan>
+          </RatePlans>
+          <RoomRates>
+            <RoomRate BookingCode="B2DRAFNOV" RoomTypeCode="B2D" NumberOfUnits="1" RatePlanCode="RAFNOV" RatePlanCategory="Converted:PRO:P" AvailabilityStatus="AvailableForSale">
+              <Rates>
+                <Rate EffectiveDate="2026-08-30" ExpireDate="2026-08-31" RateTimeUnit="Day">
+                  <Base AmountBeforeTax="1850" CurrencyCode="MXN" RateOverrideIndicator="1"/>
+                  <PaymentPolicies>
+                    <GuaranteePayment PaymentCode="8" GuaranteeType="Deposit">
+                      <AcceptedPayments>
+                        <AcceptedPayment>
+                          <PaymentCard Remark="Virtual Credit Card"/>
+                        </AcceptedPayment>
+                      </AcceptedPayments>
+                    </GuaranteePayment>
+                  </PaymentPolicies>
+                  <TPA_Extensions>
+                    <LoyaltyProgram Applicable="N"/>
+                  </TPA_Extensions>
+                </Rate>
+              </Rates>
+              <RoomRateDescription Name="Room B2D" CreatorID="1">
+                <Text Formatted="1" Language="EN">Special Event Rate-Room only</Text>
+                <Text Formatted="1" Language="EN">Superior Room with 2 double beds</Text>
+              </RoomRateDescription>
+              <Features>
+                <Feature RoomAmenity="123"/>
+                <Feature RoomAmenity="2"/>
+                <Feature RoomAmenity="55"/>
+                <Feature RoomAmenity="92"/>
+                <Feature RoomAmenity="50"/>
+                <Feature RoomAmenity="123"/>
+                <Feature RoomAmenity="2"/>
+                <Feature RoomAmenity="55"/>
+                <Feature RoomAmenity="92"/>
+                <Feature RoomAmenity="50"/>
+              </Features>
+              <Total AmountAfterTax="2176" CurrencyCode="MXN" AdditionalFeesExcludedIndicator="1" RateOverrideIndicator="1">
+                <Taxes>
+                  <Tax Type="Inclusive" Code="3" Percent="2.00" ChargeUnit="19"/>
+                  <Tax Type="Inclusive" Code="30" Percent="16.00" ChargeUnit="19"/>
+                  <Tax Type="Inclusive" Code="7" ChargeUnit="21"/>
+                </Taxes>
+              </Total>
+            </RoomRate>
+          </RoomRates>
+          <GuestCounts>
+            <GuestCount AgeQualifyingCode="10" Count="1"/>
+          </GuestCounts>
+          <TimeSpan Start="2026-08-30" End="2026-08-31">
+            <StartDateWindow DOW="Sun"/>
+            <EndDateWindow DOW="Mon"/>
+          </TimeSpan>
+          <Total AmountAfterTax="2176" CurrencyCode="MXN" AdditionalFeesExcludedIndicator="1" RateOverrideIndicator="1"/>
+          <ServiceRPHs>
+            <ServiceRPH RPH="2"/>
+          </ServiceRPHs>
+        </RoomStay>
+        <RoomStay MarketCode="Flat" SourceOfBusiness="Two Step.PricingOptional.PriceNotGuaranted.InvNotGuaranted" AvailabilityStatus="AvailableForSale" InfoSource="YZ" RPH="3">
+          <RoomTypes>
+            <RoomType IsConverted="1" RoomType="S1K" RoomTypeCode="*1K">
+              <TPA_Extensions>
+                <ProviderRoomCode>O1KN</ProviderRoomCode>
+              </TPA_Extensions>
+            </RoomType>
+          </RoomTypes>
+          <RatePlans>
+            <RatePlan RatePlanCode="57J" RateIndicator="AvailableForSale" AvailabilityStatus="AvailableForSale">
+              <Guarantee GuaranteeCode="31" GuaranteeType="GuaranteeRequired">
+                <GuaranteesAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="AX"/>
+                  </GuaranteeAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="VI"/>
+                  </GuaranteeAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="CA"/>
+                  </GuaranteeAccepted>
+                </GuaranteesAccepted>
+              </Guarantee>
+              <CancelPenalties CancelPolicyIndicator="1">
+                <CancelPenalty PolicyCode="Cancellation" NonRefundable="false">
+                  <Deadline AbsoluteDeadline="2026-08-29T18:00:00"/>
+                  <AmountPercent NmbrOfNights="1"/>
+                </CancelPenalty>
+              </CancelPenalties>
+              <Commission StatusType="Commissionable"/>
+              <MealsIncluded Breakfast="1" MealPlanIndicator="1" MealPlanCodes="19"/>
+            </RatePlan>
+          </RatePlans>
+          <RoomRates>
+            <RoomRate BookingCode="1KN57JU" RoomTypeCode="*1K" NumberOfUnits="1" RatePlanCode="57J" RatePlanCategory="Converted:BAR:P" AvailabilityStatus="AvailableForSale">
+              <Rates>
+                <Rate EffectiveDate="2026-08-30" ExpireDate="2026-08-31" RateTimeUnit="Day">
+                  <Base AmountBeforeTax="3099" CurrencyCode="MXN" RateOverrideIndicator="1"/>
+                  <PaymentPolicies>
+                    <GuaranteePayment PaymentCode="31" GuaranteeType="GuaranteeRequired"/>
+                  </PaymentPolicies>
+                  <TPA_Extensions>
+                    <LoyaltyProgram Applicable="Y"/>
+                  </TPA_Extensions>
+                </Rate>
+              </Rates>
+              <RoomRateDescription Name="Room *1K" CreatorID="1">
+                <Text Formatted="1" Language="EN">BEST FLEXIBLE RATE</Text>
+                <Text Formatted="1" Language="EN">1 King 1 Bedroom Suite 450 SqFt Suite with</Text>
+                <Text Formatted="1" Language="EN">Living Area Microwave Refrigerator Stove and</Text>
+              </RoomRateDescription>
+              <Features>
+                <Feature RoomAmenity="74"/>
+                <Feature RoomAmenity="58"/>
+                <Feature RoomAmenity="74"/>
+                <Feature RoomAmenity="58"/>
+              </Features>
+              <Total AmountBeforeTax="3099" AmountAfterTax="3687" CurrencyCode="MXN" RateOverrideIndicator="1">
+                <Taxes>
+                  <Tax Type="Exclusive" Code="17" Percent="19.00"/>
+                </Taxes>
+              </Total>
+            </RoomRate>
+          </RoomRates>
+          <GuestCounts>
+            <GuestCount AgeQualifyingCode="10" Count="1"/>
+          </GuestCounts>
+          <TimeSpan Start="2026-08-30" End="2026-08-31">
+            <StartDateWindow DOW="Sun"/>
+            <EndDateWindow DOW="Mon"/>
+          </TimeSpan>
+          <Total AmountBeforeTax="3099" AmountAfterTax="3687" CurrencyCode="MXN" RateOverrideIndicator="1"/>
+          <ServiceRPHs>
+            <ServiceRPH RPH="1"/>
+          </ServiceRPHs>
+        </RoomStay>
+        <RoomStay MarketCode="Flat" SourceOfBusiness="Two Step.PricingOptional.PriceNotGuaranted.InvNotGuaranted" AvailabilityStatus="AvailableForSale" InfoSource="HI" RPH="4">
+          <RoomTypes>
+            <RoomType IsConverted="1" RoomType="M**" RoomTypeCode="*RH">
+              <TPA_Extensions>
+                <ProviderRoomCode>CSTN</ProviderRoomCode>
+              </TPA_Extensions>
+            </RoomType>
+          </RoomTypes>
+          <RatePlans>
+            <RatePlan RatePlanCode="57J" RateIndicator="AvailableForSale" AvailabilityStatus="AvailableForSale">
+              <Guarantee GuaranteeCode="31" GuaranteeType="GuaranteeRequired">
+                <GuaranteesAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="AX"/>
+                  </GuaranteeAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="VI"/>
+                  </GuaranteeAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="CA"/>
+                  </GuaranteeAccepted>
+                </GuaranteesAccepted>
+              </Guarantee>
+              <CancelPenalties CancelPolicyIndicator="1">
+                <CancelPenalty PolicyCode="Cancellation" NonRefundable="false">
+                  <Deadline AbsoluteDeadline="2026-08-29T18:00:00"/>
+                  <AmountPercent NmbrOfNights="1"/>
+                </CancelPenalty>
+              </CancelPenalties>
+              <Commission StatusType="Commissionable"/>
+              <MealsIncluded MealPlanIndicator="1" MealPlanCodes="14"/>
+            </RatePlan>
+          </RatePlans>
+          <RoomRates>
+            <RoomRate BookingCode="STN57JU" RoomTypeCode="*RH" NumberOfUnits="1" RatePlanCode="57J" RatePlanCategory="Converted:BAR:P" AvailabilityStatus="AvailableForSale">
+              <Rates>
+                <Rate EffectiveDate="2026-08-30" ExpireDate="2026-08-31" RateTimeUnit="Day">
+                  <Base AmountBeforeTax="4319" CurrencyCode="MXN" RateOverrideIndicator="1"/>
+                  <PaymentPolicies>
+                    <GuaranteePayment PaymentCode="31" GuaranteeType="GuaranteeRequired"/>
+                  </PaymentPolicies>
+                  <TPA_Extensions>
+                    <LoyaltyProgram Applicable="Y"/>
+                  </TPA_Extensions>
+                </Rate>
+              </Rates>
+              <RoomRateDescription Name="Room *RH" CreatorID="1">
+                <Text Formatted="1" Language="EN">BEST FLEXIBLE RATE</Text>
+                <Text Formatted="1" Language="EN">Standard Room</Text>
+              </RoomRateDescription>
+              <Total AmountBeforeTax="4319" AmountAfterTax="5139" CurrencyCode="MXN" RateOverrideIndicator="1">
+                <Taxes>
+                  <Tax Type="Exclusive" Code="17" Percent="19.00"/>
+                </Taxes>
+              </Total>
+            </RoomRate>
+          </RoomRates>
+          <GuestCounts>
+            <GuestCount AgeQualifyingCode="10" Count="1"/>
+          </GuestCounts>
+          <TimeSpan Start="2026-08-30" End="2026-08-31">
+            <StartDateWindow DOW="Sun"/>
+            <EndDateWindow DOW="Mon"/>
+          </TimeSpan>
+          <Total AmountBeforeTax="4319" AmountAfterTax="5139" CurrencyCode="MXN" RateOverrideIndicator="1"/>
+          <ServiceRPHs>
+            <ServiceRPH RPH="0"/>
+          </ServiceRPHs>
+        </RoomStay>
+      </RoomStays>
+      <Services>
+        <Service ServiceRPH="0" ServiceInventoryCode="14.MPT" Inclusive="1" Type="10" ID="-"/>
+        <Service ServiceRPH="1" ServiceInventoryCode="19.MPT" Inclusive="1" Type="10" ID="-"/>
+        <Service ServiceRPH="2" ServiceInventoryCode="3.MPT" Inclusive="0" Type="10" ID="-"/>
+      </Services>
+      <CurrencyConversions>
+        <CurrencyConversion RateConversion="17.513300000000001" SourceCurrencyCode="USD" RequestedCurrencyCode="MXN" DecimalPlaces="0"/>
+      </CurrencyConversions>
+    </OTA_HotelAvailRS>
+  </soap:Body>
+</soap:Envelope>

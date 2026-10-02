@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OTA_HotelAvailRQ EchoToken="MultiSingle" Version="4.000" PrimaryLangID="EN" SummaryOnly="true" AvailRatesOnly="true" RateRangeOnly="true" SearchCacheLevel="Live" RateDetailsInd="true" RequestedCurrency="MXN" MaxResponses="96" ExactMatchOnly="true">
+  <AvailRequestSegments>
+    <AvailRequestSegment InfoSource="Distribution">
+      <HotelSearchCriteria>
+        <Criterion ExactMatch="true">
+          <HotelRef HotelCode="YZMTY045"/>
+          <StayDateRange Start="2026-08-30" End="2026-08-31"/>
+          <RoomStayCandidates>
+            <RoomStayCandidate RoomID="1" Quantity="1">
+              <GuestCounts IsPerRoom="true">
+                <GuestCount AgeQualifyingCode="10" Count="1"/>
+              </GuestCounts>
+            </RoomStayCandidate>
+          </RoomStayCandidates>
+        </Criterion>
+      </HotelSearchCriteria>
+    </AvailRequestSegment>
+  </AvailRequestSegments>
+</OTA_HotelAvailRQ>

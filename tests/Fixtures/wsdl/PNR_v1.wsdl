@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Test WSDL that declares no portType of its own and pulls its operations
+  in through wsdl:import — the second shape WsdlManager has to handle.
+
+  The imported file lives in imports/ so scandir() (top level, *.wsdl only)
+  does not also pick it up as a root WSDL.
+
+  Note this file deliberately does NOT declare xmlns:pnr — the prefix is
+  merged in from the import, which is what resolveResponseNamespace()
+  depends on.
+-->
+<wsdl:definitions
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://webservices.amadeus.com/definitions"
+    targetNamespace="http://webservices.amadeus.com/definitions"
+    name="AmadeusPnrTest">
+
+    <wsdl:import namespace="http://webservices.amadeus.com/definitions"
+                 location="imports/PNR_Retrieve_11_3.wsdl"/>
+
+    <wsdl:types>
+        <xs:schema targetNamespace="http://webservices.amadeus.com/definitions"/>
+    </wsdl:types>
+
+    <wsdl:binding name="PnrBinding" type="tns:PnrPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="PNR_Retrieve">
+            <soap:operation soapAction="http://webservices.amadeus.com/PNRRET_11_3"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="AmadeusPnrService">
+        <wsdl:port name="PnrPort" binding="tns:PnrBinding">
+            <soap:address location="https://nodeD2.test.webservices.amadeus.com/1ASIWTEST"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

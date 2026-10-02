@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PNR_AddMultiElements reply reporting a business error. Amadeus returns these
+  inside a successful SOAP response, so no exception is raised — the DTO's
+  hasErrors flag is the only signal.
+-->
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+                   xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3">
+    <SOAP-ENV:Header>
+        <awsse:Session TransactionStatusCode="InSeries">
+            <awsse:SessionId>SESSIONTEST</awsse:SessionId>
+            <awsse:SequenceNumber>3</awsse:SequenceNumber>
+            <awsse:SecurityToken>SECURITYTOKENTEST0000</awsse:SecurityToken>
+        </awsse:Session>
+    </SOAP-ENV:Header>
+    <SOAP-ENV:Body>
+        <PNR_Reply xmlns="http://xml.amadeus.com/PNRACC_21_1_1A">
+            <generalErrorInfo>
+                <messageErrorInformation>
+                    <errorDetail>
+                        <qualifier>1234</qualifier>
+                        <errorCategory>EC</errorCategory>
+                    </errorDetail>
+                </messageErrorInformation>
+                <messageErrorText>
+                    <text>INVALID FORMAT</text>
+                </messageErrorText>
+            </generalErrorInfo>
+        </PNR_Reply>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

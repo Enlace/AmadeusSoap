@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Self-contained test WSDL modelled on the Amadeus Globalizer WSDL layout:
+  versioned message names (Operation_MAJOR_MINOR), a request/reply message
+  pair per operation, one binding carrying the soapAction, and a single
+  service port carrying the endpoint.
+
+  Kept parseable by PHP's SoapClient (no external schema references) so
+  SoapClientFactory can be exercised against it.
+-->
+<wsdl:definitions
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://webservices.amadeus.com/definitions"
+    xmlns:hmsa="http://xml.amadeus.com/HOTMSAR_11_0"
+    xmlns:hdi="http://xml.amadeus.com/HOTDIR_04_0"
+    targetNamespace="http://webservices.amadeus.com/definitions"
+    name="AmadeusHotelTest">
+
+    <wsdl:types>
+        <xs:schema targetNamespace="http://xml.amadeus.com/HOTMSAR_11_0" elementFormDefault="qualified">
+            <xs:element name="Hotel_MultiSingleAvailability" type="xs:anyType"/>
+            <xs:element name="Hotel_MultiSingleAvailabilityReply" type="xs:anyType"/>
+        </xs:schema>
+        <xs:schema targetNamespace="http://xml.amadeus.com/HOTDIR_04_0" elementFormDefault="qualified">
+            <xs:element name="Hotel_DescriptiveInfo" type="xs:anyType"/>
+            <xs:element name="Hotel_DescriptiveInfoReply" type="xs:anyType"/>
+        </xs:schema>
+    </wsdl:types>
+
+    <wsdl:message name="Hotel_MultiSingleAvailability_11_0">
+        <wsdl:part name="Body" element="hmsa:Hotel_MultiSingleAvailability"/>
+    </wsdl:message>
+    <wsdl:message name="Hotel_MultiSingleAvailabilityReply_11_0">
+        <wsdl:part name="Body" element="hmsa:Hotel_MultiSingleAvailabilityReply"/>
+    </wsdl:message>
+    <wsdl:message name="Hotel_DescriptiveInfo_4_0">
+        <wsdl:part name="Body" element="hdi:Hotel_DescriptiveInfo"/>
+    </wsdl:message>
+    <wsdl:message name="Hotel_DescriptiveInfoReply_4_0">
+        <wsdl:part name="Body" element="hdi:Hotel_DescriptiveInfoReply"/>
+    </wsdl:message>
+
+    <wsdl:portType name="HotelPortType">
+        <wsdl:operation name="Hotel_MultiSingleAvailability">
+            <wsdl:input message="tns:Hotel_MultiSingleAvailability_11_0"/>
+            <wsdl:output message="tns:Hotel_MultiSingleAvailabilityReply_11_0"/>
+        </wsdl:operation>
+        <wsdl:operation name="Hotel_DescriptiveInfo">
+            <wsdl:input message="tns:Hotel_DescriptiveInfo_4_0"/>
+            <wsdl:output message="tns:Hotel_DescriptiveInfoReply_4_0"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="HotelBinding" type="tns:HotelPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="Hotel_MultiSingleAvailability">
+            <soap:operation soapAction="http://webservices.amadeus.com/HOTMSAR_11_0"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="Hotel_DescriptiveInfo">
+            <soap:operation soapAction="http://webservices.amadeus.com/HOTDIR_04_0"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="AmadeusHotelService">
+        <wsdl:port name="HotelPort" binding="tns:HotelBinding">
+            <soap:address location="https://nodeD1.test.webservices.amadeus.com/1ASIWTEST"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

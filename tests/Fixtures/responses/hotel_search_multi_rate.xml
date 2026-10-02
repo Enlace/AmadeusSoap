@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Shape of a real Hotel_MultiSingleAvailability reply: one property whose
+  HotelStay/@RoomStayRPH lists several RoomStay RPHs separated by spaces.
+  Identifiers, session tokens and the endpoint are placeholders.
+-->
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+                   xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3"
+                   xmlns:wsa="http://www.w3.org/2005/08/addressing">
+    <SOAP-ENV:Header>
+        <wsa:To>http://www.w3.org/2005/08/addressing/anonymous</wsa:To>
+        <wsa:From>
+            <wsa:Address>https://nodeD2.test.webservices.amadeus.com/1ASIWTEST</wsa:Address>
+        </wsa:From>
+        <wsa:Action>http://webservices.amadeus.com/Hotel_MultiSingleAvailability_10.0</wsa:Action>
+        <wsa:MessageID>urn:uuid:11111111-1111-1111-1111-111111111111</wsa:MessageID>
+        <awsse:Session TransactionStatusCode="InSeries">
+            <awsse:SessionId>SESSIONTEST</awsse:SessionId>
+            <awsse:SequenceNumber>1</awsse:SequenceNumber>
+            <awsse:SecurityToken>SECURITYTOKENTEST0000</awsse:SecurityToken>
+        </awsse:Session>
+    </SOAP-ENV:Header>
+    <SOAP-ENV:Body>
+        <OTA_HotelAvailRS xmlns="http://www.opentravel.org/OTA/2003/05" Version="4.000">
+            <Success/>
+            <!-- HotelSearchResponse only parses when this OK-tagged warning is present -->
+            <Warnings>
+                <Warning Type="3" Status="PRV.1" Tag="OK"/>
+            </Warnings>
+            <HotelStays>
+                <HotelStay RoomStayRPH="0 1 2">
+                    <BasicPropertyInfo ChainCode="CI" HotelCode="CITST001" HotelCityCode="MTY"
+                                       HotelName="TEST HOTEL MONTERREY" HotelCodeContext="1A"
+                                       ChainName="TEST CHAIN" AreaID="4" HotelSegmentCategoryCode="16">
+                        <Position Latitude="2565871" Longitude="-10034318"/>
+                        <Address>
+                            <CountryName Code="MX"/>
+                        </Address>
+                    </BasicPropertyInfo>
+                </HotelStay>
+                <HotelStay RoomStayRPH="3">
+                    <BasicPropertyInfo ChainCode="HY" HotelCode="HYTST002" HotelCityCode="MTY"
+                                       HotelName="TEST HOTEL SINGLE RATE" HotelCodeContext="1A"
+                                       HotelSegmentCategoryCode="12">
+                        <Address>
+                            <CountryName Code="MX"/>
+                        </Address>
+                    </BasicPropertyInfo>
+                </HotelStay>
+            </HotelStays>
+
+            <RoomStays>
+                <RoomStay MarketCode="Flat" AvailabilityStatus="AvailableForSale" InfoSource="CI" RPH="0">
+                    <RoomTypes>
+                        <RoomType IsConverted="1" RoomType="M1D" RoomTypeCode="N1D"/>
+                    </RoomTypes>
+                    <RatePlans>
+                        <RatePlan RatePlanCode="ENF" RateIndicator="AvailableForSale">
+                            <Guarantee GuaranteeCode="31" GuaranteeType="GuaranteeRequired"/>
+                            <CancelPenalties CancelPolicyIndicator="1">
+                                <CancelPenalty PolicyCode="Cancellation" NonRefundable="false">
+                                    <Deadline AbsoluteDeadline="2027-05-18T16:00:00"/>
+                                    <AmountPercent NmbrOfNights="1"/>
+                                </CancelPenalty>
+                            </CancelPenalties>
+                            <MealsIncluded Breakfast="1" MealPlanIndicator="1" MealPlanCodes="BB"/>
+                        </RatePlan>
+                    </RatePlans>
+                    <RoomRates>
+                        <RoomRate BookingCode="BCODE001" RoomTypeCode="N1D" NumberOfUnits="1"
+                                  RatePlanCode="ENF" RatePlanCategory="Converted:ENF:N">
+                            <Rates>
+                                <Rate EffectiveDate="2027-05-19" ExpireDate="2027-05-20" RateTimeUnit="Day">
+                                    <Base AmountBeforeTax="1666" CurrencyCode="MXN"/>
+                                </Rate>
+                            </Rates>
+                            <Features>
+                                <Feature RoomAmenity="189"/>
+                            </Features>
+                            <Total AmountBeforeTax="1666" AmountAfterTax="1982" CurrencyCode="MXN">
+                                <Taxes>
+                                    <Tax Type="Exclusive" Code="28" Amount="316" CurrencyCode="MXN"/>
+                                </Taxes>
+                            </Total>
+                        </RoomRate>
+                    </RoomRates>
+                    <GuestCounts>
+                        <GuestCount AgeQualifyingCode="10" Count="1"/>
+                    </GuestCounts>
+                    <TimeSpan Start="2027-05-19" End="2027-05-20"/>
+                    <Total AmountBeforeTax="1666" AmountAfterTax="1982" CurrencyCode="MXN"/>
+                </RoomStay>
+
+                <RoomStay AvailabilityStatus="AvailableForSale" InfoSource="CI" RPH="1">
+                    <RoomTypes>
+                        <RoomType RoomType="M2D" RoomTypeCode="N2D"/>
+                    </RoomTypes>
+                    <RatePlans>
+                        <RatePlan RatePlanCode="RAC" RateIndicator="AvailableForSale">
+                            <Guarantee GuaranteeCode="31"/>
+                            <CancelPenalties>
+                                <CancelPenalty PolicyCode="Cancellation" NonRefundable="true"/>
+                            </CancelPenalties>
+                            <MealsIncluded Breakfast="0" MealPlanIndicator="0"/>
+                        </RatePlan>
+                    </RatePlans>
+                    <RoomRates>
+                        <RoomRate BookingCode="BCODE002" RoomTypeCode="N2D" NumberOfUnits="1"
+                                  RatePlanCode="RAC" RatePlanCategory="Converted:RAC:N">
+                            <Rates>
+                                <Rate EffectiveDate="2027-05-19" ExpireDate="2027-05-20" RateTimeUnit="Day">
+                                    <Base AmountBeforeTax="2100" CurrencyCode="MXN"/>
+                                </Rate>
+                            </Rates>
+                            <Total AmountBeforeTax="2100" AmountAfterTax="2436" CurrencyCode="MXN"/>
+                        </RoomRate>
+                    </RoomRates>
+                    <TimeSpan Start="2027-05-19" End="2027-05-20"/>
+                    <Total AmountBeforeTax="2100" AmountAfterTax="2436" CurrencyCode="MXN"/>
+                </RoomStay>
+
+                <RoomStay AvailabilityStatus="AvailableForSale" InfoSource="CI" RPH="2">
+                    <RoomTypes>
+                        <RoomType RoomType="M3S" RoomTypeCode="N3S"/>
+                    </RoomTypes>
+                    <RatePlans>
+                        <RatePlan RatePlanCode="COR">
+                            <Guarantee GuaranteeCode="31"/>
+                            <MealsIncluded Breakfast="1" MealPlanIndicator="1" MealPlanCodes="HB"/>
+                        </RatePlan>
+                    </RatePlans>
+                    <RoomRates>
+                        <RoomRate BookingCode="BCODE003" RoomTypeCode="N3S" NumberOfUnits="1"
+                                  RatePlanCode="COR" RatePlanCategory="Converted:COR:N">
+                            <Total AmountBeforeTax="3200" AmountAfterTax="3712" CurrencyCode="MXN"/>
+                        </RoomRate>
+                    </RoomRates>
+                    <TimeSpan Start="2027-05-19" End="2027-05-20"/>
+                    <Total AmountBeforeTax="3200" AmountAfterTax="3712" CurrencyCode="MXN"/>
+                </RoomStay>
+
+                <RoomStay AvailabilityStatus="AvailableForSale" InfoSource="HY" RPH="3">
+                    <RoomTypes>
+                        <RoomType RoomType="K1D" RoomTypeCode="K1D"/>
+                    </RoomTypes>
+                    <RatePlans>
+                        <RatePlan RatePlanCode="BAR">
+                            <Guarantee GuaranteeCode="31"/>
+                            <MealsIncluded Breakfast="0" MealPlanIndicator="0"/>
+                        </RatePlan>
+                    </RatePlans>
+                    <RoomRates>
+                        <RoomRate BookingCode="BCODE004" RoomTypeCode="K1D" NumberOfUnits="1"
+                                  RatePlanCode="BAR" RatePlanCategory="Converted:BAR:N">
+                            <Total AmountBeforeTax="1450" AmountAfterTax="1682" CurrencyCode="MXN"/>
+                        </RoomRate>
+                    </RoomRates>
+                    <TimeSpan Start="2027-05-19" End="2027-05-20"/>
+                    <Total AmountBeforeTax="1450" AmountAfterTax="1682" CurrencyCode="MXN"/>
+                </RoomStay>
+            </RoomStays>
+
+            <CurrencyConversions>
+                <CurrencyConversion RequestedCurrencyCode="MXN" DecimalPlaces="2"/>
+            </CurrencyConversions>
+        </OTA_HotelAvailRS>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3" xmlns:wsa="http://www.w3.org/2005/08/addressing">
+  <SOAP-ENV:Header>
+    <wsa:To>http://www.w3.org/2005/08/addressing/anonymous</wsa:To>
+    <wsa:From>
+      <wsa:Address>https://webservices.amadeus.test/1ASIWTEST</wsa:Address>
+    </wsa:From>
+    <wsa:Action>http://webservices.amadeus.com/VLSSOQ_04_1_1A</wsa:Action>
+    <wsa:MessageID>urn:uuid:af364b30-9423-6a24-915b-0c9e612c6886</wsa:MessageID>
+    <wsa:RelatesTo RelationshipType="http://www.w3.org/2005/08/addressing/reply">83f5363b-8c28-4c04-aa59-7f5f179e80ed</wsa:RelatesTo>
+    <awsse:Session TransactionStatusCode="End">
+      <awsse:SessionId>SESSION0005</awsse:SessionId>
+      <awsse:SequenceNumber>2</awsse:SequenceNumber>
+      <awsse:SecurityToken>SECURITYTOKEN0012</awsse:SecurityToken>
+    </awsse:Session>
+  </SOAP-ENV:Header>
+  <SOAP-ENV:Body>
+    <Security_SignOutReply xmlns="http://xml.amadeus.com/VLSSOR_04_1_1A">
+      <processStatus>
+        <statusCode>P</statusCode>
+      </processStatus>
+    </Security_SignOutReply>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

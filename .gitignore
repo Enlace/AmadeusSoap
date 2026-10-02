@@ -1,0 +1,51 @@
+# Dependencies
+/vendor/
+
+# IDE
+/.idea/
+/.vscode/
+*.swp
+*.swo
+*~
+
+# Testing
+/.phpunit.cache/
+/coverage/
+.phpunit.result.cache
+
+# Build artifacts
+/build/
+/dist/
+
+# Environment (real credentials — only the templates are tracked)
+.env
+.env.*
+!.env.example
+!.env.tst.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local storage: session files (file driver) and the SOAP XML that
+# scripts/tst-chain.php dumps to storage/tst-chain (credentials, session tokens,
+# PII). Sanitized copies live in tests/Fixtures/tst.
+/storage/
+
+# Composer
+composer.phar
+
+# PHP CS Fixer
+.php-cs-fixer.cache
+
+# PHPStan
+.phpstan.cache
+
+# Claude
+/.claude/

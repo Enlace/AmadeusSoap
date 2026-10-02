@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3" xmlns:wsa="http://www.w3.org/2005/08/addressing">
+  <soap:Header>
+    <wsa:To>http://www.w3.org/2005/08/addressing/anonymous</wsa:To>
+    <wsa:From>
+      <wsa:Address>https://webservices.amadeus.test/1ASIWTEST</wsa:Address>
+    </wsa:From>
+    <wsa:Action>http://webservices.amadeus.com/Hotel_EnhancedPricing_2.0</wsa:Action>
+    <wsa:MessageID>urn:uuid:0e9ffa4f-24e3-cca4-4127-9304dd30f6ad</wsa:MessageID>
+    <wsa:RelatesTo RelationshipType="http://www.w3.org/2005/08/addressing/reply">3909440f-7771-4a65-9620-05f50f2ef59f</wsa:RelatesTo>
+    <awsse:Session TransactionStatusCode="InSeries">
+      <awsse:SessionId>SESSION0003</awsse:SessionId>
+      <awsse:SequenceNumber>2</awsse:SequenceNumber>
+      <awsse:SecurityToken>SECURITYTOKEN0010</awsse:SecurityToken>
+    </awsse:Session>
+  </soap:Header>
+  <soap:Body>
+    <OTA_HotelAvailRS xmlns="http://www.opentravel.org/OTA/2003/05" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opentravel.org/OTA/2003/05 OTA_HotelAvailRS.xsd" EchoToken="Pricing" Version="6.001" PrimaryLangID="en">
+      <Success/>
+      <HotelStays>
+        <HotelStay RoomStayRPH="0">
+          <BasicPropertyInfo ChainCode="YZ" HotelCode="YZMTY045" HotelCityCode="MTY" HotelName="STAYBRIDGE SUITES SAN PEDRO" HotelCodeContext="1A" ChainName="STAYBRIDGE SUITES" AreaID="14" SupplierIntegrationLevel="3">
+            <VendorMessages>
+              <VendorMessage InfoType="3">
+                <SubSection>
+                  <Paragraph>
+                    <Text Formatted="1">IHG CLEAN PROMISE WWW.IHG.COM/CLEAN</Text>
+                  </Paragraph>
+                </SubSection>
+              </VendorMessage>
+              <VendorMessage InfoType="4">
+                <SubSection>
+                  <Paragraph Name="SI">
+                    <Text Formatted="1">120</Text>
+                  </Paragraph>
+                  <Paragraph Name="ARR"/>
+                  <Paragraph Name="AP"/>
+                  <Paragraph Name="MA"/>
+                  <Paragraph Name="FA"/>
+                  <Paragraph Name="FM"/>
+                </SubSection>
+              </VendorMessage>
+              <VendorMessage InfoType="2">
+                <SubSection>
+                  <Paragraph Name="BS"/>
+                  <Paragraph Name="CC"/>
+                  <Paragraph Name="CC"/>
+                </SubSection>
+              </VendorMessage>
+            </VendorMessages>
+            <Address>
+              <CountryName Code="MX"/>
+            </Address>
+            <RelativePosition>
+              <Transportations>
+                <Transportation TransportationCode="20"/>
+              </Transportations>
+            </RelativePosition>
+            <Policy CheckInTime="15:00:00" CheckOutTime="12:00:00"/>
+          </BasicPropertyInfo>
+        </HotelStay>
+      </HotelStays>
+      <RoomStays>
+        <RoomStay MarketCode="Flat.None.Unknown" SourceOfBusiness="Two Step.PricingOptional.PriceNotGuaranted.InvNotGuaranted" IsAlternate="0" AvailabilityStatus="AvailableForSale" InfoSource="YZ" RPH="0">
+          <RoomTypes>
+            <RoomType IsConverted="1" RoomType="S1K" RoomTypeCode="*1K">
+              <TPA_Extensions>
+                <ProviderRoomCode>O1KN</ProviderRoomCode>
+              </TPA_Extensions>
+            </RoomType>
+            <RoomType RoomTypeCode="*1K">
+              <Occupancy MaxOccupancy="3"/>
+            </RoomType>
+          </RoomTypes>
+          <RatePlans>
+            <RatePlan RatePlanCode="57J" RateIndicator="AvailableForSale" RatePlanName="BEST FLEXIBLE RATE" AvailabilityStatus="AvailableForSale">
+              <Guarantee GuaranteeCode="31" GuaranteeType="GuaranteeRequired">
+                <GuaranteesAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="AX"/>
+                  </GuaranteeAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="VI"/>
+                  </GuaranteeAccepted>
+                  <GuaranteeAccepted>
+                    <PaymentCard CardCode="CA"/>
+                  </GuaranteeAccepted>
+                </GuaranteesAccepted>
+              </Guarantee>
+              <CancelPenalties CancelPolicyIndicator="1">
+                <CancelPenalty PolicyCode="Cancellation" NonRefundable="false">
+                  <Deadline AbsoluteDeadline="2026-08-29T18:00:00"/>
+                  <AmountPercent NmbrOfNights="1"/>
+                  <PenaltyDescription>
+                    <Text>PENALTY AMOUNT 3687.81 CANCEL BY 2026-08-29T18:00:00</Text>
+                    <Text>CXL AFTER 1800 29AUG FORFEIT ONE NITE STAY</Text>
+                  </PenaltyDescription>
+                </CancelPenalty>
+              </CancelPenalties>
+              <RatePlanDescription>
+                <Text>BEST FLEXIBLE RATE</Text>
+              </RatePlanDescription>
+              <Commission StatusType="Commissionable"/>
+              <MealsIncluded Breakfast="1" MealPlanIndicator="1" MealPlanCodes="19"/>
+              <AdditionalDetails>
+                <AdditionalDetail Type="14">
+                  <DetailDescription>
+                    <Text>Guarantee Information:</Text>
+                    <Text>GUARANTEE REQUIRED</Text>
+                  </DetailDescription>
+                </AdditionalDetail>
+              </AdditionalDetails>
+            </RatePlan>
+          </RatePlans>
+          <RoomRates>
+            <RoomRate BookingCode="1KN57JU" RoomTypeCode="*1K" NumberOfUnits="1" RatePlanCode="57J" RatePlanCategory="Converted:BAR:P" AvailabilityStatus="AvailableForSale">
+              <Rates>
+                <Rate EffectiveDate="2026-08-30" ExpireDate="2026-08-31" RateTimeUnit="Day" MinLOS="1">
+                  <Base AmountBeforeTax="3099" CurrencyCode="MXN" RateOverrideIndicator="1"/>
+                  <PaymentPolicies>
+                    <GuaranteePayment PaymentCode="31" GuaranteeType="GuaranteeRequired"/>
+                  </PaymentPolicies>
+                  <TPA_Extensions>
+                    <LoyaltyProgram Applicable="Y"/>
+                  </TPA_Extensions>
+                </Rate>
+              </Rates>
+              <RoomRateDescription Name="1 King 1 Bedroom Suite">
+                <Text Formatted="1">1 King 1 Bedroom Suite</Text>
+                <Text Formatted="1">450 SqFt Suite with Living Area Microwave Refrigerator Stove and</Text>
+                <Text Formatted="1">Diswasher</Text>
+              </RoomRateDescription>
+              <Features>
+                <Feature RoomAmenity="196"/>
+                <Feature RoomAmenity="131"/>
+                <Feature RoomAmenity="198"/>
+                <Feature RoomAmenity="26"/>
+              </Features>
+              <Total AmountBeforeTax="3099" AmountAfterTax="3687" CurrencyCode="MXN" RateOverrideIndicator="1">
+                <Taxes>
+                  <Tax Type="Exclusive" Code="17" Percent="19.00" ChargeUnit="19">
+                    <TaxDescription>
+                      <Text Formatted="1">Total tax per room per night excluded in the rate</Text>
+                    </TaxDescription>
+                  </Tax>
+                  <Tax Code="14">
+                    <TaxDescription Name="Taxes and Charges">
+                      <Text Formatted="1">19 PCT TAX PER NIGHT</Text>
+                      <Text Formatted="1">LODGING TAX 3PCT AND VAT/GST TAX 16PCT</Text>
+                      <Text Formatted="1">***EARLY DEPARTURE MAY RESULT IN A HIGHER RATE***</Text>
+                      <Text Formatted="1">EXCLUDES GRATUITY</Text>
+                    </TaxDescription>
+                  </Tax>
+                </Taxes>
+              </Total>
+            </RoomRate>
+          </RoomRates>
+          <GuestCounts>
+            <GuestCount AgeQualifyingCode="10" Count="1"/>
+          </GuestCounts>
+          <TimeSpan Start="2026-08-30" End="2026-08-31">
+            <StartDateWindow DOW="Sun"/>
+            <EndDateWindow DOW="Mon"/>
+          </TimeSpan>
+          <Total AmountBeforeTax="3099" AmountAfterTax="3687" CurrencyCode="MXN" RateOverrideIndicator="1"/>
+          <ServiceRPHs>
+            <ServiceRPH RPH="0"/>
+          </ServiceRPHs>
+        </RoomStay>
+      </RoomStays>
+      <Services>
+        <Service ServiceRPH="0" ServiceInventoryCode="19.MPT" Inclusive="1" Type="10" ID="-"/>
+      </Services>
+    </OTA_HotelAvailRS>
+  </soap:Body>
+</soap:Envelope>

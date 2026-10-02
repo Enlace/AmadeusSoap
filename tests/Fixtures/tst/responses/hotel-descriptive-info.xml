@@ -1,0 +1,1088 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3" xmlns:wsa="http://www.w3.org/2005/08/addressing">
+  <soap:Header>
+    <wsa:To>http://www.w3.org/2005/08/addressing/anonymous</wsa:To>
+    <wsa:From>
+      <wsa:Address>https://webservices.amadeus.test/1ASIWTEST</wsa:Address>
+    </wsa:From>
+    <wsa:Action>http://webservices.amadeus.com/OTA_HotelDescriptiveInfoRQ_07.1_1A2007A</wsa:Action>
+    <wsa:MessageID>urn:uuid:e7f2edac-f101-7e74-6598-5ab466c2d3d3</wsa:MessageID>
+    <wsa:RelatesTo RelationshipType="http://www.w3.org/2005/08/addressing/reply">6f4e03f9-2187-4346-9599-c53842ec1316</wsa:RelatesTo>
+    <awsse:Session TransactionStatusCode="End">
+      <awsse:SessionId>SESSION0007</awsse:SessionId>
+      <awsse:SequenceNumber>1</awsse:SequenceNumber>
+      <awsse:SecurityToken>SECURITYTOKEN0014</awsse:SecurityToken>
+    </awsse:Session>
+  </soap:Header>
+  <soap:Body>
+    <OTA_HotelDescriptiveInfoRS xmlns="http://www.opentravel.org/OTA/2003/05" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opentravel.org/OTA/2003/05 OTA_HotelDescriptiveInfoRS.xsd" EchoToken="withParsing" Target="Production" Version="6.001">
+      <Success/>
+      <HotelDescriptiveContents>
+        <HotelDescriptiveContent CurrencyCode="MXN" LanguageCode="en" UnitOfMeasure="1" ChainCode="YZ" HotelCode="YZMTY045" HotelName="STAYBRIDGE SUITES SAN PEDRO" HotelCodeContext="1A">
+          <HotelInfo WhenBuilt="2001" HotelStatusCode="1" ISO9000CertifiedInd="0">
+            <HotelName HotelShortName="STAYBRIDGE SUITES SAN PEDRO"/>
+            <CategoryCodes>
+              <LocationCategory Code="18"/>
+              <SegmentCategory Code="14"/>
+              <HotelCategory Code="1"/>
+              <HotelCategory Code="13"/>
+              <HotelCategory Code="20"/>
+              <HotelCategory Code="20"/>
+              <GuestRoomInfo Code="1" Quantity="1"/>
+              <GuestRoomInfo Code="2" Quantity="48"/>
+              <GuestRoomInfo Code="3" Quantity="52"/>
+              <GuestRoomInfo Code="10" Quantity="9"/>
+              <GuestRoomInfo Code="28" Quantity="52">
+                <MultimediaDescriptions>
+                  <MultimediaDescription>
+                    <ImageItems>
+                      <ImageItem Category="6" LastModifyDateTime="2014-05-31T02:50:44">
+                        <ImageFormat Width="500" Height="500" RecordID="62C2623C59E8454D9B7C2049323F5D2E" Format="5" FileName="GROOM_RVEW_05.jpg" FileSize="72901" IsOriginalIndicator="true">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/62C2623C59E8454D9B7C2049323F5D2E/62C2623C59E8454D9B7C2049323F5D2E.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="70" Height="70" Format="5" FileSize="3414" DimensionCategory="A">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/62C2623C59E8454D9B7C2049323F5D2E/A.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="100" Height="100" Format="5" FileSize="5873" DimensionCategory="B">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/62C2623C59E8454D9B7C2049323F5D2E/B.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="C">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/62C2623C59E8454D9B7C2049323F5D2E/C.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="200" Height="200" Format="5" FileSize="17861" DimensionCategory="D">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/62C2623C59E8454D9B7C2049323F5D2E/D.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="250" Height="250" Format="5" FileSize="25889" DimensionCategory="E">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/62C2623C59E8454D9B7C2049323F5D2E/E.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="F">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/62C2623C59E8454D9B7C2049323F5D2E/F.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="G">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/62C2623C59E8454D9B7C2049323F5D2E/G.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="350" Height="350" Format="5" FileSize="42936" DimensionCategory="H">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/62C2623C59E8454D9B7C2049323F5D2E/H.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="384" Height="384" Format="5" FileSize="50329" DimensionCategory="I">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/62C2623C59E8454D9B7C2049323F5D2E/I.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="480" Height="480" Format="5" FileSize="64315" DimensionCategory="J">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/62C2623C59E8454D9B7C2049323F5D2E/J.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="K">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/62C2623C59E8454D9B7C2049323F5D2E/K.JPEG</URL>
+                        </ImageFormat>
+                        <Description Language="en" Caption="Guest room">View from Room</Description>
+                      </ImageItem>
+                      <ImageItem Category="6" LastModifyDateTime="2014-05-31T02:50:44">
+                        <ImageFormat Width="500" Height="500" RecordID="C85891E20A754C37A55CFBDA164684A4" Format="5" FileName="MTYSP_2577832914_5931897697.jpg" FileSize="72901" IsOriginalIndicator="true">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/C85891E20A754C37A55CFBDA164684A4/C85891E20A754C37A55CFBDA164684A4.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="70" Height="70" Format="5" FileSize="3414" DimensionCategory="A">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/C85891E20A754C37A55CFBDA164684A4/A.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="100" Height="100" Format="5" FileSize="5873" DimensionCategory="B">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/C85891E20A754C37A55CFBDA164684A4/B.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="C">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/C85891E20A754C37A55CFBDA164684A4/C.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="200" Height="200" Format="5" FileSize="17861" DimensionCategory="D">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/C85891E20A754C37A55CFBDA164684A4/D.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="250" Height="250" Format="5" FileSize="25889" DimensionCategory="E">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/C85891E20A754C37A55CFBDA164684A4/E.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="F">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/C85891E20A754C37A55CFBDA164684A4/F.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="G">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/C85891E20A754C37A55CFBDA164684A4/G.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="350" Height="350" Format="5" FileSize="42936" DimensionCategory="H">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/C85891E20A754C37A55CFBDA164684A4/H.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="384" Height="384" Format="5" FileSize="50329" DimensionCategory="I">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/C85891E20A754C37A55CFBDA164684A4/I.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="480" Height="480" Format="5" FileSize="64315" DimensionCategory="J">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/C85891E20A754C37A55CFBDA164684A4/J.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="K">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/C85891E20A754C37A55CFBDA164684A4/K.JPEG</URL>
+                        </ImageFormat>
+                        <Description Language="en" Caption="Guest room">Guest Room</Description>
+                      </ImageItem>
+                      <ImageItem Category="6" LastModifyDateTime="2014-05-31T02:50:44">
+                        <ImageFormat Width="500" Height="500" RecordID="4464F663C4B746DFAC474C847ACE5168" Format="5" FileName="MTYSP_2577814221_4107995934.jpg" FileSize="72901" IsOriginalIndicator="true">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4464F663C4B746DFAC474C847ACE5168/4464F663C4B746DFAC474C847ACE5168.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="70" Height="70" Format="5" FileSize="3414" DimensionCategory="A">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4464F663C4B746DFAC474C847ACE5168/A.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="100" Height="100" Format="5" FileSize="5873" DimensionCategory="B">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4464F663C4B746DFAC474C847ACE5168/B.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="C">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4464F663C4B746DFAC474C847ACE5168/C.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="200" Height="200" Format="5" FileSize="17861" DimensionCategory="D">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4464F663C4B746DFAC474C847ACE5168/D.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="250" Height="250" Format="5" FileSize="25889" DimensionCategory="E">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4464F663C4B746DFAC474C847ACE5168/E.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="F">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4464F663C4B746DFAC474C847ACE5168/F.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="G">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4464F663C4B746DFAC474C847ACE5168/G.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="350" Height="350" Format="5" FileSize="42936" DimensionCategory="H">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4464F663C4B746DFAC474C847ACE5168/H.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="384" Height="384" Format="5" FileSize="50329" DimensionCategory="I">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4464F663C4B746DFAC474C847ACE5168/I.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="480" Height="480" Format="5" FileSize="64315" DimensionCategory="J">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4464F663C4B746DFAC474C847ACE5168/J.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="K">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4464F663C4B746DFAC474C847ACE5168/K.JPEG</URL>
+                        </ImageFormat>
+                        <Description Language="en" Caption="Guest room">View from Room</Description>
+                      </ImageItem>
+                      <ImageItem Category="6" LastModifyDateTime="2014-05-31T02:50:44">
+                        <ImageFormat Width="500" Height="500" RecordID="1112FBDD1F184C8FB369894DB5FF4496" Format="5" FileName="GROOM_RVEW_03.jpg" FileSize="72901" IsOriginalIndicator="true">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/1112FBDD1F184C8FB369894DB5FF4496/1112FBDD1F184C8FB369894DB5FF4496.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="70" Height="70" Format="5" FileSize="3414" DimensionCategory="A">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/1112FBDD1F184C8FB369894DB5FF4496/A.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="100" Height="100" Format="5" FileSize="5873" DimensionCategory="B">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/1112FBDD1F184C8FB369894DB5FF4496/B.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="C">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/1112FBDD1F184C8FB369894DB5FF4496/C.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="200" Height="200" Format="5" FileSize="17861" DimensionCategory="D">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/1112FBDD1F184C8FB369894DB5FF4496/D.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="250" Height="250" Format="5" FileSize="25889" DimensionCategory="E">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/1112FBDD1F184C8FB369894DB5FF4496/E.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="F">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/1112FBDD1F184C8FB369894DB5FF4496/F.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="G">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/1112FBDD1F184C8FB369894DB5FF4496/G.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="350" Height="350" Format="5" FileSize="42936" DimensionCategory="H">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/1112FBDD1F184C8FB369894DB5FF4496/H.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="384" Height="384" Format="5" FileSize="50329" DimensionCategory="I">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/1112FBDD1F184C8FB369894DB5FF4496/I.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="480" Height="480" Format="5" FileSize="64315" DimensionCategory="J">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/1112FBDD1F184C8FB369894DB5FF4496/J.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="K">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/1112FBDD1F184C8FB369894DB5FF4496/K.JPEG</URL>
+                        </ImageFormat>
+                        <Description Language="en" Caption="Guest room">View from Room</Description>
+                      </ImageItem>
+                      <ImageItem Category="6" LastModifyDateTime="2014-05-31T02:50:44">
+                        <ImageFormat Width="500" Height="500" RecordID="B647CCED33A44453B4A0A8DD672A9743" Format="5" FileName="MTYSP_2577832917_4514731651.jpg" FileSize="72901" IsOriginalIndicator="true">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/B647CCED33A44453B4A0A8DD672A9743/B647CCED33A44453B4A0A8DD672A9743.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="70" Height="70" Format="5" FileSize="3414" DimensionCategory="A">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/B647CCED33A44453B4A0A8DD672A9743/A.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="100" Height="100" Format="5" FileSize="5873" DimensionCategory="B">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/B647CCED33A44453B4A0A8DD672A9743/B.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="C">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/B647CCED33A44453B4A0A8DD672A9743/C.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="200" Height="200" Format="5" FileSize="17861" DimensionCategory="D">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/B647CCED33A44453B4A0A8DD672A9743/D.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="250" Height="250" Format="5" FileSize="25889" DimensionCategory="E">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/B647CCED33A44453B4A0A8DD672A9743/E.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="F">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/B647CCED33A44453B4A0A8DD672A9743/F.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="G">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/B647CCED33A44453B4A0A8DD672A9743/G.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="350" Height="350" Format="5" FileSize="42936" DimensionCategory="H">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/B647CCED33A44453B4A0A8DD672A9743/H.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="384" Height="384" Format="5" FileSize="50329" DimensionCategory="I">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/B647CCED33A44453B4A0A8DD672A9743/I.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="480" Height="480" Format="5" FileSize="64315" DimensionCategory="J">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/B647CCED33A44453B4A0A8DD672A9743/J.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="K">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/B647CCED33A44453B4A0A8DD672A9743/K.JPEG</URL>
+                        </ImageFormat>
+                        <Description Language="en" Caption="Guest room">Guest Room</Description>
+                      </ImageItem>
+                      <ImageItem Category="6" LastModifyDateTime="2014-05-31T02:50:44">
+                        <ImageFormat Width="500" Height="500" RecordID="2A2A11620FFA4F0683E9CADD4C1EFA44" Format="5" FileName="MTYSP_2577819654_2016812727.jpg" FileSize="72901" IsOriginalIndicator="true">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2A2A11620FFA4F0683E9CADD4C1EFA44/2A2A11620FFA4F0683E9CADD4C1EFA44.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="70" Height="70" Format="5" FileSize="3414" DimensionCategory="A">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2A2A11620FFA4F0683E9CADD4C1EFA44/A.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="100" Height="100" Format="5" FileSize="5873" DimensionCategory="B">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2A2A11620FFA4F0683E9CADD4C1EFA44/B.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="C">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2A2A11620FFA4F0683E9CADD4C1EFA44/C.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="200" Height="200" Format="5" FileSize="17861" DimensionCategory="D">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2A2A11620FFA4F0683E9CADD4C1EFA44/D.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="250" Height="250" Format="5" FileSize="25889" DimensionCategory="E">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2A2A11620FFA4F0683E9CADD4C1EFA44/E.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="F">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2A2A11620FFA4F0683E9CADD4C1EFA44/F.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="G">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2A2A11620FFA4F0683E9CADD4C1EFA44/G.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="350" Height="350" Format="5" FileSize="42936" DimensionCategory="H">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2A2A11620FFA4F0683E9CADD4C1EFA44/H.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="384" Height="384" Format="5" FileSize="50329" DimensionCategory="I">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2A2A11620FFA4F0683E9CADD4C1EFA44/I.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="480" Height="480" Format="5" FileSize="64315" DimensionCategory="J">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2A2A11620FFA4F0683E9CADD4C1EFA44/J.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="K">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2A2A11620FFA4F0683E9CADD4C1EFA44/K.JPEG</URL>
+                        </ImageFormat>
+                        <Description Language="en" Caption="Guest room">View from Room</Description>
+                      </ImageItem>
+                      <ImageItem Category="6" LastModifyDateTime="2014-05-31T02:50:44">
+                        <ImageFormat Width="500" Height="500" RecordID="4D2B572858FC4EA19C4AEAF305988CDB" Format="5" FileName="MTYSP_2577826273_5659162350.jpg" FileSize="72901" IsOriginalIndicator="true">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4D2B572858FC4EA19C4AEAF305988CDB/4D2B572858FC4EA19C4AEAF305988CDB.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="70" Height="70" Format="5" FileSize="3414" DimensionCategory="A">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4D2B572858FC4EA19C4AEAF305988CDB/A.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="100" Height="100" Format="5" FileSize="5873" DimensionCategory="B">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4D2B572858FC4EA19C4AEAF305988CDB/B.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="C">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4D2B572858FC4EA19C4AEAF305988CDB/C.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="200" Height="200" Format="5" FileSize="17861" DimensionCategory="D">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4D2B572858FC4EA19C4AEAF305988CDB/D.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="250" Height="250" Format="5" FileSize="25889" DimensionCategory="E">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4D2B572858FC4EA19C4AEAF305988CDB/E.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="F">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4D2B572858FC4EA19C4AEAF305988CDB/F.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="G">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4D2B572858FC4EA19C4AEAF305988CDB/G.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="350" Height="350" Format="5" FileSize="42936" DimensionCategory="H">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4D2B572858FC4EA19C4AEAF305988CDB/H.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="384" Height="384" Format="5" FileSize="50329" DimensionCategory="I">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4D2B572858FC4EA19C4AEAF305988CDB/I.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="480" Height="480" Format="5" FileSize="64315" DimensionCategory="J">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4D2B572858FC4EA19C4AEAF305988CDB/J.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="K">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/4D2B572858FC4EA19C4AEAF305988CDB/K.JPEG</URL>
+                        </ImageFormat>
+                        <Description Language="en" Caption="Guest room">Guest Room</Description>
+                      </ImageItem>
+                    </ImageItems>
+                  </MultimediaDescription>
+                </MultimediaDescriptions>
+              </GuestRoomInfo>
+              <GuestRoomInfo Code="37" Quantity="35"/>
+              <GuestRoomInfo Code="5" Quantity="4"/>
+              <GuestRoomInfo Code="6"/>
+            </CategoryCodes>
+            <Descriptions>
+              <MultimediaDescriptions>
+                <MultimediaDescription InfoCode="5">
+                  <ImageItems>
+                    <ImageItem Category="20" LastModifyDateTime="2014-05-31T02:50:44">
+                      <ImageFormat Width="500" Height="500" RecordID="DB6CF33E62474A768B4EF3ABC39B1821" Format="5" FileName="MTYSP_2577821628_498845187.jpg" FileSize="72901" IsOriginalIndicator="true">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DB6CF33E62474A768B4EF3ABC39B1821/DB6CF33E62474A768B4EF3ABC39B1821.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="70" Height="70" Format="5" FileSize="3414" DimensionCategory="A">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DB6CF33E62474A768B4EF3ABC39B1821/A.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="100" Height="100" Format="5" FileSize="5873" DimensionCategory="B">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DB6CF33E62474A768B4EF3ABC39B1821/B.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="C">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DB6CF33E62474A768B4EF3ABC39B1821/C.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="200" Height="200" Format="5" FileSize="17861" DimensionCategory="D">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DB6CF33E62474A768B4EF3ABC39B1821/D.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="250" Height="250" Format="5" FileSize="25889" DimensionCategory="E">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DB6CF33E62474A768B4EF3ABC39B1821/E.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="F">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DB6CF33E62474A768B4EF3ABC39B1821/F.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="G">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DB6CF33E62474A768B4EF3ABC39B1821/G.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="350" Height="350" Format="5" FileSize="42936" DimensionCategory="H">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DB6CF33E62474A768B4EF3ABC39B1821/H.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="384" Height="384" Format="5" FileSize="50329" DimensionCategory="I">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DB6CF33E62474A768B4EF3ABC39B1821/I.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="480" Height="480" Format="5" FileSize="64315" DimensionCategory="J">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DB6CF33E62474A768B4EF3ABC39B1821/J.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="K">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DB6CF33E62474A768B4EF3ABC39B1821/K.JPEG</URL>
+                      </ImageFormat>
+                      <Description Language="en" Caption="Property amenity">Laundry Facility</Description>
+                    </ImageItem>
+                  </ImageItems>
+                </MultimediaDescription>
+                <MultimediaDescription InfoCode="17" AdditionalDetailCode="2">
+                  <TextItems>
+                    <TextItem>
+                      <Description Language="en">Stay at comfortable all-suites hotel convenient to major business venues and attractions in the Valle area, and enjoy amenities like a Pantry, laundry room and complimentary breakfast and Internet access.</Description>
+                    </TextItem>
+                  </TextItems>
+                </MultimediaDescription>
+                <MultimediaDescription InfoCode="1" AdditionalDetailCode="2">
+                  <TextItems>
+                    <TextItem>
+                      <Description Language="en">This Award Winning Monterrey Hotel is a Travelers Dream. Guests encounter a sense of peace and tranquility as soon as they enter the Staybridge Suites Monterrey San Pedro hotel. The lush mountains that surround the hotel s property in Monterrey are a perfect backdrop to this lively, growing metropolis. Exclusive residential areas, fine restaurants and boutiques are all within reach of the hotel. San Pedro has become Mexico s center for commerce and industry. Cemex, GM, GE and the American Consulate are all easily accessible to guests here for business purposes. You can stay connected with home and the office with free high speed Internet access. The flexible stay options are perfect for weekend travelers, corporate relocation or an extended business project. Situated in San Pedros Zona Valle, the hotel has easy access to main corporate offices, as well as top area attractions. You can view the entire city from the top of Obispado Bishops Palace, visit one of many museums or go sightseeing in nearby Huasteca Canyon or Chipinque. You can also shop at high end boutiques while strolling through Paseo de los Duendes in Calzada del Valle. Monterrey and San Pedro draw thousands of guests each year. Why not stay at a place that feels like home? The outdoor pool and grill, Great Room and complimentary hot breakfast are just a few of the many amenities we offer guests. So "Get Comfortable" and enjoy your stay with us!</Description>
+                    </TextItem>
+                  </TextItems>
+                </MultimediaDescription>
+                <MultimediaDescription InfoCode="1" AdditionalDetailCode="2">
+                  <ImageItems>
+                    <ImageItem Category="1" LastModifyDateTime="2014-05-31T02:50:44">
+                      <ImageFormat Width="500" Height="500" RecordID="098A7911DADE494386CB3B0C8EED5834" Format="5" FileName="WELCM_EXTR_04.jpg" FileSize="72901" IsOriginalIndicator="true">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/098A7911DADE494386CB3B0C8EED5834/098A7911DADE494386CB3B0C8EED5834.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="70" Height="70" Format="5" FileSize="3414" DimensionCategory="A">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/098A7911DADE494386CB3B0C8EED5834/A.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="100" Height="100" Format="5" FileSize="5873" DimensionCategory="B">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/098A7911DADE494386CB3B0C8EED5834/B.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="C">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/098A7911DADE494386CB3B0C8EED5834/C.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="200" Height="200" Format="5" FileSize="17861" DimensionCategory="D">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/098A7911DADE494386CB3B0C8EED5834/D.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="250" Height="250" Format="5" FileSize="25889" DimensionCategory="E">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/098A7911DADE494386CB3B0C8EED5834/E.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="F">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/098A7911DADE494386CB3B0C8EED5834/F.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="G">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/098A7911DADE494386CB3B0C8EED5834/G.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="350" Height="350" Format="5" FileSize="42936" DimensionCategory="H">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/098A7911DADE494386CB3B0C8EED5834/H.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="384" Height="384" Format="5" FileSize="50329" DimensionCategory="I">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/098A7911DADE494386CB3B0C8EED5834/I.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="480" Height="480" Format="5" FileSize="64315" DimensionCategory="J">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/098A7911DADE494386CB3B0C8EED5834/J.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="K">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/098A7911DADE494386CB3B0C8EED5834/K.JPEG</URL>
+                      </ImageFormat>
+                      <Description Language="en" Caption="Exterior view">Hotel Exterior</Description>
+                    </ImageItem>
+                    <ImageItem Category="1" LastModifyDateTime="2014-05-31T02:50:44">
+                      <ImageFormat Width="500" Height="500" RecordID="9C1E4470249B49FD9CAC4EAC314B4114" Format="5" FileName="WELCM_EXTR_01.jpg" FileSize="72901" IsOriginalIndicator="true">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/9C1E4470249B49FD9CAC4EAC314B4114/9C1E4470249B49FD9CAC4EAC314B4114.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="70" Height="70" Format="5" FileSize="3414" DimensionCategory="A">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/9C1E4470249B49FD9CAC4EAC314B4114/A.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="100" Height="100" Format="5" FileSize="5873" DimensionCategory="B">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/9C1E4470249B49FD9CAC4EAC314B4114/B.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="C">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/9C1E4470249B49FD9CAC4EAC314B4114/C.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="200" Height="200" Format="5" FileSize="17861" DimensionCategory="D">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/9C1E4470249B49FD9CAC4EAC314B4114/D.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="250" Height="250" Format="5" FileSize="25889" DimensionCategory="E">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/9C1E4470249B49FD9CAC4EAC314B4114/E.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="F">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/9C1E4470249B49FD9CAC4EAC314B4114/F.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="G">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/9C1E4470249B49FD9CAC4EAC314B4114/G.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="350" Height="350" Format="5" FileSize="42936" DimensionCategory="H">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/9C1E4470249B49FD9CAC4EAC314B4114/H.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="384" Height="384" Format="5" FileSize="50329" DimensionCategory="I">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/9C1E4470249B49FD9CAC4EAC314B4114/I.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="480" Height="480" Format="5" FileSize="64315" DimensionCategory="J">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/9C1E4470249B49FD9CAC4EAC314B4114/J.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="K">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/9C1E4470249B49FD9CAC4EAC314B4114/K.JPEG</URL>
+                      </ImageFormat>
+                      <Description Language="en" Caption="Exterior view">Exterior View</Description>
+                    </ImageItem>
+                    <ImageItem Category="1" LastModifyDateTime="2014-05-31T02:50:44">
+                      <ImageFormat Width="500" Height="500" RecordID="82D669933F8C416B9AF8F6A419F4F8ED" Format="5" FileName="WELCM_EXTR_02.jpg" FileSize="72901" IsOriginalIndicator="true">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/82D669933F8C416B9AF8F6A419F4F8ED/82D669933F8C416B9AF8F6A419F4F8ED.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="70" Height="70" Format="5" FileSize="3414" DimensionCategory="A">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/82D669933F8C416B9AF8F6A419F4F8ED/A.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="100" Height="100" Format="5" FileSize="5873" DimensionCategory="B">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/82D669933F8C416B9AF8F6A419F4F8ED/B.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="C">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/82D669933F8C416B9AF8F6A419F4F8ED/C.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="200" Height="200" Format="5" FileSize="17861" DimensionCategory="D">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/82D669933F8C416B9AF8F6A419F4F8ED/D.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="250" Height="250" Format="5" FileSize="25889" DimensionCategory="E">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/82D669933F8C416B9AF8F6A419F4F8ED/E.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="F">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/82D669933F8C416B9AF8F6A419F4F8ED/F.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="G">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/82D669933F8C416B9AF8F6A419F4F8ED/G.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="350" Height="350" Format="5" FileSize="42936" DimensionCategory="H">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/82D669933F8C416B9AF8F6A419F4F8ED/H.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="384" Height="384" Format="5" FileSize="50329" DimensionCategory="I">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/82D669933F8C416B9AF8F6A419F4F8ED/I.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="480" Height="480" Format="5" FileSize="64315" DimensionCategory="J">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/82D669933F8C416B9AF8F6A419F4F8ED/J.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="K">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/82D669933F8C416B9AF8F6A419F4F8ED/K.JPEG</URL>
+                      </ImageFormat>
+                      <Description Language="en" Caption="Exterior view">Hotel Exterior</Description>
+                    </ImageItem>
+                    <ImageItem Category="1" LastModifyDateTime="2014-05-31T02:50:44">
+                      <ImageFormat Width="500" Height="500" RecordID="E525D1445F4A482FAE156A4CE5912249" Format="5" FileName="WELCM_EXTR_03.jpg" FileSize="72901" IsOriginalIndicator="true">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/E525D1445F4A482FAE156A4CE5912249/E525D1445F4A482FAE156A4CE5912249.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="70" Height="70" Format="5" FileSize="3414" DimensionCategory="A">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/E525D1445F4A482FAE156A4CE5912249/A.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="100" Height="100" Format="5" FileSize="5873" DimensionCategory="B">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/E525D1445F4A482FAE156A4CE5912249/B.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="C">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/E525D1445F4A482FAE156A4CE5912249/C.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="200" Height="200" Format="5" FileSize="17861" DimensionCategory="D">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/E525D1445F4A482FAE156A4CE5912249/D.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="250" Height="250" Format="5" FileSize="25889" DimensionCategory="E">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/E525D1445F4A482FAE156A4CE5912249/E.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="F">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/E525D1445F4A482FAE156A4CE5912249/F.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="G">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/E525D1445F4A482FAE156A4CE5912249/G.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="350" Height="350" Format="5" FileSize="42936" DimensionCategory="H">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/E525D1445F4A482FAE156A4CE5912249/H.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="384" Height="384" Format="5" FileSize="50329" DimensionCategory="I">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/E525D1445F4A482FAE156A4CE5912249/I.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="480" Height="480" Format="5" FileSize="64315" DimensionCategory="J">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/E525D1445F4A482FAE156A4CE5912249/J.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="K">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/E525D1445F4A482FAE156A4CE5912249/K.JPEG</URL>
+                      </ImageFormat>
+                      <Description Language="en" Caption="Exterior view">Hotel Exterior</Description>
+                    </ImageItem>
+                    <ImageItem Category="1" LastModifyDateTime="2014-05-31T02:50:44">
+                      <ImageFormat Width="500" Height="500" RecordID="DDF1820C815E48E49CCBA992588D8EC8" Format="5" FileName="MTYSP_2577791343_4817664483.jpg" FileSize="72901" IsOriginalIndicator="true">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DDF1820C815E48E49CCBA992588D8EC8/DDF1820C815E48E49CCBA992588D8EC8.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="70" Height="70" Format="5" FileSize="3414" DimensionCategory="A">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DDF1820C815E48E49CCBA992588D8EC8/A.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="100" Height="100" Format="5" FileSize="5873" DimensionCategory="B">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DDF1820C815E48E49CCBA992588D8EC8/B.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="C">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DDF1820C815E48E49CCBA992588D8EC8/C.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="200" Height="200" Format="5" FileSize="17861" DimensionCategory="D">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DDF1820C815E48E49CCBA992588D8EC8/D.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="250" Height="250" Format="5" FileSize="25889" DimensionCategory="E">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DDF1820C815E48E49CCBA992588D8EC8/E.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="F">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DDF1820C815E48E49CCBA992588D8EC8/F.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="G">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DDF1820C815E48E49CCBA992588D8EC8/G.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="350" Height="350" Format="5" FileSize="42936" DimensionCategory="H">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DDF1820C815E48E49CCBA992588D8EC8/H.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="384" Height="384" Format="5" FileSize="50329" DimensionCategory="I">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DDF1820C815E48E49CCBA992588D8EC8/I.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="480" Height="480" Format="5" FileSize="64315" DimensionCategory="J">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DDF1820C815E48E49CCBA992588D8EC8/J.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="K">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DDF1820C815E48E49CCBA992588D8EC8/K.JPEG</URL>
+                      </ImageFormat>
+                      <Description Language="en" Caption="Exterior view">Hotel Exterior</Description>
+                    </ImageItem>
+                  </ImageItems>
+                </MultimediaDescription>
+                <MultimediaDescription AdditionalDetailCode="37">
+                  <ImageItems>
+                    <ImageItem Category="8" LastModifyDateTime="2014-05-31T02:50:44">
+                      <ImageFormat Width="500" Height="500" RecordID="DFD51A9EF2834CFC806288E1BAC38749" Format="5" FileName="MTYSP_2577823439_5576936780.jpg" FileSize="72901" IsOriginalIndicator="true">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DFD51A9EF2834CFC806288E1BAC38749/DFD51A9EF2834CFC806288E1BAC38749.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="70" Height="70" Format="5" FileSize="3414" DimensionCategory="A">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DFD51A9EF2834CFC806288E1BAC38749/A.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="100" Height="100" Format="5" FileSize="5873" DimensionCategory="B">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DFD51A9EF2834CFC806288E1BAC38749/B.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="C">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DFD51A9EF2834CFC806288E1BAC38749/C.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="200" Height="200" Format="5" FileSize="17861" DimensionCategory="D">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DFD51A9EF2834CFC806288E1BAC38749/D.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="250" Height="250" Format="5" FileSize="25889" DimensionCategory="E">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DFD51A9EF2834CFC806288E1BAC38749/E.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="F">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DFD51A9EF2834CFC806288E1BAC38749/F.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="G">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DFD51A9EF2834CFC806288E1BAC38749/G.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="350" Height="350" Format="5" FileSize="42936" DimensionCategory="H">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DFD51A9EF2834CFC806288E1BAC38749/H.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="384" Height="384" Format="5" FileSize="50329" DimensionCategory="I">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DFD51A9EF2834CFC806288E1BAC38749/I.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="480" Height="480" Format="5" FileSize="64315" DimensionCategory="J">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DFD51A9EF2834CFC806288E1BAC38749/J.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="K">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/DFD51A9EF2834CFC806288E1BAC38749/K.JPEG</URL>
+                      </ImageFormat>
+                      <Description Language="en" Caption="Meeting room">Meeting Room</Description>
+                    </ImageItem>
+                  </ImageItems>
+                </MultimediaDescription>
+                <MultimediaDescription AdditionalDetailCode="17">
+                  <ImageItems>
+                    <ImageItem Category="2" LastModifyDateTime="2014-05-31T02:50:44">
+                      <ImageFormat Width="500" Height="500" RecordID="6D3A742EF0714E0FAAF8A25334E769B4" Format="5" FileName="MTYSP_2577803029_9752068353.jpg" FileSize="72901" IsOriginalIndicator="true">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/6D3A742EF0714E0FAAF8A25334E769B4/6D3A742EF0714E0FAAF8A25334E769B4.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="70" Height="70" Format="5" FileSize="3414" DimensionCategory="A">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/6D3A742EF0714E0FAAF8A25334E769B4/A.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="100" Height="100" Format="5" FileSize="5873" DimensionCategory="B">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/6D3A742EF0714E0FAAF8A25334E769B4/B.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="C">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/6D3A742EF0714E0FAAF8A25334E769B4/C.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="200" Height="200" Format="5" FileSize="17861" DimensionCategory="D">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/6D3A742EF0714E0FAAF8A25334E769B4/D.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="250" Height="250" Format="5" FileSize="25889" DimensionCategory="E">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/6D3A742EF0714E0FAAF8A25334E769B4/E.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="F">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/6D3A742EF0714E0FAAF8A25334E769B4/F.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="G">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/6D3A742EF0714E0FAAF8A25334E769B4/G.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="350" Height="350" Format="5" FileSize="42936" DimensionCategory="H">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/6D3A742EF0714E0FAAF8A25334E769B4/H.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="384" Height="384" Format="5" FileSize="50329" DimensionCategory="I">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/6D3A742EF0714E0FAAF8A25334E769B4/I.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="480" Height="480" Format="5" FileSize="64315" DimensionCategory="J">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/6D3A742EF0714E0FAAF8A25334E769B4/J.JPEG</URL>
+                      </ImageFormat>
+                      <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="K">
+                        <URL>https://d1moe8jtgovopm.cloudfront.net/6D3A742EF0714E0FAAF8A25334E769B4/K.JPEG</URL>
+                      </ImageFormat>
+                      <Description Language="en" Caption="Lobby view">Lobby Lounge</Description>
+                    </ImageItem>
+                  </ImageItems>
+                </MultimediaDescription>
+                <MultimediaDescription AdditionalDetailCode="23">
+                  <TextItems>
+                    <TextItem>
+                      <Description Language="en">Unless noted, Property Facilities May Not Be On-Site and Charges May Apply.</Description>
+                    </TextItem>
+                  </TextItems>
+                </MultimediaDescription>
+                <MultimediaDescription AdditionalDetailCode="25">
+                  <TextItems>
+                    <TextItem>
+                      <Description Language="en">Unless noted, Services May Not Be On-Site and Charges May Apply.</Description>
+                    </TextItem>
+                  </TextItems>
+                </MultimediaDescription>
+                <MultimediaDescription AdditionalDetailCode="35">
+                  <TextItems>
+                    <TextItem>
+                      <Description Language="en">Unless noted, Recreation Facilities May Not Be On-Site and Charges May Apply.</Description>
+                    </TextItem>
+                  </TextItems>
+                </MultimediaDescription>
+                <MultimediaDescription InfoCode="2">
+                  <TextItems>
+                    <TextItem>
+                      <Description Language="en">All confirmed reservations which overlap special event dates will be subject to that special events deposit - cancel requirements.</Description>
+                    </TextItem>
+                  </TextItems>
+                </MultimediaDescription>
+                <MultimediaDescription AdditionalDetailCode="13">
+                  <TextItems>
+                    <TextItem>
+                      <Description Language="en">Commission paid on all major marketing programs.Agencies in each country receive their commission checks in their own local currency.One check with a comprehensive listing of all hotel bookings is mailed to an agency by the 15th business day each month.</Description>
+                    </TextItem>
+                  </TextItems>
+                </MultimediaDescription>
+                <MultimediaDescription AdditionalDetailCode="31">
+                  <TextItems>
+                    <TextItem>
+                      <Description Language="en">MAXIMUM NUMBER OF ROOMS PER SEGMENT - 4 MAXIMUM NUMBER OF CONSECUTIVE DAYS- 99 Group rates are net non commissionable and are applicable to all bona fide groups that occupy a minimum of 10 rooms booked in multiple segments and - or multiple PNRs for a reserved night.</Description>
+                    </TextItem>
+                  </TextItems>
+                </MultimediaDescription>
+              </MultimediaDescriptions>
+            </Descriptions>
+            <Position Latitude="25.65838" Longitude="-100.3694"/>
+            <Services>
+              <Service Code="1"/>
+              <Service Code="7"/>
+              <Service Code="8" ProximityCode="1"/>
+              <Service Code="28" ProximityCode="1"/>
+              <Service Code="37" ProximityCode="1"/>
+              <Service>
+                <Features>
+                  <Feature AccessibleCode="28" ProximityCode="1"/>
+                  <Feature AccessibleCode="38" ProximityCode="1"/>
+                  <Feature AccessibleCode="50" ProximityCode="1"/>
+                  <Feature AccessibleCode="105" ProximityCode="1"/>
+                  <Feature SecurityCode="9" ProximityCode="1"/>
+                  <Feature SecurityCode="19" ProximityCode="1"/>
+                  <Feature SecurityCode="22" ProximityCode="1"/>
+                  <Feature SecurityCode="34" ProximityCode="1"/>
+                  <Feature SecurityCode="54" ProximityCode="1"/>
+                  <Feature SecurityCode="57" ProximityCode="1"/>
+                  <Feature SecurityCode="58" ProximityCode="1"/>
+                  <Feature SecurityCode="89" ProximityCode="1"/>
+                  <Feature SecurityCode="93" ProximityCode="1"/>
+                </Features>
+              </Service>
+              <Service Code="56" ProximityCode="2"/>
+              <Service Code="58" ProximityCode="1"/>
+              <Service Code="71" ProximityCode="1"/>
+              <Service Code="76"/>
+              <Service Code="78"/>
+              <Service Code="92" ProximityCode="1"/>
+              <Service Code="100" ProximityCode="1"/>
+              <Service Code="179"/>
+              <Service Code="194" ProximityCode="1"/>
+              <Service Code="198"/>
+              <Service Code="264" ProximityCode="1"/>
+              <Service Code="352"/>
+              <Service Code="222"/>
+              <Service BusinessServiceCode="2" ProximityCode="1"/>
+              <Service BusinessServiceCode="13" ProximityCode="1"/>
+              <Service BusinessServiceCode="28" ProximityCode="1"/>
+              <Service BusinessServiceCode="39" ProximityCode="1"/>
+              <Service BusinessServiceCode="41" ProximityCode="1"/>
+              <Service BusinessServiceCode="48" ProximityCode="1"/>
+              <Service BusinessServiceCode="96" ProximityCode="1"/>
+              <Service Code="66" ProximityCode="1">
+                <MultimediaDescriptions>
+                  <MultimediaDescription>
+                    <ImageItems>
+                      <ImageItem Category="3" LastModifyDateTime="2014-05-31T02:50:44">
+                        <ImageFormat Width="500" Height="500" RecordID="2DBEF41F147143E2B1376E7D38833588" Format="5" FileName="FEATR_POOL_02.jpg" FileSize="72901" IsOriginalIndicator="true">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2DBEF41F147143E2B1376E7D38833588/2DBEF41F147143E2B1376E7D38833588.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="70" Height="70" Format="5" FileSize="3414" DimensionCategory="A">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2DBEF41F147143E2B1376E7D38833588/A.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="100" Height="100" Format="5" FileSize="5873" DimensionCategory="B">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2DBEF41F147143E2B1376E7D38833588/B.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="C">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2DBEF41F147143E2B1376E7D38833588/C.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="200" Height="200" Format="5" FileSize="17861" DimensionCategory="D">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2DBEF41F147143E2B1376E7D38833588/D.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="250" Height="250" Format="5" FileSize="25889" DimensionCategory="E">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2DBEF41F147143E2B1376E7D38833588/E.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="F">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2DBEF41F147143E2B1376E7D38833588/F.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="G">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2DBEF41F147143E2B1376E7D38833588/G.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="350" Height="350" Format="5" FileSize="42936" DimensionCategory="H">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2DBEF41F147143E2B1376E7D38833588/H.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="384" Height="384" Format="5" FileSize="50329" DimensionCategory="I">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2DBEF41F147143E2B1376E7D38833588/I.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="480" Height="480" Format="5" FileSize="64315" DimensionCategory="J">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2DBEF41F147143E2B1376E7D38833588/J.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="K">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/2DBEF41F147143E2B1376E7D38833588/K.JPEG</URL>
+                        </ImageFormat>
+                        <Description Language="en" Caption="Pool view">Swimming Pool</Description>
+                      </ImageItem>
+                      <ImageItem Category="3" LastModifyDateTime="2014-05-31T02:50:44">
+                        <ImageFormat Width="500" Height="500" RecordID="A8570D4BB62B4B0794A96BABF969F4C3" Format="5" FileName="FEATR_POOL_01.jpg" FileSize="72901" IsOriginalIndicator="true">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/A8570D4BB62B4B0794A96BABF969F4C3/A8570D4BB62B4B0794A96BABF969F4C3.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="70" Height="70" Format="5" FileSize="3414" DimensionCategory="A">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/A8570D4BB62B4B0794A96BABF969F4C3/A.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="100" Height="100" Format="5" FileSize="5873" DimensionCategory="B">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/A8570D4BB62B4B0794A96BABF969F4C3/B.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="C">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/A8570D4BB62B4B0794A96BABF969F4C3/C.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="200" Height="200" Format="5" FileSize="17861" DimensionCategory="D">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/A8570D4BB62B4B0794A96BABF969F4C3/D.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="250" Height="250" Format="5" FileSize="25889" DimensionCategory="E">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/A8570D4BB62B4B0794A96BABF969F4C3/E.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="F">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/A8570D4BB62B4B0794A96BABF969F4C3/F.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="300" Height="300" Format="5" FileSize="34526" DimensionCategory="G">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/A8570D4BB62B4B0794A96BABF969F4C3/G.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="350" Height="350" Format="5" FileSize="42936" DimensionCategory="H">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/A8570D4BB62B4B0794A96BABF969F4C3/H.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="384" Height="384" Format="5" FileSize="50329" DimensionCategory="I">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/A8570D4BB62B4B0794A96BABF969F4C3/I.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="480" Height="480" Format="5" FileSize="64315" DimensionCategory="J">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/A8570D4BB62B4B0794A96BABF969F4C3/J.JPEG</URL>
+                        </ImageFormat>
+                        <ImageFormat Width="150" Height="150" Format="5" FileSize="10633" DimensionCategory="K">
+                          <URL>https://d1moe8jtgovopm.cloudfront.net/A8570D4BB62B4B0794A96BABF969F4C3/K.JPEG</URL>
+                        </ImageFormat>
+                        <Description Language="en" Caption="Pool view">Swimming Pool</Description>
+                      </ImageItem>
+                    </ImageItems>
+                  </MultimediaDescription>
+                </MultimediaDescriptions>
+              </Service>
+              <Service Code="147" ProximityCode="1"/>
+            </Services>
+            <Languages>
+              <Language Language="EN"/>
+              <Language Language="ES"/>
+            </Languages>
+          </HotelInfo>
+          <FacilityInfo>
+            <MeetingRooms MeetingRoomCount="1"/>
+            <GuestRooms>
+              <GuestRoom>
+                <TypeRoom RoomTypeCode="ALL"/>
+                <Amenities>
+                  <Amenity RoomAmenityCode="24"/>
+                  <Amenity RoomAmenityCode="26"/>
+                  <Amenity RoomAmenityCode="33"/>
+                  <Amenity RoomAmenityCode="39"/>
+                  <Amenity RoomAmenityCode="40"/>
+                  <Amenity RoomAmenityCode="74"/>
+                  <Amenity RoomAmenityCode="100"/>
+                  <Amenity RoomAmenityCode="119"/>
+                  <Amenity RoomAmenityCode="123"/>
+                  <Amenity RoomAmenityCode="161"/>
+                  <Amenity RoomAmenityCode="165"/>
+                  <Amenity RoomAmenityCode="203"/>
+                  <Amenity RoomAmenityCode="208"/>
+                  <Amenity RoomAmenityCode="221"/>
+                  <Amenity RoomAmenityCode="226"/>
+                </Amenities>
+              </GuestRoom>
+            </GuestRooms>
+            <Restaurants Quantity="1">
+              <Restaurant RestaurantName="Guacamaya" OfferBreakfast="0" OfferLunch="1" OfferDinner="1" OfferBrunch="0" ProximityCode="2">
+                <MultimediaDescriptions>
+                  <MultimediaDescription>
+                    <TextItems>
+                      <TextItem>
+                        <Description Language="en">Completely remodeled, very trendy, contemporary decor. Excellent food. For regional specialties and exquisite seafood: ceviche, callo de hacha al Limon, trenza de salmon y huachinango, cabrito al horno. Dont leave without trying the Guacamaya Ice Cream.</Description>
+                      </TextItem>
+                    </TextItems>
+                  </MultimediaDescription>
+                </MultimediaDescriptions>
+                <InfoCodes>
+                  <InfoCode Name="RestaurantCategory" Code="17"/>
+                </InfoCodes>
+                <CuisineCodes>
+                  <CuisineCode Code="49" IsMain="1"/>
+                </CuisineCodes>
+                <ContactInfos>
+                  <ContactInfo>
+                    <Addresses>
+                      <Address>
+                        <AddressLine>Ave. Roble No. 515</AddressLine>
+                      </Address>
+                    </Addresses>
+                  </ContactInfo>
+                </ContactInfos>
+              </Restaurant>
+              <Restaurant RestaurantName="Mr.  Tanaka" OfferBreakfast="0" OfferLunch="1" OfferDinner="1" OfferBrunch="0" ProximityCode="2">
+                <InfoCodes>
+                  <InfoCode Name="RestaurantCategory" Code="17"/>
+                </InfoCodes>
+                <CuisineCodes>
+                  <CuisineCode Code="14" IsMain="1"/>
+                </CuisineCodes>
+                <ContactInfos>
+                  <ContactInfo>
+                    <Addresses>
+                      <Address>
+                        <AddressLine>Calzada San Pedro 102</AddressLine>
+                      </Address>
+                    </Addresses>
+                  </ContactInfo>
+                </ContactInfos>
+              </Restaurant>
+              <Restaurant RestaurantName="Fogoncito" OfferBreakfast="0" OfferLunch="1" OfferDinner="1" OfferBrunch="0" ProximityCode="2">
+                <MultimediaDescriptions>
+                  <MultimediaDescription>
+                    <TextItems>
+                      <TextItem>
+                        <Description Language="en">Serves a variety of tacos and mexican dishes in a nice, family friendly ambiance.</Description>
+                      </TextItem>
+                    </TextItems>
+                  </MultimediaDescription>
+                </MultimediaDescriptions>
+                <InfoCodes>
+                  <InfoCode Name="RestaurantCategory" Code="8"/>
+                </InfoCodes>
+                <CuisineCodes>
+                  <CuisineCode Code="8" IsMain="1"/>
+                </CuisineCodes>
+                <ContactInfos>
+                  <ContactInfo>
+                    <Addresses>
+                      <Address>
+                        <AddressLine>R?o Tamanzuchale No. 108</AddressLine>
+                      </Address>
+                    </Addresses>
+                  </ContactInfo>
+                </ContactInfos>
+              </Restaurant>
+              <Restaurant RestaurantName="Vips" OfferBreakfast="0" OfferLunch="1" OfferDinner="1" OfferBrunch="0" ProximityCode="2">
+                <MultimediaDescriptions>
+                  <MultimediaDescription>
+                    <TextItems>
+                      <TextItem>
+                        <Description Language="en">Restaurant serving soups and salads, sandwiches, hamburguers, steaks and mexican specialties. Open Sun to Thrs 7 am to 12 pm. Fri and Sat. 24 hrs.</Description>
+                      </TextItem>
+                    </TextItems>
+                  </MultimediaDescription>
+                </MultimediaDescriptions>
+                <InfoCodes>
+                  <InfoCode Name="RestaurantCategory" Code="4"/>
+                </InfoCodes>
+                <CuisineCodes>
+                  <CuisineCode Code="8" IsMain="1"/>
+                </CuisineCodes>
+                <ContactInfos>
+                  <ContactInfo>
+                    <Addresses>
+                      <Address>
+                        <AddressLine>Clazada San Pedro</AddressLine>
+                      </Address>
+                    </Addresses>
+                  </ContactInfo>
+                </ContactInfos>
+              </Restaurant>
+            </Restaurants>
+          </FacilityInfo>
+          <Policies>
+            <Policy>
+              <CancelPolicy>
+                <CancelPenalty>
+                  <PenaltyDescription>
+                    <Text Language="en">Cancel policies and Early Departure Fees vary by hotel. Since a hotel can set a cancellation policy of up to 30 days in advance please review policy prior to booking to avoid possible charge.</Text>
+                  </PenaltyDescription>
+                </CancelPenalty>
+              </CancelPolicy>
+              <GuaranteePaymentPolicy>
+                <GuaranteePayment PaymentCode="5" Type="RequiredPayment">
+                  <Description>
+                    <Text Language="en">Deposit policies vary by hotel Since a hotel can set a deposit policy of up to 30 days in advance please review rate rules prior to booking to avoid possible charge</Text>
+                  </Description>
+                </GuaranteePayment>
+                <GuaranteePayment PaymentCode="5" Type="AcceptedPaymentForms">
+                  <AcceptedPayments>
+                    <AcceptedPayment>
+                      <PaymentCard CardCode="AX"/>
+                    </AcceptedPayment>
+                    <AcceptedPayment>
+                      <PaymentCard CardCode="CA"/>
+                    </AcceptedPayment>
+                    <AcceptedPayment>
+                      <PaymentCard CardCode="VI"/>
+                    </AcceptedPayment>
+                  </AcceptedPayments>
+                </GuaranteePayment>
+              </GuaranteePaymentPolicy>
+              <PolicyInfoCodes>
+                <PolicyInfoCode Name="OversoldArrangeAccommodations"/>
+                <PolicyInfoCode Name="OversoldProvidePhonecall"/>
+              </PolicyInfoCodes>
+              <PolicyInfo CheckInTime="15:00:00" CheckOutTime="12:00:00" KidsStayFree="1">
+                <Description>
+                  <Text Language="en">CHILDREN STAY FREE IN PARENTS ROOM USING EXISTING BEDDING - PLEASE REVIEW HOTEL RATE RULES FOR ADDITIONAL INFORMATION</Text>
+                </Description>
+              </PolicyInfo>
+              <TaxPolicies>
+                <TaxPolicy Code="8" Percent="2" CurrencyCode="MXN" ChargeUnit="19"/>
+              </TaxPolicies>
+              <StayRequirements>
+                <StayRequirement>
+                  <Description>
+                    <Text Language="en">Min Stay is defaulted at 1 Max Stay is defaulted at 99</Text>
+                  </Description>
+                </StayRequirement>
+              </StayRequirements>
+              <CommissionPolicy CommissionApplicability="NoRates">
+                <PaymentCompany Name="Onyx Program"/>
+              </CommissionPolicy>
+            </Policy>
+          </Policies>
+          <AreaInfo>
+            <RefPoints>
+              <RefPoint Direction="NE" Distance="30" UnitOfMeasureCode="1" IndexPointCode="6" Name="MTY-Aeropuerto General Mariano Escobedo" PrimaryIndicator="1" ToFrom="FromFacility">
+                <Transportations>
+                  <Transportation TransportationCode="20" Included="0" Amount="30.00" CurrencyCode="MXN"/>
+                </Transportations>
+                <MultimediaDescriptions>
+                  <MultimediaDescription>
+                    <TextItems>
+                      <TextItem>
+                        <Description Language="en">From airport take Miguel Aleman Ave. and then Constitution Ave.  Drive about 2 miles to Ave. San Jeronimo.  Turn to your left to Calzada San Pedro.  Drive about 1/2 mile, passing the bridge.  Staybridge Suites Monterrey-San Pedro is located at left.</Description>
+                      </TextItem>
+                    </TextItems>
+                  </MultimediaDescription>
+                </MultimediaDescriptions>
+              </RefPoint>
+              <RefPoint Direction="N" Distance="25" UnitOfMeasureCode="1" IndexPointCode="6" Name="NTR-Aeropuerto Del Norte Airport" PrimaryIndicator="0" ToFrom="FromFacility">
+                <Transportations>
+                  <Transportation TransportationCode="20" Included="0" Amount="300.00" CurrencyCode="MXN"/>
+                </Transportations>
+                <MultimediaDescriptions>
+                  <MultimediaDescription>
+                    <TextItems>
+                      <TextItem>
+                        <Description Language="en">From Laredo take hwy 85, then Lopez Portillo Blvd. turn right to  Barrag?n Ave. drive about 2 min. and take Fidel Vel?zquez to Gonzalitos Ave. Look for a sign to  San Jeronimo turn on the next light to your right; Calzada San Pedro. Drive 1/2 mile.</Description>
+                      </TextItem>
+                    </TextItems>
+                  </MultimediaDescription>
+                </MultimediaDescriptions>
+              </RefPoint>
+              <RefPoint Direction="S" Distance="3" UnitOfMeasureCode="1" IndexPointCode="33" Name="Cemex Headquarter" PrimaryIndicator="0" ToFrom="ToFacility"/>
+              <RefPoint Direction="S" Distance="3" UnitOfMeasureCode="1" IndexPointCode="33" Name="Cydsa" PrimaryIndicator="0" ToFrom="ToFacility"/>
+              <RefPoint Direction="S" Distance="3" UnitOfMeasureCode="1" IndexPointCode="33" Name="Home Depot" PrimaryIndicator="0" ToFrom="ToFacility"/>
+              <RefPoint Direction="S" Distance="3" UnitOfMeasureCode="1" IndexPointCode="33" Name="Punto central building" PrimaryIndicator="0" ToFrom="ToFacility"/>
+              <RefPoint Direction="S" Distance="3" UnitOfMeasureCode="1" IndexPointCode="33" Name="Santa Engracia Park" PrimaryIndicator="0" ToFrom="ToFacility"/>
+              <RefPoint Direction="S" Distance="3" UnitOfMeasureCode="1" IndexPointCode="33" Name="Torre alta building" PrimaryIndicator="0" ToFrom="ToFacility"/>
+              <RefPoint Direction="S" Distance="3" UnitOfMeasureCode="1" IndexPointCode="33" Name="Villacero" PrimaryIndicator="0" ToFrom="ToFacility"/>
+              <RefPoint Direction="S" Distance="3" UnitOfMeasureCode="1" IndexPointCode="33" Name="Vitro" PrimaryIndicator="0" ToFrom="ToFacility"/>
+              <RefPoint Direction="SE" Distance="7" UnitOfMeasureCode="1" Name="Plaza Sesamo" PrimaryIndicator="0" ToFrom="ToFacility"/>
+            </RefPoints>
+            <Recreations>
+              <Recreation Code="7" ProximityCode="2"/>
+              <Recreation Code="20" ProximityCode="2"/>
+            </Recreations>
+          </AreaInfo>
+          <ContactInfos>
+            <ContactInfo Location="6">
+              <Addresses>
+                <Address UseType="7">
+                  <AddressLine>CALZADA SAN PEDRO 103</AddressLine>
+                  <CityName>MONTERREY</CityName>
+                  <PostalCode>NL 66220</PostalCode>
+                  <CountryName Code="MX"/>
+                </Address>
+              </Addresses>
+              <Phones>
+                <Phone PhoneTechType="1" PhoneUseType="5" PhoneNumber="+52 81 81731000"/>
+                <Phone PhoneTechType="3" PhoneUseType="5" PhoneNumber="+52 81 81731001"/>
+              </Phones>
+              <URLs>
+                <URL>www.staybridge.com/mty-sanpedro</URL>
+              </URLs>
+            </ContactInfo>
+          </ContactInfos>
+        </HotelDescriptiveContent>
+      </HotelDescriptiveContents>
+    </OTA_HotelDescriptiveInfoRS>
+  </soap:Body>
+</soap:Envelope>

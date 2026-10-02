@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Shape of a real Hotel_CompleteReservationDetailsReply. Identifiers and
+  session tokens are placeholders.
+-->
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+                   xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3">
+    <SOAP-ENV:Header>
+        <awsse:Session TransactionStatusCode="InSeries">
+            <awsse:SessionId>SESSIONTEST</awsse:SessionId>
+            <awsse:SequenceNumber>6</awsse:SequenceNumber>
+            <awsse:SecurityToken>SECURITYTOKENTEST0000</awsse:SecurityToken>
+        </awsse:Session>
+    </SOAP-ENV:Header>
+    <SOAP-ENV:Body>
+        <Hotel_CompleteReservationDetailsReply xmlns="http://xml.amadeus.com/HCRDRR_17_1_1A">
+            <retrievalKeyGroup>
+                <tattooNumber>
+                    <status>3</status>
+                    <reference>
+                        <qualifier>ST</qualifier>
+                        <number>2</number>
+                    </reference>
+                </tattooNumber>
+                <retrievalKey>
+                    <reservation>
+                        <companyId>1A</companyId>
+                        <controlNumber>TEST01</controlNumber>
+                        <controlType>P</controlType>
+                    </reservation>
+                </retrievalKey>
+            </retrievalKeyGroup>
+            <hotelSalesRequirementsSection>
+                <hotelPropertyInfo>
+                    <hotelReference>
+                        <chainCode>CI</chainCode>
+                        <cityCode>MTY</cityCode>
+                        <hotelCode>001</hotelCode>
+                    </hotelReference>
+                </hotelPropertyInfo>
+                <bookingPeriod businessSemantic="CHK">
+                    <beginDateTime>
+                        <year>2027</year>
+                        <month>5</month>
+                        <day>19</day>
+                    </beginDateTime>
+                    <endDateTime>
+                        <year>2027</year>
+                        <month>5</month>
+                        <day>20</day>
+                    </endDateTime>
+                </bookingPeriod>
+                <hotelChainInformation>
+                    <travelSector>HTL</travelSector>
+                    <companyCode>CI</companyCode>
+                    <companyName>TEST CHAIN</companyName>
+                </hotelChainInformation>
+                <countryStateInformation>
+                    <countryCode>MX</countryCode>
+                </countryStateInformation>
+                <occupancyLevel>
+                    <quantityDetails>
+                        <numberOfUnit>1</numberOfUnit>
+                    </quantityDetails>
+                </occupancyLevel>
+                <hotelSalesRequCategorySection>
+                    <pricingCategory>
+                        <itemDescriptionType>TTX</itemDescriptionType>
+                        <itemDescription>
+                            <description>All known taxes and estimated fees</description>
+                            <language>ENG</language>
+                        </itemDescription>
+                    </pricingCategory>
+                    <totalAmountInformation>
+                        <monetaryDetails>
+                            <typeQualifier>712</typeQualifier>
+                            <amount>1982.00</amount>
+                            <currency>MXN</currency>
+                        </monetaryDetails>
+                    </totalAmountInformation>
+                    <rateAmountInformation>
+                        <tariffInfo>
+                            <amount>1666.00</amount>
+                            <currency>MXN</currency>
+                            <ratePlanIndicator>3</ratePlanIndicator>
+                        </tariffInfo>
+                    </rateAmountInformation>
+                    <taxSection>
+                        <taxFeeInformation>
+                            <includedInAmount>E</includedInAmount>
+                            <perPerson>ROO</perPerson>
+                            <timeUnit>4</timeUnit>
+                            <category>TAX</category>
+                            <code>ROO</code>
+                            <amount>316.00</amount>
+                            <currencyCode>MXN</currencyCode>
+                            <longName>ROOM TAX</longName>
+                        </taxFeeInformation>
+                    </taxSection>
+                </hotelSalesRequCategorySection>
+                <!--
+                  Amadeus splits this reply into one category section per
+                  itemDescriptionType (TTX, OTH, DES, BOO, CXL, INC, RAT).
+                  Cancellation policies live in the CXL one.
+                -->
+                <hotelSalesRequCategorySection>
+                    <pricingCategory>
+                        <itemDescriptionType>OTH</itemDescriptionType>
+                    </pricingCategory>
+                    <infoMsgAndCancelPolicies>
+                        <freeText>Rate plan is award eligible.</freeText>
+                    </infoMsgAndCancelPolicies>
+                </hotelSalesRequCategorySection>
+                <hotelSalesRequCategorySection>
+                    <pricingCategory>
+                        <itemDescriptionType>CXL</itemDescriptionType>
+                    </pricingCategory>
+                    <infoMsgAndCancelPolicies>
+                        <freeText>CANCEL 24 HOURS PRIOR TO 4PM OF THE ARRIVAL DATE</freeText>
+                    </infoMsgAndCancelPolicies>
+                </hotelSalesRequCategorySection>
+            </hotelSalesRequirementsSection>
+        </Hotel_CompleteReservationDetailsReply>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

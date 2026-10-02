@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OTA_HotelAvailRQ EchoToken="Pricing" Version="4.000" PrimaryLangID="EN" SummaryOnly="false" RateRangeOnly="false" RequestedCurrency="MXN">
+  <AvailRequestSegments>
+    <AvailRequestSegment InfoSource="Distribution">
+      <HotelSearchCriteria>
+        <Criterion ExactMatch="true">
+          <HotelRef HotelCode="YZMTY045"/>
+          <StayDateRange Start="2026-08-30" End="2026-08-31"/>
+          <RatePlanCandidates>
+            <RatePlanCandidate RatePlanCode="57J"/>
+          </RatePlanCandidates>
+          <RoomStayCandidates>
+            <RoomStayCandidate BookingCode="1KN57JU" RoomTypeCode="*1K" RoomID="1" Quantity="1">
+              <GuestCounts IsPerRoom="true">
+                <GuestCount AgeQualifyingCode="10" Count="1"/>
+              </GuestCounts>
+            </RoomStayCandidate>
+          </RoomStayCandidates>
+        </Criterion>
+      </HotelSearchCriteria>
+    </AvailRequestSegment>
+  </AvailRequestSegments>
+</OTA_HotelAvailRQ>

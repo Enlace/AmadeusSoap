@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Shape of a real Hotel_SellReply. Note the reply nests the reservation
+  number under globalBookingInfo/bookingInfo and the hotel reference under
+  hotelPropertyInfo — not the bookingRecordId / markerGlobalBookingInfo
+  element names used on the request side.
+  Identifiers and session tokens are placeholders.
+-->
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+                   xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3"
+                   xmlns:wsa="http://www.w3.org/2005/08/addressing">
+    <SOAP-ENV:Header>
+        <wsa:Action>http://webservices.amadeus.com/HBKRCQ_20_1_1A</wsa:Action>
+        <awsse:Session TransactionStatusCode="InSeries">
+            <awsse:SessionId>SESSIONTEST</awsse:SessionId>
+            <awsse:SequenceNumber>4</awsse:SequenceNumber>
+            <awsse:SecurityToken>SECURITYTOKENTEST0000</awsse:SecurityToken>
+        </awsse:Session>
+    </SOAP-ENV:Header>
+    <SOAP-ENV:Body>
+        <Hotel_SellReply xmlns="http://xml.amadeus.com/HBKRCR_20_1_1A">
+            <roomStayData>
+                <markerRoomStayData/>
+                <pnrInfo>
+                    <tattooReference>
+                        <referenceDetails>
+                            <type>S</type>
+                            <value>2</value>
+                        </referenceDetails>
+                    </tattooReference>
+                </pnrInfo>
+                <globalBookingInfo>
+                    <hotelPropertyInfo>
+                        <hotelReference>
+                            <chainCode>CI</chainCode>
+                            <cityCode>MTY</cityCode>
+                            <hotelCode>001</hotelCode>
+                        </hotelReference>
+                        <hotelName>TEST HOTEL MONTERREY</hotelName>
+                    </hotelPropertyInfo>
+                    <individualCompanyId>
+                        <companyName>TEST CHAIN</companyName>
+                    </individualCompanyId>
+                    <bookingInfo>
+                        <reservation>
+                            <companyId>CI</companyId>
+                            <controlNumber>99999999</controlNumber>
+                            <controlType>2</controlType>
+                        </reservation>
+                    </bookingInfo>
+                    <globalPriceInformation>
+                        <globalPrice>
+                            <tariffInfo>
+                                <amount>1666</amount>
+                                <currency>MXN</currency>
+                                <totalAmount>1982</totalAmount>
+                            </tariffInfo>
+                        </globalPrice>
+                    </globalPriceInformation>
+                    <representativeParties>
+                        <occupantList>
+                            <passengerReference>
+                                <type>BHO</type>
+                                <value>2</value>
+                            </passengerReference>
+                        </occupantList>
+                    </representativeParties>
+                </globalBookingInfo>
+                <roomListInfo>
+                    <roomStayIndex>
+                        <sequenceDetails>
+                            <number>1</number>
+                        </sequenceDetails>
+                    </roomStayIndex>
+                    <cancellationPolicies>
+                        <cancellationDateTime businessSemantic="CAN">
+                            <dateTime>
+                                <year>2027</year>
+                                <month>5</month>
+                                <day>18</day>
+                                <hour>16</hour>
+                                <minutes>0</minutes>
+                            </dateTime>
+                        </cancellationDateTime>
+                    </cancellationPolicies>
+                    <requestableInformation>
+                        <requestedDates>
+                            <beginDateTime>
+                                <year>2027</year>
+                                <month>5</month>
+                                <day>19</day>
+                            </beginDateTime>
+                            <endDateTime>
+                                <year>2027</year>
+                                <month>5</month>
+                                <day>20</day>
+                            </endDateTime>
+                        </requestedDates>
+                        <roomRateDetails>
+                            <roomInformation>
+                                <roomRateIdentifier>
+                                    <roomType>N1D</roomType>
+                                    <ratePlanCode>ENF</ratePlanCode>
+                                </roomRateIdentifier>
+                                <bookingCode>BCODE001</bookingCode>
+                                <guestCountDetails>
+                                    <numberOfUnit>1</numberOfUnit>
+                                    <unitQualifier>A</unitQualifier>
+                                </guestCountDetails>
+                            </roomInformation>
+                            <specialInfo>
+                                <freeTextDetails>
+                                    <textSubjectQualifier>3</textSubjectQualifier>
+                                    <informationType>BC</informationType>
+                                </freeTextDetails>
+                                <freeText>BCODE001</freeText>
+                            </specialInfo>
+                            <tariffInformation>
+                                <tariffInfo>
+                                    <amount>1982</amount>
+                                    <currency>MXN</currency>
+                                </tariffInfo>
+                            </tariffInformation>
+                        </roomRateDetails>
+                        <guestList>
+                            <occupantList>
+                                <passengerReference>
+                                    <type>ROP</type>
+                                    <value>2</value>
+                                </passengerReference>
+                            </occupantList>
+                        </guestList>
+                    </requestableInformation>
+                </roomListInfo>
+            </roomStayData>
+        </Hotel_SellReply>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

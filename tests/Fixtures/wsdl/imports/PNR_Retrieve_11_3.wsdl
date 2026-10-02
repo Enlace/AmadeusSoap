@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Imported by ../PNR_v1.wsdl. Holds the portType and messages that
+  WsdlManager has to read out of the import and merge into the base WSDL.
+-->
+<wsdl:definitions
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://webservices.amadeus.com/definitions"
+    xmlns:pnr="http://xml.amadeus.com/PNRRET_11_3"
+    targetNamespace="http://webservices.amadeus.com/definitions"
+    name="AmadeusPnrRetrieveMessages">
+
+    <wsdl:types>
+        <xs:schema targetNamespace="http://webservices.amadeus.com/definitions">
+            <xs:import namespace="http://xml.amadeus.com/PNRRET_11_3"
+                       schemaLocation="PNR_Retrieve_11_3_schema.xsd"/>
+        </xs:schema>
+    </wsdl:types>
+
+    <wsdl:message name="PNR_Retrieve_11_3">
+        <wsdl:part name="Body" element="pnr:PNR_Retrieve"/>
+    </wsdl:message>
+    <wsdl:message name="PNR_RetrieveReply_11_3">
+        <wsdl:part name="Body" element="pnr:PNR_Reply"/>
+    </wsdl:message>
+
+    <wsdl:portType name="PnrPortType">
+        <wsdl:operation name="PNR_Retrieve">
+            <wsdl:input message="tns:PNR_Retrieve_11_3"/>
+            <wsdl:output message="tns:PNR_RetrieveReply_11_3"/>
+        </wsdl:operation>
+    </wsdl:portType>
+</wsdl:definitions>
