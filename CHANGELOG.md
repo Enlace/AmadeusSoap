@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-10-05
+
 ### Added
 - Every call accepts what the previous step returned, so the booking flow no
   longer re-types hotel, dates, codes, agent or passenger:
@@ -48,6 +50,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   read the namespace from the reply
 
 ### Changed
+- The dist archive (what Composer installs) no longer ships `tests/`,
+  `scripts/`, the CI workflows, `CLAUDE.md`, `composer.lock` or `phpunit.xml`
 - The response cache keys entries by the endpoint the WSDL points at, so
   environments sharing a cache store, an office ID and even the WSDL directory
   path never share entries
@@ -218,5 +222,6 @@ unchanged and must migrate their calls before requiring `^2.0`.
 - `.env.*` (except `.env.example`) and `storage/` are git-ignored: raw TST
   captures contain credentials and personal data
 
-[Unreleased]: https://github.com/Enlace/AmadeusSoap/compare/v2.0.0...v2
+[Unreleased]: https://github.com/Enlace/AmadeusSoap/compare/v2.1.0...v2
+[2.1.0]: https://github.com/Enlace/AmadeusSoap/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/Enlace/AmadeusSoap/releases/tag/v2.0.0

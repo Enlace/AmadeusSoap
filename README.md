@@ -50,13 +50,15 @@ A robust Laravel package for integrating with Amadeus Globalizer SOAP Web Servic
 Install the package via Composer:
 
 ```bash
-composer require aldogtz/amadeus-soap:^2.0
+composer require aldogtz/amadeus-soap:^2.1
 ```
 
 2.x is a rewrite with typed params and response DTOs. The previous,
 unversioned generation (`dev-main`) returns `DOMXPath`; apps on `dev-main`
-keep working unchanged and need to migrate their calls before moving to
-`^2.0`. See the [CHANGELOG](CHANGELOG.md).
+keep working unchanged and need to migrate their calls before moving to 2.x.
+To migrate call by call, `$reply->raw->xpath()` is the same `DOMXPath` the
+`dev-main` methods returned (with the `res` prefix bound to the reply), and
+`Facades\AmadeusSoapFacade` still resolves. See the [CHANGELOG](CHANGELOG.md).
 
 ### Publish Configuration
 
