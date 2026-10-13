@@ -50,7 +50,7 @@ A robust Laravel package for integrating with Amadeus Globalizer SOAP Web Servic
 Install the package via Composer:
 
 ```bash
-composer require aldogtz/amadeus-soap:^2.1
+composer require aldogtz/amadeus-soap:^2.2
 ```
 
 2.x is a rewrite with typed params and response DTOs. The previous,

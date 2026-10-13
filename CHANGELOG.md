@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-10-13
+
 ### Added
 - `addMultiElements('ignore')` (PNR_AddMultiElements option 20, IG): drops
   what the session added to the PNR since the last end transaction, without
@@ -229,6 +231,7 @@ unchanged and must migrate their calls before requiring `^2.0`.
 - `.env.*` (except `.env.example`) and `storage/` are git-ignored: raw TST
   captures contain credentials and personal data
 
-[Unreleased]: https://github.com/Enlace/AmadeusSoap/compare/v2.1.0...v2
+[Unreleased]: https://github.com/Enlace/AmadeusSoap/compare/v2.2.0...v2
+[2.2.0]: https://github.com/Enlace/AmadeusSoap/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/Enlace/AmadeusSoap/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/Enlace/AmadeusSoap/releases/tag/v2.0.0
