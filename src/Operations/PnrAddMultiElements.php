@@ -23,6 +23,13 @@ class PnrAddMultiElements implements Operation
 
     public function build(): array
     {
+        // IG: Amadeus drops whatever this session added to the PNR since the last end
+        // transaction, without saving it. The session and its availability context stay
+        // usable, so another rate can be sold without duplicating the names.
+        if ($this->type === 'ignore') {
+            return ['pnrActions' => ['optionCode' => '20']];
+        }
+
         $rfTexts = [
             'create' => 'Added via WebService',
             'end' => 'hotel reservation via WebServices',

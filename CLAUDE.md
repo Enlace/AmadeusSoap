@@ -119,6 +119,11 @@ API surface:
   Nothing in the rate's shape predicts it: `*RH` with a `Converted:BAR:P`
   category sells, and two earlier attempts to guess from those markers (first
   "unsellable placeholder", then "property-specific") were both wrong.
+- **`addMultiElements('ignore')` (IG) restarts an attempt without losing the
+  session.** On 2026-10-13 on `MCMEXSFM` (`--ignore-check`): a second create in
+  the same session listed two travelers (the names are added again); after an
+  IG the next create listed one, and pricing the same booking code still
+  worked, so the availability context survives the IG.
 - **TST availability comes and goes.** On 2026-10-02 every Monterrey property
   (`YZMTY045`, `CPMTYE71`, `RTMTYNOV`) refused all twelve rates tried with
   `CTL`, sells took ~8 s, and searches then reported the provider as

@@ -32,6 +32,11 @@ class PnrAddMultiElementsTest extends TestCase
         return ['surname' => 'DOE', 'name' => 'JOHN', 'type' => 'ADT'] + $extra;
     }
 
+    public function test_ignore_only_asks_amadeus_to_drop_the_session_changes(): void
+    {
+        $this->assertSame(['pnrActions' => ['optionCode' => '20']], (new PnrAddMultiElements('ignore', []))->build());
+    }
+
     public function test_without_a_check_out_date_the_retention_is_a_week_away(): void
     {
         $this->assertSame('070826', $this->retentionDate(new PnrAddMultiElements('create', $this->traveler())));

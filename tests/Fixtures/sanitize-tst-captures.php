@@ -58,6 +58,10 @@ const FIXTURES = [
     'requests/pnr-create-occupants.xml' => '235336-pnr-create-request.xml',
     'requests/hotel-sell-holder-only.xml' => '235337-sell-request.xml',
     'responses/pnr-end-companion.xml' => '235338-pnr-end-response.xml',
+    // IG (scripts/tst-chain.php --ignore-check): drops what the session added to
+    // the PNR and keeps its availability context
+    'requests/pnr-ignore.xml' => '192435-pnr-ignore-request.xml',
+    'responses/pnr-ignore.xml' => '192435-pnr-ignore-response.xml',
 ];
 
 const FAKE_OFFICE_ID = 'TEST01';

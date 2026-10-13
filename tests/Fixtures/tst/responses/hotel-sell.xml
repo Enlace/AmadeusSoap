@@ -11,7 +11,7 @@
     <awsse:Session TransactionStatusCode="InSeries">
       <awsse:SessionId>SESSION0013</awsse:SessionId>
       <awsse:SequenceNumber>4</awsse:SequenceNumber>
-      <awsse:SecurityToken>SECURITYTOKEN0023</awsse:SecurityToken>
+      <awsse:SecurityToken>SECURITYTOKEN0024</awsse:SecurityToken>
     </awsse:Session>
   </SOAP-ENV:Header>
   <SOAP-ENV:Body>

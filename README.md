@@ -32,7 +32,7 @@ A robust Laravel package for integrating with Amadeus Globalizer SOAP Web Servic
 | `hotelSell` | Create a hotel booking segment | Yes |
 | `hotelDescriptiveInfo` | Get hotel details and amenities | No |
 | `hotelCompleteReservationDetails` | Get complete reservation details | Yes |
-| `addMultiElements` | Add elements to PNR (create/update) | Yes |
+| `addMultiElements` | Create, commit, cancel or ignore the session's PNR | Yes |
 | `pnrRetrieve` | Retrieve PNR by record locator | Yes |
 | `pnrCancel` | Cancel a PNR | Yes |
 | `signOut` | End the Amadeus session | Yes |
@@ -270,7 +270,10 @@ $sell = Amadeus::hotelSell($room, $pnr, $card);
 
 if ($sell->hasErrors) {
     // e.g. CTL: Amadeus refuses this rate. It is per rate, so another room
-    // stay of the same search (same session) may sell.
+    // stay of the same search (same session) may sell. To start that attempt
+    // over, drop what this one added to the PNR: the session and its
+    // availability context stay, and the names are not added twice.
+    Amadeus::addMultiElements('ignore');
 }
 
 echo "Confirmation: {$sell->confirmationNumber}\n";

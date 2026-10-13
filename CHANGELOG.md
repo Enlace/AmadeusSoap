@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `addMultiElements('ignore')` (PNR_AddMultiElements option 20, IG): drops
+  what the session added to the PNR since the last end transaction, without
+  saving it. The session and its availability context stay, so after a refused
+  sell another rate can be priced and sold without adding the names again.
+  Verified against TST (`scripts/tst-chain.php --ignore-check`).
+
 ## [2.1.0] - 2026-10-05
 
 ### Added

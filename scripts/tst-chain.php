@@ -42,6 +42,7 @@ declare(strict_types=1);
 
 use Aldogtz\AmadeusSoap\AmadeusSoap;
 use Aldogtz\AmadeusSoap\AmadeusSoapServiceProvider;
+use Aldogtz\AmadeusSoap\Data\Responses\AddMultiElementsResponse;
 use Aldogtz\AmadeusSoap\Data\Responses\HotelResult;
 use Aldogtz\AmadeusSoap\Data\Responses\HotelSearchResponse;
 use Aldogtz\AmadeusSoap\Data\Responses\RoomStayResult;
@@ -89,6 +90,7 @@ $options = getopt('h', [
     'dump-dir:',
     'book',
     'bookingv2',
+    'ignore-check',
     'keep',
     'yes',
     'dry-run',
@@ -122,6 +124,10 @@ Runs the Amadeus booking chain against the TST environment.
                         list of room arrays keyed by ccHolderName alone, with
                         BHO/BOP passenger references; end with no params.
                         --guests=2 adds a companion (BOP).
+  --ignore-check        without --book: create the PNR, ignore it (IG), create
+                        it again and price once more, to check that IG drops
+                        the names and keeps the availability context. Nothing
+                        is committed.
   --keep                leave the created PNR in place instead of cancelling
   --yes                 skip the confirmation prompt for --book
   --dry-run             validate config, WSDL and endpoint, then stop without
@@ -140,6 +146,7 @@ TXT);
 
 $book = isset($options['book']);
 $bookingV2 = isset($options['bookingv2']);
+$ignoreCheck = isset($options['ignore-check']) && ! isset($options['book']);
 $keep = isset($options['keep']);
 $city = strtoupper((string) ($options['city'] ?? 'MTY'));
 $hotelCodeArg = isset($options['hotel']) ? strtoupper((string) $options['hotel']) : null;
@@ -609,7 +616,40 @@ try {
     ]));
 
     if (! $book) {
-        // -- 4. Descriptive info (stateless) --------------------------------
+        if ($ignoreCheck) {
+            // -- 4. IG keeps the session usable --------------------------------
+            // A refused sell leaves the names in the session's PNR. Ignoring it
+            // must drop them (a second create would otherwise duplicate them)
+            // and keep the availability context pricing depends on.
+            $traveler = ['surname' => $env('AMADEUS_TST_PAX_SURNAME') ?? 'TEST', 'name' => $env('AMADEUS_TST_PAX_FIRSTNAME') ?? 'TESTER', 'type' => 'ADT'];
+            $oneTraveler = fn (AddMultiElementsResponse $reply) => count($reply->travelers) === 1
+                ? null
+                : sprintf('el PNR trae %d viajeros, se esperaba 1', count($reply->travelers));
+
+            // Control: without the IG a second create adds the names again
+            $step('pnr-create', "addMultiElements('create')", fn () => $amadeus->addMultiElements('create', $traveler), $oneTraveler);
+            $step('pnr-create-twice', "addMultiElements('create') otra vez, sin IG — duplica los nombres",
+                fn () => $amadeus->addMultiElements('create', $traveler),
+                fn (AddMultiElementsResponse $reply) => count($reply->travelers) === 2
+                    ? null
+                    : sprintf('el PNR trae %d viajeros, se esperaban 2', count($reply->travelers)));
+            $step('pnr-ignore', "addMultiElements('ignore')", fn () => $amadeus->addMultiElements('ignore'));
+            $step('pnr-create-again', "addMultiElements('create') tras el IG — sin nombres duplicados",
+                fn () => $amadeus->addMultiElements('create', $traveler), $oneTraveler);
+            $step('pnr-ignore-again', "addMultiElements('ignore')", fn () => $amadeus->addMultiElements('ignore'));
+            $step('pricing-after-ignore', 'hotelPricing tras el IG — conserva la disponibilidad', fn () => $amadeus->hotelPricing([
+                'start' => $checkIn,
+                'end' => $checkOut,
+                'hotel_code' => $hotel->hotelCode,
+                'rate_plan_code' => $fresh->ratePlanCode,
+                'booking_code' => $fresh->bookingCode,
+                'room_type_code' => $fresh->roomTypeCode,
+                'quantity' => $rooms,
+                'guest_count' => $guests,
+            ]));
+        }
+
+        // -- Descriptive info (stateless) -----------------------------------
         $describe();
 
         $line();

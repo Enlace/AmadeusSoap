@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:awsse="http://xml.amadeus.com/2010/06/Session_v3" xmlns:wsa="http://www.w3.org/2005/08/addressing">
+  <SOAP-ENV:Header>
+    <wsa:To>http://www.w3.org/2005/08/addressing/anonymous</wsa:To>
+    <wsa:From>
+      <wsa:Address>https://webservices.amadeus.test/1ASIWTEST</wsa:Address>
+    </wsa:From>
+    <wsa:Action>http://webservices.amadeus.com/PNRADD_21_1_1A</wsa:Action>
+    <wsa:MessageID>urn:uuid:217dc344-e963-03c4-9536-c01e97d8cb73</wsa:MessageID>
+    <wsa:RelatesTo RelationshipType="http://www.w3.org/2005/08/addressing/reply">53c39a62-34fa-452e-a063-17b41bb150bf</wsa:RelatesTo>
+    <awsse:Session TransactionStatusCode="InSeries">
+      <awsse:SessionId>SESSION0018</awsse:SessionId>
+      <awsse:SequenceNumber>4</awsse:SequenceNumber>
+      <awsse:SecurityToken>SECURITYTOKEN0029</awsse:SecurityToken>
+    </awsse:Session>
+  </SOAP-ENV:Header>
+  <SOAP-ENV:Body>
+    <PNR_Reply xmlns="http://xml.amadeus.com/PNRACC_21_1_1A">
+      <pnrHeader>
+        <reservationInfo>
+          <reservation>
+            <companyId>1A</companyId>
+          </reservation>
+        </reservationInfo>
+      </pnrHeader>
+      <securityInformation>
+        <responsibilityInformation>
+          <typeOfPnrElement>RP</typeOfPnrElement>
+          <officeId>TEST01</officeId>
+          <iataCode>00000000</iataCode>
+        </responsibilityInformation>
+        <queueingInformation>
+          <queueingOfficeId>TEST01</queueingOfficeId>
+        </queueingInformation>
+        <cityCode>MTY</cityCode>
+      </securityInformation>
+      <sbrPOSDetails>
+        <sbrUserIdentificationOwn>
+          <originIdentification>
+            <inHouseIdentification1> </inHouseIdentification1>
+          </originIdentification>
+        </sbrUserIdentificationOwn>
+        <sbrSystemDetails>
+          <deliveringSystem>
+            <companyId> </companyId>
+          </deliveringSystem>
+        </sbrSystemDetails>
+        <sbrPreferences>
+          <userPreferences>
+            <codedCountry> </codedCountry>
+          </userPreferences>
+        </sbrPreferences>
+      </sbrPOSDetails>
+      <sbrCreationPosDetails>
+        <sbrUserIdentificationOwn>
+          <originIdentification>
+            <inHouseIdentification1> </inHouseIdentification1>
+          </originIdentification>
+        </sbrUserIdentificationOwn>
+        <sbrSystemDetails>
+          <deliveringSystem>
+            <companyId> </companyId>
+          </deliveringSystem>
+        </sbrSystemDetails>
+        <sbrPreferences>
+          <userPreferences>
+            <codedCountry> </codedCountry>
+          </userPreferences>
+        </sbrPreferences>
+      </sbrCreationPosDetails>
+      <sbrUpdatorPosDetails>
+        <sbrUserIdentificationOwn>
+          <originIdentification>
+            <originatorId>00000000</originatorId>
+            <inHouseIdentification1>TEST01</inHouseIdentification1>
+          </originIdentification>
+          <originatorTypeCode>T</originatorTypeCode>
+        </sbrUserIdentificationOwn>
+        <sbrSystemDetails>
+          <deliveringSystem>
+            <companyId>1A</companyId>
+            <locationId>MTY</locationId>
+          </deliveringSystem>
+        </sbrSystemDetails>
+        <sbrPreferences>
+          <userPreferences>
+            <codedCountry>MX</codedCountry>
+          </userPreferences>
+        </sbrPreferences>
+      </sbrUpdatorPosDetails>
+    </PNR_Reply>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
